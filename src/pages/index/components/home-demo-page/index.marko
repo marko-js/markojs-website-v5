@@ -27,6 +27,7 @@ style {
     left:0;
     height:0.5em;
     background: linear-gradient(90deg, #25dbd2, #33d5f4, #039fea);
+    transform-origin: 0 0;
   }
   .demo-page-header {
     display: flex;
@@ -218,7 +219,7 @@ $ const progress = input.buffered ? Math.floor(input.progress / 0.9) : input.pro
 <div.demo-page-wrapper class=input.class role="img" aria-label=input.label> 
   <div.demo-page-container aria-hidden="true" class={ "demo-page-hydrate-all":input.hydrateAll, "demo-page-hydrate-partial":input.hydratePartial }>
     <if(input.progress >= 0)>
-      <div.demo-page-progress style={ width:`${100*Math.min(1, input.progress * (input.buffered ? 1 : 1/0.9))}%` }/>
+      <div.demo-page-progress style={ transform: `scaleX(${Math.min(1, input.progress * (input.buffered ? 1 : 1/0.9))})` }/>
     </if>
     <div.demo-page-header.demo-page-delay-1 class={ "demo-page-loading": progress < 0.1 }>
       <div.demo-page-link.demo-page-delay-2>All Products</div>
