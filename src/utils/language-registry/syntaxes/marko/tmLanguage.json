@@ -1313,7 +1313,7 @@
               "patterns": [
                 {
                   "comment": "Core tag.",
-                  "match": "(for|if|while|else-if|else|macro|tag|await|let|const|props|effect|set|get|id|lifecycle|return)(?=\\b)",
+                  "match": "(for|if|while|else-if|else|macro|tag|await|let|const|attrs|effect|set|get|id|lifecycle|return)(?=\\b)",
                   "name": "support.function.marko"
                 },
                 {
