@@ -14,7 +14,7 @@ module.exports = babelMacros.createMacro(
           ["language-guide", "Language Guide"],
           ["color-picker", "Color Picker"],
           ["tic-tac-toe", "Tic Tac Toe"],
-          ["todomvc", "Todo MVC"]
+          ["todomvc", "Todo MVC"],
           // "ui-components-playground"
         ].map(([name, title]) => {
           const examplePath = path.join(EXAMPLES_DIR, name);
@@ -27,7 +27,7 @@ module.exports = babelMacros.createMacro(
             t.objectProperty(
               t.identifier("files"),
               dirToObjectNode(path.join(examplePath, "src"), nodePath)
-            )
+            ),
           ]);
         })
       )
@@ -78,7 +78,10 @@ module.exports = babelMacros.createMacro(
                 "+",
                 t.stringLiteral("export default "),
                 t.callExpression(
-                  t.memberExpression(t.identifier("JSON"), t.identifier("stringify")),
+                  t.memberExpression(
+                    t.identifier("JSON"),
+                    t.identifier("stringify")
+                  ),
                   [assetId]
                 )
               )

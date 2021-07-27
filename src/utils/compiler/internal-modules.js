@@ -12,6 +12,7 @@ internalModuleLookup.url = () => require("url");
 [
   require.context("@marko/translator-default/dist", true, /\.(js(on)?)$/),
   require.context("@marko/build/dist/components", true, /\.(js(on)?|marko)$/),
+  require.context("@marko/tags-api-preview/dist", true, /\.(js(on)?|marko)$/),
   ...(process.env.NODE_ENV === "production"
     ? [
         require.context("marko/dist/core-tags", true, /\.(js(on)?)$/),

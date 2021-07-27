@@ -14,6 +14,11 @@ taglib.register(
   require("@marko/build/dist/components/marko.json")
 );
 
+taglib.register(
+  require.resolve("@marko/tags-api-preview/marko.json"),
+  require("@marko/tags-api-preview/marko.json")
+);
+
 export default ({ output }) => {
   let cssContent;
   let buildCache;

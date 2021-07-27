@@ -42,6 +42,12 @@ module.exports = [
   ...getBrowserConfigs(config => {
     shared(config);
 
+    config.node = {
+      ...config.node,
+      __dirname: true,
+      __filename: true
+    }
+
     config.module.rules.push(
       {
         test: /\.wasm$/,
