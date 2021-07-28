@@ -8,7 +8,7 @@
     "@marko/compiler": "^5.14.2",
     "@marko/prettyprint": "^3.0.1",
     "@marko/serve": "^4.2.2",
-    "@marko/tags-api-preview": "^0.0.5",
+    "@marko/tags-api-preview": "^0.0.6",
     "assert": "^2.0.0",
     "babel-plugin-transform-commonjs": "^1.1.6",
     "babel-plugin-transform-define": "^2.0.0",
