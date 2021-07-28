@@ -178,7 +178,7 @@ class {
     };
 
     for (const fileName in files) {
-      example.files[fileName] = files[fileName].content;
+      example.files[path.join("components", fileName)] = files[fileName].content;
     }
 
     const newExampleIndex = EXAMPLES.length - 1;
