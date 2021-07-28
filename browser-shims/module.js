@@ -9,7 +9,7 @@ const Module = {
       basedir: path.dirname(fromModule.filename),
       paths: fromModule.paths,
       pathFilter(pkg, _, relativePath) {
-        if (relativePath === "index.js") {
+        if (/^index(\.[^/\\]+)?$/.test(relativePath)) {
           try {
             return resolveExports.legacy(pkg, Module._resolveExportsOptions);
           } catch {}
