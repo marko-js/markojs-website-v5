@@ -1,0 +1,216 @@
+import path from "path"
+import { format } from "prettier/standalone"
+import prettierHTML from "prettier/parser-html"
+import prettierBabel from "prettier/parser-babel"
+import highlight from "../../../utils/highlight"
+import { bundle, compile } from "../../../utils/compiler"
+import fs, { vol } from "memfs"
+
+<attrs/{ type, files, selectedFile, onSelectError, onSyntaxError }/>
+<id/examplePath/>
+<const/selectedPath = path.join("/", examplePath, selectedFile.path)/>
+<const/defaultPath = path.join("/", examplePath, files[0].path)/>
+
+<let/error = null/>
+<let/result = null/>
+<const/SYNTAX_ERROR_REG = /(.+?)(?:\((\d+),(\d+)\)|:(\d+)): (.*(?=\s+\d+ | ))/ />
+
+<style>
+  .preview-error,
+  .preview-output,
+  .preview-compiled {
+    position: relative;
+    display: block;
+    min-height: 100%;
+    width: 100%;
+    padding-top: 8px;
+    padding-left: 16px;
+  }
+
+  .preview-output {
+    padding-right: 16px;
+  }
+
+  .preview-output,
+  .preview-error {
+    background: #fff;
+  }
+  .preview-compiled pre.highlighted {
+    padding: 0;
+    font-family: Menlo, Monaco, "Courier New", monospace;
+    font-weight: normal;
+    font-size: 12px;
+    font-feature-settings: "liga" 0, "calt" 0;
+    line-height: 18px;
+    letter-spacing: 0px;
+  }
+
+  .preview-error .error-name {
+    background: #f92672;
+    color: #f8f8f0;
+    margin-left: -16px;
+    margin-top: -8px;
+    padding-top: 8px;
+    padding-bottom: 12px;
+    padding-left: 16px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+
+  .preview-error a {
+    color: #66d9ef;
+    font-weight: normal;
+  }
+
+  .preview-error pre {
+    width: 100%;
+    overflow: auto;
+  }
+
+  .preview-error small {
+    font-style: italic;
+    font-size: 0.75 rem;
+  }
+</style>
+
+
+<if=error>
+  <div.preview-error>
+    <h1.error-name>
+      ${error.name}
+      <if=error.file>
+        &nbsp;:&nbsp;
+        <a onClick() { onSelectError(error) }>
+          ${error.file.slice(1)}(${error.line},${error.column})
+        </a>
+      </if>
+    </h1>
+    <div>${error.message}</div>
+    <if=(selectedPath !== error.file)>
+      <if=error.codeFrame>
+        <pre><code>${error.codeFrame}</code></pre>
+      </if>
+      <else>
+        <small>Open the dev tools to view the full error.</small>
+      </else>
+    </if>
+  </div>
+</if>
+<else>
+  <if=(type === "preview")>
+    <div/outputEl class="preview-output"/>
+  </if>
+  <else>
+    <div.preview-compiled>$!{result}</div>
+  </else>
+</else>
+
+<effect() {
+  const previewTargetEl = !error && type === "preview" && outputEl();
+  const syncTimeout = setTimeout(async () => {
+    for (const file of files) {
+      const filePath = path.join("/", examplePath, file.path);
+      vol.mkdirSync(path.dirname(filePath), { recursive: true });
+      vol.writeFileSync(filePath, file.content);
+    }
+    
+    try {
+      if (type === "preview" || type === "html") {
+        const bundleResult = await bundle({
+          entry: defaultPath,
+          markoOptions: { output: "vdom" }
+        });
+        const template = (0, eval)(bundleResult.js);
+
+        const renderResult = await template.render({});
+
+        if (type === "preview" && previewTargetEl) {
+          let shadowRoot = previewTargetEl.shadowRoot;
+
+          if (shadowRoot) {
+            while (shadowRoot.firstChild) {
+              shadowRoot.removeChild(shadowRoot.firstChild);
+            }
+          } else {
+            shadowRoot = previewTargetEl.attachShadow({ mode: "open" });
+          }
+
+          const style = document.createElement("style");
+          style.innerHTML = bundleResult.css;
+          // TODO: this is because of bug in Marko when rendering in shadow roots that
+          // should be removed once fixed.
+          shadowRoot.createElementNS = document.createElementNS.bind(document);
+          shadowRoot.createTextNode = document.createTextNode.bind(document);
+
+          shadowRoot.appendChild(style);
+          renderResult.appendTo(shadowRoot);
+        } else {
+          result = highlight(
+            "html",
+            format(String(renderResult), {
+              parser: "html",
+              plugins: [prettierHTML]
+            })
+          );
+        }
+      } else {
+        const output = type === "compiled-html" ? "html" : "vdom";
+        const code = await compile({
+          entry: selectedPath,
+          markoOptions: { output }
+        });
+        result = highlight(
+          "javascript",
+          format(
+            code.replaceAll(`${examplePath}/`, ""),
+            {
+              parser: "babel",
+              plugins: [prettierBabel]
+            }
+          )
+        );
+      }
+
+      error = null;
+    } catch (err) {
+      result = null;
+
+      const errorWithLocationMatch =
+        err.name === "SyntaxError" && SYNTAX_ERROR_REG.exec(err.message);
+      if (errorWithLocationMatch) {
+        let [match, file, line, column, lineOnly, message] = errorWithLocationMatch;
+        if (lineOnly) {
+          line = lineOnly;
+          column = 0;
+        }
+
+        file = path.resolve(file);
+        line = parseInt(line, 10);
+        column = parseInt(column, 10) + 1;
+        const codeFrame = err.message.slice(match.length);
+        error = {
+          name: err.name,
+          file,
+          message,
+          line,
+          column,
+          codeFrame
+        };
+
+        if (file === selectedPath && onSyntaxError) {
+          onSyntaxError(error);
+        }
+      } else {
+        error = err;
+        console.error(err);
+      }
+    }
+  }, 150);
+  return () => {
+    clearTimeout(syncTimeout);
+    try {
+      vol.rmdirSync(examplePath, { recursive: true });
+    } catch (e) {}
+  }
+}/>

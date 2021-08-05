@@ -1,0 +1,84 @@
+import { load, setModelMarkers, createEditor, createModel } from "../../../utils/monaco"
+
+static export const loading = load();
+
+class {
+  onMount() {
+    this.editor = createEditor(this.getEl("editor"));
+    this.sync();
+  }
+
+  onUpdate() {
+    this.sync();
+  }
+
+  onDestroy() {
+    this.editor.dispose();
+  }
+
+  sync() {
+    if (this.prevLanguage !== this.input.language) {
+      if (this.model) {
+        this.model.dispose();
+      }
+
+      this.model = createModel(this.input.value, this.input.language);
+      this.editor.setModel(this.model);
+      this.editor.layout();
+      this.model.onDidChangeContent(() => {
+        const value = this.model.getValue();
+        if (value !== this.prevValue) {
+          this.prevValue = value;
+          this.input.valueChange(value);
+        }
+
+        if (this.hasErrorMarkers) {
+          setModelMarkers(this.model, null, []);
+          this.hasErrorMarkers = false;
+        }
+      });
+    } else if (this.prevValue !== this.input.value) {
+      this.model.setValue(this.input.value);
+    }
+
+    this.prevLanguage = this.input.language;
+    this.prevValue = this.input.value;
+  }
+
+  focus(lineNumber, column) {
+    this.editor.focus();
+    this.editor.setPosition({
+      lineNumber,
+      column
+    });
+  }
+
+  showError({ line, column, message }) {
+    this.hasErrorMarkers = true;
+    setModelMarkers(this.model, null, [
+      {
+        startLineNumber: line,
+        startColumn: column,
+        endLineNumber: line,
+        endColumn: column,
+        message,
+        severity: 8
+      }
+    ]);
+  }
+
+  handleResize() {
+    this.editor.layout();
+  }
+}
+
+style {
+  .editor {
+    display: block;
+    height: 100%;
+    padding-top: 8px;
+  }
+}
+
+<subscribe to=window on-resize("handleResize")/>
+<div.editor key="editor" no-update/>

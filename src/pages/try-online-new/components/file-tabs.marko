@@ -1,0 +1,116 @@
+<attrs/{ files: externalFiles, selectedIndex: externalSelected }/>
+
+<let/files := externalFiles/>
+<let/selectedIndex := externalSelected/>
+
+<const/selectedFile = files[selectedIndex]/>
+
+<div.file-tabs>
+  <let/nextId = 1/>
+  <for|file, index| of=files>
+    <let/editing = false/>
+    <const/selected = selectedFile === file/>
+    <const/mutable = (index > 0)/>
+    <div.file-tab class={ selected } onClick() { 
+      if (selected) {
+        editing = true;
+      } else {
+        editing = false;
+        selectedIndex = index;
+      }
+    }>
+      <if=(!editing || !selected || !mutable)>
+        ${file.name}
+      </if>
+      <else>
+        <let/name = file.name/>
+        <const/finishRename() {
+          const modifiedFile = { ...file, name, path: file.path.replace(file.name, name) };
+          files = [
+            ...files.slice(0, index), 
+            modifiedFile,
+            ...files.slice(index+1)
+          ];
+          editing = false;
+        }/>
+        <input/nameInput 
+          type="text" 
+          size=name.length 
+          value:=name 
+          onBlur=finishRename
+          onKeydown(e) {
+            if (e.code === "Enter") {
+              finishRename();
+            }
+          }/>
+        <lifecycle onMount() { 
+          nameInput().focus();
+          nameInput().setSelectionRange(0, name.indexOf("."));
+        }/>
+      </else>
+      <if=mutable>
+        <button.file-close onClick(e) { 
+          if (window.confirm(`Delete ${file.path}?`)) {
+            if (selectedIndex >= index) {
+              selectedIndex--;
+            }
+            files = [...files.slice(0, index), ...files.slice(index+1)];
+          }
+          e.stopPropagation();
+        }>
+          &times;
+        </button>
+      </if>
+    </div>
+  </for>
+  <button.new-file onClick() { 
+    const newFile = { name:`Component${nextId}.marko`, path:`/components/Component${nextId}.marko`, content:"" };
+    selectedIndex = files.length;
+    files = files.concat(newFile);
+    nextId++;
+  }>
+    +
+  </button>
+</div>
+<style>
+  .file-tabs {
+    display:flex;
+    overflow-x: auto;
+    width:100%;
+    height:100%;
+  }
+  .file-tab {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding:0 1em;
+    flex-shrink: 0;
+    border-bottom: 2px solid transparent;
+    cursor:pointer;
+  }
+  .file-tab:not(.selected):hover {
+    background: rgba(255,255,255,0.1);
+  }
+  .file-tab.selected {
+    border-bottom: 2px solid #09bcf8;
+  }
+  .file-close {
+    padding:0.5em;
+    background: transparent;
+    margin-right:-0.5em;
+    color:#fff;
+  }
+  .file-close:hover {
+    color:#f1195b;
+  }
+  .new-file {
+    padding:0 1em;
+    font-size: 1.5em;
+    background: transparent;
+    color:#999;
+  }
+  .new-file:hover {
+    color: #09bcf8;
+  }
+</style>

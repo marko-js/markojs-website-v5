@@ -1,0 +1,28 @@
+import { encode, decode } from "base64url";
+
+<attrs/{ default:defaultValue }/>
+<let/value = (
+  (() => { 
+    try {
+      return JSON.parse(decode(window.location.hash.slice(1)));
+    } catch(e) {
+      console.error(e);
+    }
+  })() 
+  || defaultValue
+)/>
+<effect() {
+  window.location.hash = encode(JSON.stringify(value));
+}/>
+<effect() { 
+  const handler = () => {
+    try {
+      value = JSON.parse(decode(window.location.hash.slice(1)));
+    } catch(e) {
+      console.error(e);
+    }
+  };
+  window.addEventListener("hashchange", handler);
+  () => window.removevEventListener("hashchange", handler);
+}/>
+<return:=value/>
