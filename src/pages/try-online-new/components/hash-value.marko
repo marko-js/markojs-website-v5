@@ -4,7 +4,9 @@ import { encode, decode } from "base64url";
 <let/value = (
   (() => { 
     try {
-      return JSON.parse(decode(window.location.hash.slice(1)));
+      if (typeof window !== "undefined") {
+        return JSON.parse(decode(window.location.hash.slice(1)));
+      }
     } catch(e) {
       console.error(e);
     }
