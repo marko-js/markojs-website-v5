@@ -1,0 +1,68 @@
+<hash-value/files = [{ name:"index.marko", path:"/index.marko", content:"-- test" }]/>
+<let/selectedIndex = 0/>
+<let/previewType = "preview"/>
+<const/selectedFile = files[selectedIndex]/>
+
+<style>
+  .editor-container {
+    background: #202134;
+    color: #fff;
+  }
+</style>
+
+<resizable-panes>
+  <@left class="editor-container">
+    <pane>
+      <@actions>
+        <file-tabs files:=files selectedIndex:=selectedIndex/>
+      </@actions>
+      <@body>
+        <let/editor = null/>
+        <${editor} 
+          value=selectedFile.content 
+          language=selectedFile.name.substring(selectedFile.name.indexOf(".")+1) 
+          valueChange(content) {
+            const modifiedFile = { ...selectedFile, content };
+            files = [
+              ...files.slice(0, selectedIndex), 
+              modifiedFile,
+              ...files.slice(selectedIndex+1)
+            ];
+          }/>
+        <lifecycle onMount = (async () => { 
+          const e = await import("./editor");
+          await e.loading;
+          editor = e;
+        })/>
+      </@body>
+    </pane>
+  </@left>
+  <@right>
+    <pane>
+      <@actions>
+        <controllable-select.preview-select value:=previewType>
+          <option value="preview">App Preview</option>
+          <option value="compiled-html">Compiled (HTML)</option>
+          <option value="compiled-vdom">Compiled (VDOM)</option>
+        </controllable-select>
+        <style>
+          .preview-select {
+            border:0;
+            height:100%;
+            padding:0 1em;
+          }
+        </style>
+      </@actions>
+      <@body>
+        <let/preview = null/>
+        <${preview} 
+          type=previewType
+          files=files
+          selectedFile=selectedFile/>
+        <lifecycle onMount = (async () => { 
+          preview = await import("./preview");
+        })/>
+      </@body>
+    </pane>
+  </@right>
+</resizable-panes>

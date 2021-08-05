@@ -1,0 +1,12 @@
+<attrs/{ default: query, fallback }/>
+<let/isMatch = typeof window !== "undefined" ? window.matchMedia(query).matches : fallback/>
+
+<effect() {
+  const mq = window.matchMedia(query);
+  const listener = () => isMatch = !!mq.matches;
+  mq.addEventListener("change", listener);
+  isMatch = !!mq.matches;
+  return () => mq.removeEventListener("change", listener);
+}/>
+
+<return=isMatch/>

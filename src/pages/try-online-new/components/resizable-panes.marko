@@ -1,0 +1,83 @@
+<attrs/{ left, right }/>
+
+<let/editorSize=0.5/>
+<let/resizing = false/>
+<match-media/isVertical = "(max-aspect-ratio: 1/1)"/>
+
+<div class=["panes", resizing && "resizing"]>
+  <div ...left style=`flex:${editorSize}`>
+    <${left.renderBody}/>
+  </div>
+  <div.divider>
+    <div.inner
+      onMousedown() {
+        resizing = true;
+      }/>
+  </div>
+  <div ...right style=`flex:${1-editorSize}`>
+    <${right.renderBody}/>
+  </div>
+</div>
+<if=resizing>
+  <effect() {
+    const handler = (e) => {
+      if (e.buttons || e.which) {
+        const fraction = isVertical 
+          ? e.clientY / window.innerHeight 
+          : e.clientX / window.innerWidth;
+        if (fraction > 0) {
+          // it seems a drag event with no position is fired when we stop
+          // so we'll ignore that value
+          editorSize = Math.min(0.8, Math.max(0.2, fraction));
+        }
+      } else {
+        resizing = false;
+      }
+    };
+    window.addEventListener("mousemove", handler);
+    return () => window.removeEventListener("mousemove", handler);
+  }/>
+</if>
+
+<style>
+  .panes {
+    display:flex;
+    flex:1;
+    width: 100%;
+  }
+  .panes > div {
+    overflow:hidden;
+    display: flex;
+  }
+  .panes.resizing {
+    cursor: col-resize;
+  }
+  .panes.resizing > div:not(.divider) {
+    pointer-events: none;
+  }
+  .divider {
+    min-height: 2px;
+    min-width: 2px;
+    position:relative;
+    background:#eee;
+    cursor: col-resize;
+  }
+  .divider:hover {
+    background:#ccc;
+  }
+  .divider .inner {
+    position: absolute;
+    top:-10px; left: -10px; bottom:-10px; right:-10px;
+    opacity: 0;
+    z-index:1000;
+  }
+  @media (max-aspect-ratio: 1/1) {
+    .panes {
+      flex-direction: column;
+    }
+    .panes.resizing,
+    .divider:hover {
+      cursor: row-resize;
+    }
+  }
+</style>
