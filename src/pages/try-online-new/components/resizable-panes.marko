@@ -4,8 +4,8 @@
 <let/resizing = false/>
 <match-media/isVertical = "(max-aspect-ratio: 1/1)"/>
 
-<div class=["panes", resizing && "resizing"]>
-  <div ...left style=`flex:${editorSize}`>
+<div/container class=["panes", resizing && "resizing"]>
+  <div ...left style=`flex-grow:${editorSize}`>
     <${left.renderBody}/>
   </div>
   <div.divider>
@@ -14,7 +14,7 @@
         resizing = true;
       }/>
   </div>
-  <div ...right style=`flex:${1-editorSize}`>
+  <div ...right style=`flex-grow:${1-editorSize}`>
     <${right.renderBody}/>
   </div>
 </div>
@@ -22,9 +22,10 @@
   <effect() {
     const handler = (e) => {
       if (e.buttons || e.which) {
+        const rect = container().getBoundingClientRect();
         const fraction = isVertical 
-          ? e.clientY / window.innerHeight 
-          : e.clientX / window.innerWidth;
+          ? (e.clientY - rect.top) / rect.height 
+          : (e.clientX - rect.left) / rect.width;
         if (fraction > 0) {
           // it seems a drag event with no position is fired when we stop
           // so we'll ignore that value
@@ -48,6 +49,7 @@
   .panes > div {
     overflow:hidden;
     display: flex;
+    flex-basis:0;
   }
   .panes.resizing {
     cursor: col-resize;
