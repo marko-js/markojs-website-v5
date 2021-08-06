@@ -4,7 +4,12 @@ static export const loading = load();
 
 class {
   onMount() {
-    this.editor = createEditor(this.getEl("editor"));
+    const editorEl = this.getEl("editor");
+    this.editor = createEditor(editorEl);
+    this.resizeObserver = new ResizeObserver(entries => {
+      this.editor.layout();
+    });
+    this.resizeObserver.observe(editorEl);
     this.sync();
   }
 
@@ -14,6 +19,7 @@ class {
 
   onDestroy() {
     this.editor.dispose();
+    this.resizeObserver.disconnect();
   }
 
   sync() {
@@ -66,10 +72,6 @@ class {
       }
     ]);
   }
-
-  handleResize() {
-    this.editor.layout();
-  }
 }
 
 style {
@@ -77,8 +79,12 @@ style {
     display: block;
     height: 100%;
     padding-top: 8px;
+    position:relative;
+  }
+  .editor .monaco-editor {
+    position:absolute;
+    top:0; bottom:0; right:0; left:0;
   }
 }
 
-<subscribe to=window on-resize("handleResize")/>
 <div.editor key="editor" no-update/>
