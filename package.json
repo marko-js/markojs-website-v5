@@ -46,7 +46,7 @@
     "publish": "node ./publish"
   },
   "dependencies": {
-    "base64url": "^3.0.1",
+    "lz-string": "^1.4.4",
     "resolve": "^1.20.0",
     "resolve.exports": "^1.0.2"
   }

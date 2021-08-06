@@ -1,11 +1,11 @@
-import { encode, decode } from "base64url";
+import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
 
 <attrs/{ default:defaultValue }/>
 <let/value = (
   (() => { 
     try {
       if (typeof window !== "undefined") {
-        return JSON.parse(decode(window.location.hash.slice(1)));
+        return JSON.parse(decompressFromEncodedURIComponent(window.location.hash.slice(1)));
       }
     } catch(e) {
       console.error(e);
@@ -14,12 +14,12 @@ import { encode, decode } from "base64url";
   || defaultValue
 )/>
 <effect() {
-  window.location.hash = encode(JSON.stringify(value));
+  window.location.hash = compressToEncodedURIComponent(JSON.stringify(value));
 }/>
 <effect() { 
   const handler = () => {
     try {
-      value = JSON.parse(decode(window.location.hash.slice(1)));
+      value = JSON.parse(decompressFromEncodedURIComponent(window.location.hash.slice(1)));
     } catch(e) {
       console.error(e);
     }
