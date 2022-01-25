@@ -17,8 +17,8 @@
         <file-tabs files:=files selectedIndex:=selectedIndex/>
       </@actions>
       <@body>
-        <let/editor = null/>
-        <${editor} 
+        <let/activeEditor = null/>
+        <activeEditor
           value=selectedFile.content 
           language=selectedFile.name.substring(selectedFile.name.indexOf(".")+1) 
           valueChange(content) {
@@ -32,7 +32,7 @@
         <lifecycle onMount = (async () => { 
           const e = await import("./editor");
           await e.loading;
-          editor = e;
+          activeEditor = e;
         })/>
       </@body>
     </pane>

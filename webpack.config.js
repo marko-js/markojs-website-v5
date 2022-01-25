@@ -73,6 +73,7 @@ module.exports = [
         fs: path.join(__dirname, "browser-shims/fs"),
         module: path.join(__dirname, "browser-shims/module"),
         process: path.join(__dirname, "browser-shims/process"),
+        os: false,
         stream: false,
         http: false
       }
