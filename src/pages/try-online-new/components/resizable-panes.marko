@@ -10,8 +10,10 @@
   </div>
   <div.divider>
     <div.inner
-      onMousedown() {
+      onMousedown(e) {
         resizing = true;
+        e.preventDefault();
+        e.stopPropagation();
       }/>
   </div>
   <div ...right style=`flex-grow:${1-editorSize}`>
