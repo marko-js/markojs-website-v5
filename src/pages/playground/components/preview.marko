@@ -32,7 +32,8 @@ import fs, { vol } from "memfs"
   }
 
   .preview-output {
-    padding-right: 16px;
+    padding: 0;
+    border: 0;
   }
 
   .preview-output,
@@ -103,7 +104,7 @@ import fs, { vol } from "memfs"
 </if>
 <else>
   <if=(type === "preview")>
-    <div/outputEl class="preview-output"/>
+    <iframe/outputEl class="preview-output"/>
   </if>
   <else>
     <div.preview-compiled>$!{result}</div>
@@ -125,31 +126,23 @@ import fs, { vol } from "memfs"
           entry: defaultPath,
           markoOptions: { output: "vdom" }
         });
-        const template = (0, eval)(bundleResult.js);
-
-        const renderResult = await template.render({});
 
         if (type === "preview" && previewTargetEl) {
-          let shadowRoot = previewTargetEl.shadowRoot;
+          const { contentWindow, contentDocument } = previewTargetEl;
+          contentDocument.open();
+          contentDocument.close();
+          contentWindow.__INTERNAL_MODULES__ = window.__INTERNAL_MODULES__;
+          const template = (0, contentWindow.eval)(bundleResult.js);
+          const renderResult = await template.render({});
 
-          if (shadowRoot) {
-            while (shadowRoot.firstChild) {
-              shadowRoot.removeChild(shadowRoot.firstChild);
-            }
-          } else {
-            shadowRoot = previewTargetEl.attachShadow({ mode: "open" });
-          }
-
-          const style = document.createElement("style");
+          const style = contentDocument.createElement("style");
           style.innerHTML = bundleResult.css;
-          // TODO: this is because of bug in Marko when rendering in shadow roots that
-          // should be removed once fixed.
-          shadowRoot.createElementNS = document.createElementNS.bind(document);
-          shadowRoot.createTextNode = document.createTextNode.bind(document);
 
-          shadowRoot.appendChild(style);
-          renderResult.appendTo(shadowRoot);
+          contentDocument.head.appendChild(style);
+          renderResult.appendTo(contentDocument.body);
         } else {
+          const template = (0, eval)(bundleResult.js);
+          const renderResult = await template.render({});
           result = highlight(
             "html",
             format(String(renderResult), {
