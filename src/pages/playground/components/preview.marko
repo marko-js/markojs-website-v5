@@ -104,7 +104,7 @@ import fs, { vol } from "memfs"
 </if>
 <else>
   <if=(type === "preview")>
-    <iframe/outputEl class="preview-output"/>
+    <iframe-swap/outputEl class="preview-output"/>
   </if>
   <else>
     <div.preview-compiled>$!{result}</div>
@@ -112,7 +112,7 @@ import fs, { vol } from "memfs"
 </else>
 
 <effect() {
-  const previewTargetEl = !error && type === "preview" && outputEl();
+  const previewTargetEl = !error && type === "preview" && outputEl;
   const syncTimeout = setTimeout(async () => {
     for (const file of files) {
       const filePath = path.join("/", examplePath, file.path);
@@ -128,9 +128,7 @@ import fs, { vol } from "memfs"
         });
 
         if (type === "preview" && previewTargetEl) {
-          const { contentWindow, contentDocument } = previewTargetEl;
-          contentDocument.open();
-          contentDocument.close();
+          const { contentWindow, contentDocument } = previewTargetEl.clear();
           contentWindow.__INTERNAL_MODULES__ = window.__INTERNAL_MODULES__;
           const template = (0, contentWindow.eval)(bundleResult.js);
           const renderResult = await template.render({});
