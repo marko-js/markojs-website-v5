@@ -23,32 +23,32 @@ class {
   }
 
   sync() {
-    if (this.prevLanguage !== this.input.language) {
+    const { filename } = this.input;
+    const language = filename.substring(filename.indexOf(".")+1);
+
+    if (this.prevLanguage !== language) {
       if (this.model) {
         this.model.dispose();
       }
 
-      this.model = createModel(this.input.value, this.input.language);
+      this.model = createModel(this.input.value, language);
       this.editor.setModel(this.model);
       this.editor.layout();
       this.model.onDidChangeContent(() => {
         const value = this.model.getValue();
-        if (value !== this.prevValue) {
-          this.prevValue = value;
-          this.input.valueChange(value);
-        }
+        this.input.valueChange(value);
 
         if (this.hasErrorMarkers) {
           setModelMarkers(this.model, null, []);
           this.hasErrorMarkers = false;
         }
       });
-    } else if (this.prevValue !== this.input.value) {
+    } else if (this.prevFilename !== filename) {
       this.model.setValue(this.input.value);
     }
 
-    this.prevLanguage = this.input.language;
-    this.prevValue = this.input.value;
+    this.prevLanguage = language;
+    this.prevFilename = filename;
   }
 
   focus(lineNumber, column) {

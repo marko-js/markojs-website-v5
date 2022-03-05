@@ -4,6 +4,7 @@ import prettierHTML from "prettier/parser-html"
 import prettierBabel from "prettier/parser-babel"
 import highlight from "../../../utils/highlight"
 import { bundle, compile } from "../../../utils/compiler"
+import * as fluurtTranslator from "../../../../browser-shims/translator"
 import fs, { vol } from "memfs"
 
 <attrs/{ type, files, selectedFile, onSelectError, onSyntaxError }/>
@@ -150,10 +151,14 @@ import fs, { vol } from "memfs"
           );
         }
       } else {
-        const output = type === "compiled-html" ? "html" : "vdom";
+        const output = type.startsWith("compiled-html") ? "html" : "vdom";
+        const translator = type.endsWith("-6") ? fluurtTranslator : undefined;
         const code = await compile({
           entry: selectedPath,
-          markoOptions: { output }
+          markoOptions: { 
+            output,
+            translator
+          }
         });
         result = highlight(
           "javascript",
@@ -201,7 +206,7 @@ import fs, { vol } from "memfs"
         console.error(err);
       }
     }
-  }, 150);
+  }, 300);
   return () => {
     clearTimeout(syncTimeout);
     try {

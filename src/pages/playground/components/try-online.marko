@@ -1,4 +1,4 @@
-<hash-value/files = [{ name:"index.marko", path:"/index.marko", content:"<let/count=0/>\n<button onClick() { count++ }>\n  ${count}\n</button>" }]/>
+<hash-value/files = [{ name:"index.marko", path:"/components/index.marko", content:"<let/count=0/>\n<button onClick() { count++ }>\n  ${count}\n</button>" }]/>
 <let/selectedIndex = 0/>
 <let/previewType = "preview"/>
 <const/selectedFile = files[selectedIndex]/>
@@ -20,7 +20,7 @@
         <let/activeEditor = null/>
         <activeEditor
           value=selectedFile.content 
-          language=selectedFile.name.substring(selectedFile.name.indexOf(".")+1) 
+          filename=selectedFile.path 
           valueChange(content) {
             const modifiedFile = { ...selectedFile, content };
             files = [
@@ -42,8 +42,10 @@
       <@actions>
         <controllable-select.preview-select value:=previewType>
           <option value="preview">App Preview</option>
-          <option value="compiled-html">Compiled (HTML)</option>
-          <option value="compiled-vdom">Compiled (VDOM)</option>
+          <option value="compiled-html-5">Compiled v5 (HTML)</option>
+          <option value="compiled-vdom-5">Compiled v5 (VDOM)</option>
+          <option value="compiled-html-6">Compiled v6 (HTML)</option>
+          <option value="compiled-vdom-6">Compiled v6 (DOM)</option>
         </controllable-select>
         <style>
           .preview-select {
