@@ -12,8 +12,10 @@ import fs, { vol } from "memfs"
 <const/selectedPath = path.join("/", examplePath, selectedFile.path)/>
 <const/defaultPath = path.join("/", examplePath, files[0].path)/>
 
+
 <let/error = null/>
 <let/result = null/>
+<let/deferredType = type/>
 <const/SYNTAX_ERROR_REG = /(.+?)(?:\((\d+),(\d+)\)|:(\d+)): (.*(?=\s+\d+ | ))/ />
 
 <style>
@@ -104,7 +106,7 @@ import fs, { vol } from "memfs"
   </div>
 </if>
 <else>
-  <if=(type === "preview")>
+  <if=(deferredType === "preview")>
     <iframe-swap/outputEl class="preview-output"/>
   </if>
   <else>
@@ -113,6 +115,7 @@ import fs, { vol } from "memfs"
 </else>
 
 <effect() {
+  let errorTimeout;
   const previewTargetEl = !error && type === "preview" && outputEl;
   const syncTimeout = setTimeout(async () => {
     for (const file of files) {
@@ -174,41 +177,46 @@ import fs, { vol } from "memfs"
 
       error = null;
     } catch (err) {
-      result = null;
+      errorTimeout = setTimeout(() => {
+        result = null;
 
-      const errorWithLocationMatch =
-        err.name === "SyntaxError" && SYNTAX_ERROR_REG.exec(err.message);
-      if (errorWithLocationMatch) {
-        let [match, file, line, column, lineOnly, message] = errorWithLocationMatch;
-        if (lineOnly) {
-          line = lineOnly;
-          column = 0;
+        const errorWithLocationMatch =
+          err.name === "SyntaxError" && SYNTAX_ERROR_REG.exec(err.message);
+        if (errorWithLocationMatch) {
+          let [match, file, line, column, lineOnly, message] = errorWithLocationMatch;
+          if (lineOnly) {
+            line = lineOnly;
+            column = 0;
+          }
+
+          file = path.resolve(file);
+          line = parseInt(line, 10);
+          column = parseInt(column, 10) + 1;
+          const codeFrame = err.message.slice(match.length);
+          error = {
+            name: err.name,
+            file,
+            message,
+            line,
+            column,
+            codeFrame
+          };
+
+          if (file === selectedPath && onSyntaxError) {
+            onSyntaxError(error);
+          }
+        } else {
+          error = err;
+          console.error(err);
         }
-
-        file = path.resolve(file);
-        line = parseInt(line, 10);
-        column = parseInt(column, 10) + 1;
-        const codeFrame = err.message.slice(match.length);
-        error = {
-          name: err.name,
-          file,
-          message,
-          line,
-          column,
-          codeFrame
-        };
-
-        if (file === selectedPath && onSyntaxError) {
-          onSyntaxError(error);
-        }
-      } else {
-        error = err;
-        console.error(err);
-      }
+      }, 1000);
     }
-  }, 300);
+
+    deferredType = type;
+  }, 10);
   return () => {
     clearTimeout(syncTimeout);
+    clearTimeout(errorTimeout);
     try {
       vol.rmdirSync(examplePath, { recursive: true });
     } catch (e) {}
