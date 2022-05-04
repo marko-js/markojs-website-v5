@@ -1,4 +1,5 @@
-<hash-value/files = [{ name:"index.marko", path:"/components/index.marko", content:"<let/count=0/>\n<button onClick() { count++ }>\n  ${count}\n</button>" }]/>
+<attrs/{ getTranslator, defaultFiles }/>
+<hash-value/files = defaultFiles/>
 <let/selectedIndex = 0/>
 <let/previewType = "preview"/>
 <const/selectedFile = files[selectedIndex]/>
@@ -42,10 +43,8 @@
       <@actions>
         <controllable-select.preview-select value:=previewType>
           <option value="preview">App Preview</option>
-          <option value="compiled-html-5">Compiled v5 (HTML)</option>
-          <option value="compiled-vdom-5">Compiled v5 (VDOM)</option>
-          <option value="compiled-html-6">Compiled v6 (HTML)</option>
-          <option value="compiled-vdom-6">Compiled v6 (DOM)</option>
+          <option value="compiled-html">Compiled (HTML)</option>
+          <option value="compiled-vdom">Compiled (DOM)</option>
         </controllable-select>
         <style>
           .preview-select {
@@ -60,7 +59,8 @@
         <${preview} 
           type=previewType
           files=files
-          selectedFile=selectedFile/>
+          selectedFile=selectedFile
+          getTranslator=getTranslator/>
         <lifecycle onMount = (async () => { 
           preview = await import("./preview");
         })/>

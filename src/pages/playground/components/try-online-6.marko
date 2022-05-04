@@ -1,0 +1,9 @@
+import * as fluurtTranslator from "../../../../browser-shims/translator"
+
+class {}
+
+<try-online getTranslator() { return fluurtTranslator } defaultFiles=[{ 
+  name:"index.marko", 
+  path:"/components/index.marko", 
+  content:"<let/count=0/>\n<button onclick() { count++ }>\n  ${count}\n</button>"
+}]/>
