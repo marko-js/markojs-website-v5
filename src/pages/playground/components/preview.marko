@@ -6,15 +6,13 @@ import highlight from "../../../utils/highlight"
 import { bundle, compile } from "../../../utils/compiler"
 import fs, { vol } from "memfs"
 
-<attrs/{ type, files, selectedFile, getTranslator, onSelectError, onSyntaxError }/>
+<attrs/{ type, files, selectedFile, getTranslator, debounce, onSelectError, onSyntaxError }/>
 <id/examplePath/>
 <const/selectedPath = path.join("/", examplePath, selectedFile.path)/>
 <const/defaultPath = path.join("/", examplePath, files[0].path)/>
 
-
 <let/error = null/>
 <let/result = null/>
-<let/deferredType = type/>
 <const/SYNTAX_ERROR_REG = /(.+?)(?:\((\d+),(\d+)\)|:(\d+)): (.*(?=\s+\d+ | ))/ />
 
 <style>
@@ -27,6 +25,18 @@ import fs, { vol } from "memfs"
     width: 100%;
     padding-top: 8px;
     padding-left: 16px;
+  }
+
+  .preview-error {
+    display:none;
+  }
+  .preview-error.preview-error-active {
+    display:block;
+  }
+  
+  .preview-error-active ~ .preview-output,
+  .preview-error-active ~ .preview-compiled {
+    display: none;
   }
 
   .preview-compiled {
@@ -82,8 +92,8 @@ import fs, { vol } from "memfs"
 </style>
 
 
-<if=error>
-  <div.preview-error>
+<div.preview-error class=error && "preview-error-active">
+  <if=error>
     <h1.error-name>
       ${error.name}
       <if=error.file>
@@ -102,21 +112,25 @@ import fs, { vol } from "memfs"
         <small>Open the dev tools to view the full error.</small>
       </else>
     </if>
-  </div>
+  </if>
+</div>
+<if=(type === "preview")>
+  <iframe-swap/outputEl class="preview-output"/>
 </if>
 <else>
-  <if=(deferredType === "preview")>
-    <iframe-swap/outputEl class="preview-output"/>
-  </if>
-  <else>
-    <div.preview-compiled>$!{result}</div>
-  </else>
+  <div.preview-compiled>$!{result}</div>
 </else>
 
 <effect() {
-  let errorTimeout;
-  const previewTargetEl = !error && type === "preview" && outputEl;
-  const syncTimeout = setTimeout(async () => {
+  let syncTimeout, errorTimeout;
+
+  if (debounce) {
+    syncTimeout = setTimeout(showPreview, 100);
+  } else {
+    showPreview();
+  }
+
+  async function showPreview() {
     for (const file of files) {
       const filePath = path.join("/", examplePath, file.path);
       vol.mkdirSync(path.dirname(filePath), { recursive: true });
@@ -133,8 +147,8 @@ import fs, { vol } from "memfs"
           }
         });
 
-        if (type === "preview" && previewTargetEl) {
-          const { contentWindow, contentDocument } = previewTargetEl.clear();
+        if (type === "preview") {
+          const { contentWindow, contentDocument } = outputEl.next();
           contentWindow.__INTERNAL_MODULES__ = window.__INTERNAL_MODULES__;
           const template = (0, contentWindow.eval)(bundleResult.js);
           const style = contentDocument.createElement("style");
@@ -148,6 +162,7 @@ import fs, { vol } from "memfs"
             const renderResult = await template.render({});
             renderResult.appendTo(contentDocument.body);
           }
+          outputEl.swap();
         }
         // else {
         //   const template = (0, eval)(bundleResult.js);
@@ -183,9 +198,13 @@ import fs, { vol } from "memfs"
 
       error = null;
     } catch (err) {
-      errorTimeout = setTimeout(() => {
-        result = null;
+      if (debounce) {
+        errorTimeout = setTimeout(showError, 1000);
+      } else {
+        showError();
+      }
 
+      function showError() {
         const errorWithLocationMatch =
           err.name === "SyntaxError" && SYNTAX_ERROR_REG.exec(err.message);
         if (errorWithLocationMatch) {
@@ -215,11 +234,10 @@ import fs, { vol } from "memfs"
           error = err;
           console.error(err);
         }
-      }, 1000);
+      }
     }
-
-    deferredType = type;
-  }, 10);
+  }
+  
   return () => {
     clearTimeout(syncTimeout);
     clearTimeout(errorTimeout);

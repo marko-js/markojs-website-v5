@@ -4,7 +4,11 @@
 <iframe/second ...iframeAttrs style="display:none"/>
 
 <return={
-  clear() {
+  next() {
+    const firstHidden = first().style.display === "none";
+    return firstHidden ? first() : second();
+  },
+  swap() {
     const firstHidden = first().style.display === "none";
     const current = firstHidden ? second() : first();
     const next = firstHidden ? first() : second();

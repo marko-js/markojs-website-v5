@@ -2,6 +2,7 @@
 <hash-value/files = defaultFiles/>
 <let/selectedIndex = 0/>
 <let/previewType = "preview"/>
+<let/debounce = false/>
 <const/selectedFile = files[selectedIndex]/>
 
 <style>
@@ -29,6 +30,7 @@
               modifiedFile,
               ...files.slice(selectedIndex+1)
             ];
+            debounce = true;
           }/>
         <lifecycle onMount = (async () => { 
           const e = await import("./editor");
@@ -41,7 +43,12 @@
   <@right>
     <pane>
       <@actions>
-        <controllable-select.preview-select value:=previewType>
+        <controllable-select.preview-select 
+          value=previewType 
+          valueChange(value) {
+            previewType = value;
+            debounce = false;
+          }>
           <option value="preview">App Preview</option>
           <option value="compiled-html">Compiled (HTML)</option>
           <option value="compiled-vdom">Compiled (DOM)</option>
@@ -60,7 +67,8 @@
           type=previewType
           files=files
           selectedFile=selectedFile
-          getTranslator=getTranslator/>
+          getTranslator=getTranslator
+          debounce=debounce/>
         <lifecycle onMount = (async () => { 
           preview = await import("./preview");
         })/>
