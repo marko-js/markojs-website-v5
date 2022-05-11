@@ -33,7 +33,7 @@
             debounce = true;
           }/>
         <lifecycle onMount = (async () => { 
-          const e = await import("./editor");
+          const e = await import("./components/editor");
           await e.loading;
           activeEditor = e;
         })/>
@@ -70,7 +70,7 @@
           getTranslator=getTranslator
           debounce=debounce/>
         <lifecycle onMount = (async () => { 
-          preview = await import("./preview");
+          preview = await import("./components/preview");
         })/>
       </@body>
     </pane>
