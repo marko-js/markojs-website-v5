@@ -13,18 +13,20 @@ import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from
   })() 
   || defaultValue
 )/>
-<effect() {
-  window.location.hash = compressToEncodedURIComponent(JSON.stringify(value));
-}/>
-<effect() { 
-  const handler = () => {
-    try {
-      value = JSON.parse(decompressFromEncodedURIComponent(window.location.hash.slice(1)));
-    } catch(e) {
-      console.error(e);
-    }
-  };
-  window.addEventListener("hashchange", handler);
-  () => window.removevEventListener("hashchange", handler);
-}/>
+<lifecycle 
+  onMount() {
+    window.addEventListener("hashchange", this.handler = () => {
+      try {
+        value = JSON.parse(decompressFromEncodedURIComponent(window.location.hash.slice(1)));
+      } catch(e) {
+        console.error(e);
+      }
+    });
+  } 
+  onUpdate() {
+    window.location.hash = compressToEncodedURIComponent(JSON.stringify(value));
+  }
+  onDestroy() {
+    window.removevEventListener("hashchange", this.handler);
+  }/>
 <return:=value/>
