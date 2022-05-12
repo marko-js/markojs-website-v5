@@ -1,0 +1,71 @@
+static const examples = {
+  "counter": {
+    "title": "Counter",
+    "description": "A simple counter",
+    files: [{ 
+      name:"index.marko", 
+      path:"/components/index.marko", 
+      content:"<let/count=0/>\n<button onClick() { count++ }>\n  ${count}\n</button>"
+    }]
+  },
+  "hello-world": {
+    "title": "Hello World",
+    "description": "A simple hello world example",
+    files: [{ 
+      name:"index.marko", 
+      path:"/components/index.marko", 
+      content:"<h1>Hello World</h1>"
+    }]
+  },
+  "loop": {
+    "title": "Loops and Lists",
+    "description": "A simple loop example",
+    files: [{ 
+      name:"index.marko",
+      path:"/components/index.marko",
+      content:"<let/list=[0,1,2,3]/>\n<ul>\n  <for|item| of=list>\n    <li>${item}</li>\n  </for>\n</ul>\n<button onClick() { list = list.concat(list.length); }>Add</button>"
+    }]
+  }
+}
+
+$ const { params } = input;
+
+<app-layout footer=false discord=false>
+  <div class="examples-container">
+    <div class="examples-sidebar">
+      <for|name, { title, description }| in=examples>
+        <a href=`/examples/${name}` class="example-link">
+          <span class="example-title">${title}</span>
+          <span class="example-description">${description}</span>
+        </a>
+      </for>
+    </div>
+    <playground defaultFiles=examples[params.name]?.files || []/>
+  </div>
+</app-layout>
+
+style {
+  .examples-container {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: stretch;
+    background-color: #fff;
+    width: 100%;
+  }
+  .example-link {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+  }
+  .example-link:hover {
+    background-color: #fafafa;
+  }
+  .example-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+}
