@@ -1,0 +1,7 @@
+<attrs/{ value, valueChange, renderBody, class:className }/>
+<select/el class=className onChange(e) { valueChange(e.target.value); }>
+  <${renderBody}/>
+</select>
+<effect() {
+  el().value = value;
+}/>

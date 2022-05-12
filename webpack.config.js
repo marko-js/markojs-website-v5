@@ -64,6 +64,7 @@ module.exports = [
       ...config.resolve,
       alias: {
         "@marko/compiler": path.join(__dirname, "browser-shims/compiler"),
+        "@marko/translator-fluurt": path.join(__dirname, "browser-shims/translator.js"),
         "enhanced-resolve": path.join(__dirname, "browser-shims/enhanced-resolve"),
         util: require.resolve("util/"),
         buffer: require.resolve("buffer"),
@@ -73,6 +74,7 @@ module.exports = [
         fs: path.join(__dirname, "browser-shims/fs"),
         module: path.join(__dirname, "browser-shims/module"),
         process: path.join(__dirname, "browser-shims/process"),
+        os: false,
         stream: false,
         http: false
       }

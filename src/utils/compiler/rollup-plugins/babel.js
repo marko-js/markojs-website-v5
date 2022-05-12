@@ -5,21 +5,21 @@ import { transform } from "@babel/core";
 import ConcatMap from "concat-with-sourcemaps";
 import commonjsPlugin from "babel-plugin-transform-commonjs";
 import definePlugin from "babel-plugin-transform-define";
-import * as translator from "@marko/translator-default";
+import * as defaultTranslator from "@marko/translator-default";
 import markoPlugin from "@marko/compiler/dist/babel-plugin";
 import * as taglib from "@marko/compiler/dist/taglib";
+
+defaultTranslator.taglibs.push([
+  require.resolve("@marko/tags-api-preview/marko.json"),
+  require("@marko/tags-api-preview/marko.json")
+]);
 
 taglib.register(
   require.resolve("@marko/build/dist/components/marko.json"),
   require("@marko/build/dist/components/marko.json")
 );
 
-taglib.register(
-  require.resolve("@marko/tags-api-preview/marko.json"),
-  require("@marko/tags-api-preview/marko.json")
-);
-
-export default ({ output }) => {
+export default ({ output, translator = defaultTranslator }) => {
   let cssContent;
   let buildCache;
   return {

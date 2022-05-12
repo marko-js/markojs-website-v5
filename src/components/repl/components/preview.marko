@@ -1,0 +1,248 @@
+import path from "path"
+import { format } from "prettier/standalone"
+import prettierHTML from "prettier/parser-html"
+import prettierBabel from "prettier/parser-babel"
+import highlight from "../../../utils/highlight"
+import { bundle, compile } from "../../../utils/compiler"
+import fs, { vol } from "memfs"
+
+<attrs/{ type, files, selectedFile, getTranslator, debounce, onSelectError, onSyntaxError }/>
+<id/examplePath/>
+<const/selectedPath = path.join("/", examplePath, selectedFile.path)/>
+<const/defaultPath = path.join("/", examplePath, files[0].path)/>
+
+<let/error = null/>
+<let/result = null/>
+<const/SYNTAX_ERROR_REG = /(.+?)(?:\((\d+),(\d+)\)|:(\d+)): (.*(?=\s+\d+ | ))/ />
+
+<style>
+  .preview-error,
+  .preview-output,
+  .preview-compiled {
+    position: relative;
+    display: block;
+    min-height: 100%;
+    width: 100%;
+    padding-top: 8px;
+    padding-left: 16px;
+  }
+
+  .preview-error {
+    display:none;
+  }
+  .preview-error.preview-error-active {
+    display:block;
+  }
+  
+  .preview-error-active ~ .preview-output,
+  .preview-error-active ~ .preview-compiled {
+    display: none;
+  }
+
+  .preview-compiled {
+    background: #202134;
+  }
+
+  .preview-output {
+    padding: 0;
+    border: 0;
+  }
+
+  .preview-output,
+  .preview-error {
+    background: #fff;
+  }
+  .preview-compiled pre.highlighted {
+    padding: 0;
+    font-family: Menlo, Monaco, "Courier New", monospace;
+    font-weight: normal;
+    font-size: 12px;
+    font-feature-settings: "liga" 0, "calt" 0;
+    line-height: 18px;
+    letter-spacing: 0px;
+  }
+
+  .preview-error .error-name {
+    background: #f92672;
+    color: #f8f8f0;
+    margin-left: -16px;
+    margin-top: -8px;
+    padding-top: 8px;
+    padding-bottom: 12px;
+    padding-left: 16px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+
+  .preview-error a {
+    color: #66d9ef;
+    font-weight: normal;
+  }
+
+  .preview-error pre {
+    width: 100%;
+    overflow: auto;
+  }
+
+  .preview-error small {
+    font-style: italic;
+    font-size: 0.75 rem;
+  }
+</style>
+
+
+<div.preview-error class=error && "preview-error-active">
+  <if=error>
+    <h1.error-name>
+      ${error.name}
+      <if=error.file>
+        &nbsp;:&nbsp;
+        <a onClick() { onSelectError(error) }>
+          ${error.file.slice(1)}(${error.line},${error.column})
+        </a>
+      </if>
+    </h1>
+    <div>${error.message}</div>
+    <if=(selectedPath !== error.file)>
+      <if=error.codeFrame>
+        <pre><code>${error.codeFrame}</code></pre>
+      </if>
+      <else>
+        <small>Open the dev tools to view the full error.</small>
+      </else>
+    </if>
+  </if>
+</div>
+<if=(type === "preview")>
+  <iframe-swap/outputEl class="preview-output"/>
+</if>
+<else>
+  <div.preview-compiled>$!{result}</div>
+</else>
+
+<effect() {
+  let syncTimeout, errorTimeout;
+
+  if (debounce) {
+    syncTimeout = setTimeout(showPreview, 100);
+  } else {
+    showPreview();
+  }
+
+  async function showPreview() {
+    for (const file of files) {
+      const filePath = path.join("/", examplePath, file.path);
+      vol.mkdirSync(path.dirname(filePath), { recursive: true });
+      vol.writeFileSync(filePath, file.content);
+    }
+    
+    try {
+      if (type === "preview" || type === "html") {
+        const bundleResult = await bundle({
+          entry: defaultPath,
+          markoOptions: { 
+            output: "vdom",
+            translator: getTranslator && getTranslator()
+          }
+        });
+
+        if (type === "preview") {
+          const { contentWindow, contentDocument } = outputEl.next();
+          contentWindow.__INTERNAL_MODULES__ = window.__INTERNAL_MODULES__;
+          const template = (0, contentWindow.eval)(bundleResult.js);
+          const style = contentDocument.createElement("style");
+          style.innerHTML = bundleResult.css;
+          contentDocument.head.appendChild(style);
+
+          if (getTranslator) {
+            // new api
+            template.default({}, contentDocument.body);
+          } else {
+            const renderResult = await template.render({});
+            renderResult.appendTo(contentDocument.body);
+          }
+          outputEl.swap();
+        }
+        // else {
+        //   const template = (0, eval)(bundleResult.js);
+        //   const renderResult = await template.render({});
+        //   result = highlight(
+        //     "html",
+        //     format(String(renderResult), {
+        //       parser: "html",
+        //       plugins: [prettierHTML]
+        //     })
+        //   );
+        // }
+      } else {
+        const output = type.startsWith("compiled-html") ? "html" : "vdom";
+        const code = await compile({
+          entry: selectedPath,
+          markoOptions: { 
+            output,
+            translator: getTranslator && getTranslator()
+          }
+        });
+        result = highlight(
+          "javascript",
+          format(
+            code.replaceAll(`${examplePath}/`, ""),
+            {
+              parser: "babel",
+              plugins: [prettierBabel]
+            }
+          )
+        );
+      }
+
+      error = null;
+    } catch (err) {
+      if (debounce) {
+        errorTimeout = setTimeout(showError, 1000);
+      } else {
+        showError();
+      }
+
+      function showError() {
+        const errorWithLocationMatch =
+          err.name === "SyntaxError" && SYNTAX_ERROR_REG.exec(err.message);
+        if (errorWithLocationMatch) {
+          let [match, file, line, column, lineOnly, message] = errorWithLocationMatch;
+          if (lineOnly) {
+            line = lineOnly;
+            column = 0;
+          }
+
+          file = path.resolve(file);
+          line = parseInt(line, 10);
+          column = parseInt(column, 10) + 1;
+          const codeFrame = err.message.slice(match.length);
+          const errorData = error = {
+            name: err.name,
+            file,
+            message,
+            line,
+            column,
+            codeFrame
+          };
+
+          if (file === selectedPath && onSyntaxError) {
+            onSyntaxError(errorData);
+          }
+        } else {
+          error = err;
+          console.error(err);
+        }
+      }
+    }
+  }
+  
+  return () => {
+    clearTimeout(syncTimeout);
+    clearTimeout(errorTimeout);
+    try {
+      vol.rmdirSync(examplePath, { recursive: true });
+    } catch (e) {}
+  }
+}/>

@@ -1,0 +1,87 @@
+<attrs/{ left, right }/>
+
+<let/editorSize=0.5/>
+<let/resizing = false/>
+<match-media/isVertical = "(max-aspect-ratio: 1/1)"/>
+
+<div/container class=["panes", resizing && "resizing"]>
+  <div ...left style=`flex-grow:${editorSize}`>
+    <${left.renderBody}/>
+  </div>
+  <div.divider>
+    <div.inner
+      onMousedown(e) {
+        resizing = true;
+        e.preventDefault();
+        e.stopPropagation();
+      }/>
+  </div>
+  <div ...right style=`flex-grow:${1-editorSize}`>
+    <${right.renderBody}/>
+  </div>
+</div>
+<if=resizing>
+  <effect() {
+    const handler = (e) => {
+      if (e.buttons || e.which) {
+        const rect = container().getBoundingClientRect();
+        const fraction = isVertical 
+          ? (e.clientY - rect.top) / rect.height 
+          : (e.clientX - rect.left) / rect.width;
+        if (fraction > 0) {
+          // it seems a drag event with no position is fired when we stop
+          // so we'll ignore that value
+          editorSize = Math.min(0.8, Math.max(0.2, fraction));
+        }
+      } else {
+        resizing = false;
+      }
+    };
+    window.addEventListener("mousemove", handler);
+    return () => window.removeEventListener("mousemove", handler);
+  }/>
+</if>
+
+<style>
+  .panes {
+    display:flex;
+    flex:1;
+    width: 100%;
+  }
+  .panes > div {
+    overflow:hidden;
+    display: flex;
+    flex-basis:0;
+  }
+  .panes.resizing {
+    cursor: col-resize;
+  }
+  .panes.resizing > div:not(.divider) {
+    pointer-events: none;
+  }
+  .divider {
+    min-height: 2px;
+    min-width: 2px;
+    position:relative;
+    background:#eee;
+    cursor: col-resize;
+  }
+  .divider:hover {
+    background:#ccc;
+  }
+  .divider .inner {
+    position: absolute;
+    top:-10px; left: -10px; bottom:-10px; right:-10px;
+    opacity: 0;
+    z-index:1000;
+  }
+  @media (max-aspect-ratio: 1/1) {
+    .panes {
+      flex-direction: column;
+    }
+    .panes.resizing,
+    .divider:hover {
+      cursor: row-resize;
+    }
+  }
+</style>

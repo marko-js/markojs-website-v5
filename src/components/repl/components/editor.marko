@@ -1,0 +1,95 @@
+import { load, setModelMarkers, createEditor, createModel } from "../../../utils/monaco"
+
+static export const loading = load();
+
+class {
+  onMount() {
+    const editorEl = this.getEl("editor");
+    this.editor = createEditor(editorEl);
+    this.resizeObserver = new ResizeObserver(entries => {
+      this.editor.layout();
+    });
+    this.resizeObserver.observe(editorEl);
+    this.sync();
+  }
+
+  onUpdate() {
+    this.sync();
+  }
+
+  onDestroy() {
+    this.editor.dispose();
+    this.resizeObserver.disconnect();
+  }
+
+  sync() {
+    const { filename } = this.input;
+    const language = filename.substring(filename.indexOf(".")+1);
+
+    if (this.prevLanguage !== language) {
+      if (this.model) {
+        this.model.dispose();
+      }
+
+      this.model = createModel(this.input.value, language);
+      this.editor.setModel(this.model);
+      this.editor.layout();
+      this.model.onDidChangeContent(() => {
+        const value = this.model.getValue();
+        if (value !== this.input.value) {
+          this.input.valueChange(value);
+          this.isUpdating = true;
+        }
+
+        if (this.hasErrorMarkers) {
+          setModelMarkers(this.model, null, []);
+          this.hasErrorMarkers = false;
+        }
+      });
+    } else if (this.prevFilename !== filename || !this.isUpdating) {
+      this.model.setValue(this.input.value);
+    } else {
+      this.isUpdating = false;
+    }
+
+    this.prevLanguage = language;
+    this.prevFilename = filename;
+  }
+
+  focus(lineNumber, column) {
+    this.editor.focus();
+    this.editor.setPosition({
+      lineNumber,
+      column
+    });
+  }
+
+  showError({ line, column, message }) {
+    this.hasErrorMarkers = true;
+    setModelMarkers(this.model, null, [
+      {
+        startLineNumber: line,
+        startColumn: column,
+        endLineNumber: line,
+        endColumn: column,
+        message,
+        severity: 8
+      }
+    ]);
+  }
+}
+
+style {
+  .editor {
+    display: block;
+    height: 100%;
+    padding-top: 8px;
+    position:relative;
+  }
+  .editor .monaco-editor {
+    position:absolute;
+    top:0; bottom:0; right:0; left:0;
+  }
+}
+
+<div.editor key="editor" no-update/>

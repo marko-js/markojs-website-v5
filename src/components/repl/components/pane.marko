@@ -1,0 +1,31 @@
+<attrs/{ actions, body }/>
+
+<div.pane>
+  <div.pane-actions>
+    <${actions.renderBody}/>
+  </div>
+  <div.pane-divider/>
+  <div.pane-body>
+    <${body.renderBody}/>
+  </div>
+</div>
+
+<style>
+  .pane {
+    display:flex;
+    flex-direction: column;
+    flex:1;
+  }
+  .pane-actions {
+    height: 3em;
+  }
+  .pane-divider {
+    height:1px;
+    background: rgba(0,0,0,0.2);
+  }
+  .pane-body {
+    flex:1;
+    flex-basis: 0;
+    overflow:auto;
+  }
+</style>
