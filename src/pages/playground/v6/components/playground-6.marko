@@ -1,9 +1,8 @@
 import * as fluurtTranslator from "../../../../../browser-shims/translator"
 
-class {}
-
-<playground getTranslator() { return fluurtTranslator } defaultFiles=[{ 
+<hash-value/files = [{ 
   name:"index.marko", 
   path:"/components/index.marko", 
   content:"<let/count=0/>\n<button onclick() { count++ }>\n  ${count}\n</button>"
 }]/>
+<repl getTranslator() { return fluurtTranslator } files:=files/>

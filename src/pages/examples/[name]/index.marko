@@ -29,8 +29,9 @@ static const examples = {
 }
 
 $ const { params } = input;
+$ const currentExample = examples[params.name];
 
-<app-layout footer=false discord=false>
+<app-layout title=currentExample?.title footer=false discord=false>
   <div class="examples-container">
     <div class="examples-sidebar">
       <for|name, { title, description }| in=examples>
@@ -40,7 +41,7 @@ $ const { params } = input;
         </a>
       </for>
     </div>
-    <playground defaultFiles=examples[params.name]?.files || []/>
+    <repl files=currentExample?.files || []/>
   </div>
 </app-layout>
 

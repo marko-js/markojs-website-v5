@@ -36,15 +36,20 @@ class {
       this.editor.layout();
       this.model.onDidChangeContent(() => {
         const value = this.model.getValue();
-        this.input.valueChange(value);
+        if (value !== this.input.value) {
+          this.input.valueChange(value);
+          this.isUpdating = true;
+        }
 
         if (this.hasErrorMarkers) {
           setModelMarkers(this.model, null, []);
           this.hasErrorMarkers = false;
         }
       });
-    } else if (this.prevFilename !== filename) {
+    } else if (this.prevFilename !== filename || !this.isUpdating) {
       this.model.setValue(this.input.value);
+    } else {
+      this.isUpdating = false;
     }
 
     this.prevLanguage = language;
