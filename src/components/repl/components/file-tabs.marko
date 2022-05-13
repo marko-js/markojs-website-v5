@@ -65,8 +65,9 @@
   </for>
   <button.new-file onClick() { 
     const newFile = { name:`Component${nextId}.marko`, path:`/components/Component${nextId}.marko`, content:"" };
-    selectedIndex = files.length;
+    const newIndex = files.length;
     files = files.concat(newFile);
+    selectedIndex = newIndex;
     nextId++;
   }>
     +

@@ -46,7 +46,7 @@ class {
           this.hasErrorMarkers = false;
         }
       });
-    } else if (this.prevFilename !== filename || !this.isUpdating) {
+    } else if (!this.isUpdating) {
       this.model.setValue(this.input.value);
     } else {
       this.isUpdating = false;

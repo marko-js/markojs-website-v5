@@ -17,13 +17,18 @@ import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from
   onMount() {
     window.addEventListener("hashchange", this.handler = () => {
       try {
-        value = JSON.parse(decompressFromEncodedURIComponent(window.location.hash.slice(1)));
+        if (!this.isUpdating) {
+          value = JSON.parse(decompressFromEncodedURIComponent(window.location.hash.slice(1)));
+        } else {
+          this.isUpdating = false;
+        }
       } catch(e) {
         console.error(e);
       }
     });
   } 
   onUpdate() {
+    this.isUpdating = true;
     window.location.hash = compressToEncodedURIComponent(JSON.stringify(value));
   }
   onDestroy() {

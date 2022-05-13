@@ -2,7 +2,7 @@
 <let/selectedIndex = 0/>
 <let/previewType = "preview"/>
 <let/debounce = false/>
-<const/selectedFile = files[selectedIndex]/>
+<const/selectedFile = (() => { debugger; return files[selectedIndex]; })()/>
 
 <style>
   .editor-container {
