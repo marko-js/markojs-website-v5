@@ -4,4 +4,11 @@
 </select>
 <effect() {
   el().value = value;
+  // TODO: this should not be necessary
+  // but re-rendering the parent component causes new closures
+  // to be passed for renderBody and valueChange which causes
+  // this component to re-render.  Morphdom sets the <select>
+  // back to the original value.  So we track those values as well,
+  // so we can re-set the <select>'s value.
+  renderBody; valueChange;
 }/>
