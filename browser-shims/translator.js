@@ -204,8 +204,12 @@ function startSection(path3) {
   let sectionId = extra.sectionId;
   if (sectionId === void 0) {
     const programExtra = path3.hub.file.path.node.extra ??= {};
+    const sectionNameNode = path3.parent?.name;
+    const sectionName = sectionNameNode?.value ?? sectionNameNode?.name ?? "dynamic";
     sectionId = extra.sectionId = programExtra.nextSectionId || 0;
     programExtra.nextSectionId = sectionId + 1;
+    programExtra.sectionNames = programExtra.sectionNames ?? [];
+    programExtra.sectionNames[sectionId] = currentProgramPath.scope.generateUid(sectionName + "Body");
   }
   return sectionId;
 }
@@ -230,7 +234,7 @@ function createSectionState(key, init) {
   return [
     (sectionId) => {
       const arrayOfSectionData = currentProgramPath.state[key] ??= [];
-      const sectionData = arrayOfSectionData[sectionId] ??= init && init();
+      const sectionData = arrayOfSectionData[sectionId] ??= init && init(sectionId);
       return sectionData;
     },
     (sectionId, value) => {
@@ -500,7 +504,7 @@ function getReferenceGroup(sectionId, lookup, analyze2 = false) {
   return found;
 }
 function generateReferenceGroupName(type, sectionId, references) {
-  let name = type + (sectionId || "");
+  let name = type + (sectionId ? currentProgramPath.node.extra.sectionNames[sectionId].replace("_", "$") : "");
   if (references) {
     if (Array.isArray(references)) {
       name += "With";
@@ -911,14 +915,10 @@ function getWalkString(sectionId) {
 }
 
 // src/util/writer.ts
-var [_getRenderer] = createSectionState("renderer", () => currentProgramPath.scope.generateUidIdentifier());
-function getRenderer(sectionId, name) {
-  const renderer = _getRenderer(sectionId);
-  if (name) {
-    renderer.name = currentProgramPath.scope.generateUid(name);
-  }
-  return renderer;
-}
+var [getRenderer] = createSectionState("renderer", (sectionId) => {
+  const name = currentProgramPath.node.extra.sectionNames[sectionId];
+  return t7.identifier(name);
+});
 var [getWrites] = createSectionState("writes", () => [""]);
 function writeTo(path3) {
   const sectionId = getSectionId(path3);
@@ -2146,7 +2146,7 @@ function exitBranchTranslate(tag) {
       for (let i = branches.length; i--; ) {
         const { tag: tag2, sectionId: sectionId2 } = branches[i];
         const [testAttr] = tag2.node.attributes;
-        const id = getRenderer(sectionId2, "if");
+        const id = getRenderer(sectionId2);
         setQueueBuilder(tag2, ({ apply, index }, closurePriority) => {
           return callRuntime("queueInBranch", scopeIdentifier, t23.numericLiteral(extra.reserve.id), getRenderer(sectionId2), apply, t23.numericLiteral(index), closurePriority);
         });
@@ -2495,7 +2495,7 @@ var translateDOM = {
       if (!t27.isIdentifier(valParam)) {
         throw tag.buildCodeFrameError(`Invalid 'for of' tag, |value| parameter must be an identifier.`);
       }
-      const rendererId = getRenderer(bodySectionId, "for");
+      const rendererId = getRenderer(bodySectionId);
       tag.remove();
       addStatement("apply", sectionId, ofAttr.extra?.valueReferences, t27.expressionStatement(callRuntime("setLoopOf", scopeIdentifier, t27.numericLiteral(reserve.id), ofAttrValue, rendererId, byAttr ? byAttr.value : t27.nullLiteral(), getReferenceGroup(bodySectionId, valParam.extra.reserve).apply)));
     }
