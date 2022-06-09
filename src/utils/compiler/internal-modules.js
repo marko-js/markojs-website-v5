@@ -10,9 +10,9 @@ internalModuleLookup.path = () => require("path");
 internalModuleLookup.url = () => require("url");
 
 if (process.env.NODE_ENV === "production") {
-  internalModuleLookup["@marko/runtime-fluurt/dist/dom"] = () => require("@marko/runtime-fluurt/dist/dom");
+  internalModuleLookup["@marko/runtime-fluurt/dist/dom"] = () => require("../../../browser-shims/v6/runtime");
 } else {
-  internalModuleLookup["@marko/runtime-fluurt/dist/debug/dom"] = () => require("@marko/runtime-fluurt/dist/debug/dom");
+  internalModuleLookup["@marko/runtime-fluurt/dist/debug/dom"] = () => require("../../../browser-shims/v6/runtime");
 }
 
 [
