@@ -1,0 +1,7 @@
+<script>
+  // hides the site header when the page is embedded in an iframe
+  if (window.self !== window.top) {
+    document.querySelector(".site-header").style.display = "none";
+    document.body.style.padding = "0";
+  }
+</script>
