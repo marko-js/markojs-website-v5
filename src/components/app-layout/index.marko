@@ -8,8 +8,12 @@
     <meta
       name="Description"
       content="Marko is a friendly (and fast!) UI library that makes building web apps fun."/>
+    <script>
+      if (window.self !== window.top) {
+        document.documentElement.classList.add("iframe");
+      }
+    </script>
   </head>
-
   <body class=input.class>
     <layout-header/>
     <layout-sidebar currentDoc=input.currentDoc toc=input.toc/>

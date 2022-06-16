@@ -1,4 +1,21 @@
 <app-layout title="Try online" footer=false discord=false>
-  <hide-header-iframe/>
   <playground/>
 </app-layout>
+
+<style>
+  html {
+    overflow: hidden;
+  }
+
+  .iframe body {
+    padding: 0;
+  }
+
+  .iframe .site-header {
+    display:none;
+  }
+
+  .playground-link:not(.iframe .playground-link) {
+    display: none
+  }
+</style>
