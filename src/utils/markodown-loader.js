@@ -46,7 +46,7 @@ module.exports = function markodown(source) {
       .replace(/\s+\([^\)]+\)/g, "")
       .replace(/\([^\)]+\)/g, "()")
       .replace(/<\/?code\>/g, "")
-      .replace(/&amp;lt;/g, "&lt;");
+      .replace(/&amp;([a-z0-9]+?);/g, "&$1;");
 
     title = title || linkText;
 
