@@ -1,42 +1,46 @@
-.site-search {
-  display:flex;
-  flex-direction: row;
-  align-items: center;
-  height:2em;
-  width:3.75em;
-  padding:0.5em;
-  border-radius:1em;
-  font-size:1em;
-  border:1px solid #dbdddf;
+.SiteSearch {
+  position: relative;
+  margin: 0 2em 0 1em;
+}
+
+.SiteSearch-icon {
+  position: absolute;
+  left: 0.5em;
+  height: 100%;
+  pointer-events: none;
+}
+
+.SiteSearch-input {
+  font-size: 1em; /* fix zoom-on-focus bug in iOS Safari */
+  width: 3.75em;
+  height: 2em;
+  padding: 0.75em 3em;
+  border: 1px solid #dbdddf;
+  border-radius: 99em; /* force to be circular */
   box-shadow: inset 0 3px 10px #eceef0;
-  margin-right:2em;
   transition: width 0.3s;
-  margin-left: 1em;
-  margin-top: 0;
-  margin-bottom: 0;
+}
+.SiteSearch-input:focus {
+  width: 12em;
+  padding-left: 2em;
 }
 
-.site-search.large {
-  width:12em;
+.SiteSearch-submit {
+  position: absolute;
+  right: 0;
+  height: 100%;
+  color: #fff;
+  background: #595959;
+  border-radius: 0 99em 99em 0;
+  opacity: 0;
+  border: 1px solid transparent; /* trick for Windows High-Contrast Mode */
+  padding: 0 1em; /* for touch target minimum size */
+  pointer-events: none;
 }
-
-.site-search img {
-  height:1em;
-}
-
-.site-search input {
-  -webkit-appearance: none;
-  display:block;
-  height:2em;
-  padding:0.5em;
-  width: 100%;
-  font-size:0.85em;
-  border:0;
-  outline:0;
-  background:transparent;
-  color: transparent;
-}
-
-.site-search.large input {
-  color: initial;
+.SiteSearch-submit:hover,
+.SiteSearch-submit:focus,
+.SiteSearch-submit:active,
+.SiteSearch-input:focus + .SiteSearch-submit {
+  pointer-events: auto;
+  opacity: 1;    
 }
