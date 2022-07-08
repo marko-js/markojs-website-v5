@@ -1,4 +1,4 @@
-<img src="https://user-images.githubusercontent.com/1958812/62652399-2a314c80-b910-11e9-883b-196686708979.png"/>
+![Screenshot of markojs.com running in a browser](https://user-images.githubusercontent.com/1958812/62652399-2a314c80-b910-11e9-883b-196686708979.png)
 
 ## Running markojs.com Locally
 
