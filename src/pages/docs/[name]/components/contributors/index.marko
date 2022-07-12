@@ -1,6 +1,6 @@
 import getContributors from "./get-contributors";
 
-$ var editPath = `https://github.com/${input.repo}/blob/master/${input.repoPath}`;
+$ var editPath = `https://github.com/${input.repo}/blob/main/${input.repoPath}`;
 
 style {
     .contributors {
@@ -60,7 +60,7 @@ style {
         <div.contributors>
             <for|contributor| of=contributors>
                 <a.contributor href=contributor.profile>
-                    <img.photo src=contributor.photo/>
+                    <img.photo src=contributor.photo alt=""/>
                     <span.name>${contributor.username}</span>
                 </a>
             </for>

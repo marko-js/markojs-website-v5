@@ -256,7 +256,7 @@ $ const progress = input.buffered ? Math.floor(input.progress / 0.9) : input.pro
     <div.demo-page-product.${delay(5)} class={ "demo-page-loading": progress < 0.4 }>
       $ const hideLowRes =  progress < 0.6 || (input.buffered && input.progress < 1);
       <div.demo-page-image.demo-page-image-lowres class={ "demo-page-loading": !hideLowRes }/>
-      <img.demo-page-image class={ "demo-page-loading": hideLowRes } src="./product.png"/>
+      <img.demo-page-image class={ "demo-page-loading": hideLowRes } src="./product.png" alt=""/>
       <div.demo-page-description.${delay(6)}>
         <span.demo-page-description-title>Google Home - $79</span>
         <div.demo-page-description-button.${delay(7)}.demo-page-hydrated>Add to Cart</div>

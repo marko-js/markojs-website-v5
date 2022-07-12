@@ -5,14 +5,14 @@
   </@content>
   <@visual>
       <div.home-performance-example role="img" aria-label="Marko templates are compiled to generate HTML Strings on the server and VDOM Nodes in the browser">
-          <div.home-performance-input role="presentation">
+          <div.home-performance-input>
             <code-block lang="marko" no-switch>
                 <div>
                   <h2>Images</h2>
                   <div>
                     <for|item| of=input.items>
                       <div on-click(() => alert(item.title), item)>
-                        <img src=item.img />
+                        <img src=item.img alt="" />
                       </div>
                     </for>
                   </div>
@@ -22,7 +22,7 @@
           <div.home-performance-arrow>
             <img src="./arrow.svg" alt=""/>
           </div>
-          <div.home-performance-outputs role="presentation">
+          <div.home-performance-outputs>
             <div.home-performance-html>
               <code-block lang="javascript" no-switch>
                   out.write("<div><h2>Images</h2><div>");
