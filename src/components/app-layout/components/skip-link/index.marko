@@ -1,0 +1,34 @@
+<a#skip-link href=`#${input.anchor}`>
+  Skip to main content
+</a>
+
+style {
+  /* This positions the skip link off-page accessibly, and transitions it in noticeably when it receives focus.
+     More info: https://webaim.org/techniques/skipnav/
+  */
+   #skip-link { /* Intentionally using an id for specificity reasons */
+    position: fixed;
+    z-index: 10000000;
+    left: 0;
+    top: -4em; /* Fallback for browsers without `transform` support */
+    padding: 0.4em;
+    background: #fff;
+    border: 2px solid hsl(0, 0%, 25%);
+    border-bottom-right-radius: 0.25em;
+    text-decoration: underline; /* Not a fan of how this is removed for all links by default */
+    transform: translateY(-100%);
+    transition: transform 0.2s, 
+                top 0s; /* Don’t animate this it’s janky */
+    transition-delay: 0.3s; /* A delay that’s removed on :focus makes the link linger a bit when tabbing away, in case the user didn’t expect it while mashing Tab */
+  }
+   #skip-link:focus {
+    top: 0;
+    transform: translateY(0);
+    transition-delay: 0s; /* See above note */
+  }
+  @media print {
+    #skip-link {
+      display: none !important;
+    }
+  }
+}

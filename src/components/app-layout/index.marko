@@ -1,3 +1,5 @@
+static const mainContentId = 'main';
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -15,9 +17,10 @@
     </script>
   </head>
   <body class=input.class>
+    <skip-link anchor=mainContentId/>
     <layout-header/>
     <layout-sidebar currentDoc=input.currentDoc toc=input.toc/>
-    <main.content>
+    <main.content id=mainContentId tabindex=-1>
       <${input.renderBody}/>
     </main>
     <if(input.footer !== false)>
