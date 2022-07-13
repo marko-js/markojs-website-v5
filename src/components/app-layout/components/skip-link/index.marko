@@ -19,7 +19,7 @@ style {
     transform: translateY(-100%);
     transition: transform 0.2s, 
                 top 0s; /* Don’t animate this it’s janky */
-    transition-delay: 0.3s; /* A delay that’s removed on :focus makes the link linger a bit when tabbing away, in case the user didn’t expect it while mashing Tab */
+    transition-delay: 0.3s; /* A delay that’s removed on :focus makes the link linger a bit when tabbing away, in case the user didn’t expect it while mashing Tab. https://css-tricks.com/transition-delay-delays/ */
   }
    #skip-link:focus {
     top: 0;
