@@ -1,0 +1,27 @@
+import { compressToEncodedURIComponent } from "lz-string";
+
+<attrs/{ files, ...attrs }/>
+<a.playground-link ...attrs
+  href=`/playground/#${compressToEncodedURIComponent(JSON.stringify(files))}`
+  target="_top">
+  <span>Open in playground </span>↗
+</a>
+
+<style>
+  .playground-link {
+    float:right;
+    padding: 0.8em 1em;
+    display:block;
+    position: relative;
+  }
+  .playground-link span {
+    display:none;
+    position:absolute;
+    right: 1em;
+    width: 10em;
+  }
+  .playground-link:hover span {
+    display:inline;
+  }
+</style>
+

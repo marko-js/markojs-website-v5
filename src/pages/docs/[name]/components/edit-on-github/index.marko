@@ -1,22 +1,19 @@
-<a.edit-on-github href=`https://github.com/${input.repo}/blob/master/${input.repoPath}`>
-    EDIT <img src="./github.svg"/>
+<a.edit-on-github href=`https://github.com/${input.repo}/blob/main/${input.repoPath}`>
+    EDIT <img alt="on GitHub" src="./github.svg"/>
 </a>
 
 style {
     .edit-on-github {
-        display:flex;
-        justify-content:center;
-        align-items:center;
         position: absolute;
-        top:0.25em; right:0;
+        top: 0.25em; right: 0;
         font-size: 0.8em;
-        color:#a4a6a8;
-        font-weight:600;
+        color: #a4a6a8;
+        font-weight: 600;
     }
 
-    .edit-on-github img {
-        margin-left:0.5em;
-        height:1.2em;
-        filter:contrast(0) brightness(1.25);
+    .edit-on-github > img {
+        height: 1.2em;
+        vertical-align: -0.2em;
+        opacity: 0.35;
     }
 }
