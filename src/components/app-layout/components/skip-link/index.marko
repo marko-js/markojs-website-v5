@@ -11,24 +11,46 @@ style {
     z-index: 10000000;
     left: 0;
     top: -4em; /* Fallback for browsers without `transform` support */
-    padding: 0.4em;
+    padding: 0.2em;
     background: #fff;
     border: 2px solid hsl(0, 0%, 25%);
     border-bottom-right-radius: 0.25em;
-    text-decoration: underline; /* Not a fan of how this is removed for all links by default */
+    text-decoration: underline; /* Not a fan of how we remove this for all links by default */
     transform: translateY(-100%);
-    transition: transform 0.2s, 
-                top 0s; /* Don’t animate this it’s janky */
-    transition-delay: 0.3s; /* A delay that’s removed on :focus makes the link linger a bit when tabbing away, in case the user didn’t expect it while mashing Tab. https://css-tricks.com/transition-delay-delays/ */
+    transition: top 1s steps(1), transform 1s; /* Long duration for focusing out to make the skip link harder to miss, as described in the WebAIM link */
   }
    #skip-link:focus {
     top: 0;
     transform: translateY(0);
-    transition-delay: 0s; /* See above note */
+    transition-duration: 0.01ms, 0.2s; /* See above note */
+  }
+  @media (prefers-reduced-motion) {
+    #skip-link {
+      transition-duration: 0.01ms !important;
+    }
   }
   @media print {
     #skip-link {
       display: none !important;
     }
+  }
+
+  #skiptocontent a {
+    padding: 6px;
+    position: absolute;
+    top: -40px;
+    left: 0;
+    color:white;
+    border-right: 1px solid white;
+    border-bottom:1px solid white;
+    border-bottom-right-radius:8px;
+    background:#BF1722;
+    transition: top 1s ease-out;
+    z-index: 100;
+  }
+
+  #skiptocontent a:focus {
+    top: 0;
+    transition: top .1s ease-in;
   }
 }
