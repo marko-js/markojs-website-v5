@@ -1,0 +1,37 @@
+<a#skip-link href=`#${input.anchor}`>
+  Skip to main content
+</a>
+
+style {
+  /* This positions the skip link off-page accessibly, and transitions it in noticeably when it receives focus.
+     More info: https://webaim.org/techniques/skipnav/
+  */
+   #skip-link { /* Intentionally using an id for specificity reasons */
+    position: fixed;
+    z-index: 10000000;
+    left: 0;
+    top: -4em; /* Fallback for browsers without `transform` support */
+    padding: 0.2em;
+    background: #fff;
+    border: 2px solid hsl(0, 0%, 25%);
+    border-bottom-right-radius: 0.25em;
+    text-decoration: underline; /* Not a fan of how we remove this for all links by default */
+    transform: translateY(-100%);
+    transition: top 1s steps(1), transform 1s; /* Long duration for focusing out to make the skip link harder to miss, as described in the WebAIM link */
+  }
+   #skip-link:focus {
+    top: 0;
+    transform: translateY(0);
+    transition-duration: 0.01ms, 0.2s; /* See above note */
+  }
+  @media (prefers-reduced-motion) {
+    #skip-link {
+      transition-duration: 0.01ms !important;
+    }
+  }
+  @media print {
+    #skip-link {
+      display: none !important;
+    }
+  }
+}
