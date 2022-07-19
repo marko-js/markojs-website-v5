@@ -18,7 +18,7 @@ taglib.register(
     "<code-block>": {
       transformer: require.resolve("./src/utils/code-block-transformer"),
       "parse-options": {
-          state: "static-text",
+          text: true,
           preserveWhitespace: true
       },
     }
@@ -66,15 +66,14 @@ module.exports = [
       alias: {
         "@marko/compiler": path.join(__dirname, "browser-shims/compiler"),
         "@marko/translator-fluurt": path.join(__dirname, "browser-shims/translator.js"),
-        "enhanced-resolve": path.join(__dirname, "browser-shims/enhanced-resolve"),
         util: require.resolve("util/"),
         buffer: require.resolve("buffer"),
         assert: require.resolve("assert/"),
         path: require.resolve("path-browserify"),
         crypto: require.resolve("crypto-browserify"),
-        fs: path.join(__dirname, "browser-shims/fs"),
-        module: path.join(__dirname, "browser-shims/module"),
-        process: path.join(__dirname, "browser-shims/process"),
+        fs: path.join(__dirname, "browser-shims/fs.js"),
+        module: path.join(__dirname, "browser-shims/module.js"),
+        process: path.join(__dirname, "browser-shims/process.js"),
         os: false,
         stream: false,
         http: false
@@ -83,7 +82,7 @@ module.exports = [
 
     config.plugins.push(new webpack.ProvidePlugin({
       Buffer: [require.resolve("buffer"), "Buffer"],
-      process: path.join(__dirname, "browser-shims/process")
+      process: path.join(__dirname, "browser-shims/process.js")
     }));
 
     config.plugins.push(new webpack.DefinePlugin({

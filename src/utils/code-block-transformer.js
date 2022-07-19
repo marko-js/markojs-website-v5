@@ -1,6 +1,5 @@
 const fs = require("fs");
 const nodePath = require("path");
-const redent = require("redent");
 const { format } = require("prettier");
 const highlight = require("./highlight");
 const { importDefault } = require("@marko/babel-utils");
@@ -37,11 +36,11 @@ module.exports = function (path, t) {
     lang = nodePath.extname(filePath).slice(1);
     code = fs.readFileSync(filePath, "utf-8");
   } else {
-    const textNodePath = path.get("body.body.0");
+    const bodyNodes = path.get("body.body");
     const langNodePath = attrs.lang;
 
-    if (!textNodePath || !textNodePath.isMarkoText()) {
-      throw (textNodePath || path).buildCodeFrameError(
+    if (!bodyNodes.length) {
+      throw path.buildCodeFrameError(
         "<code-block> missing body content."
       );
     }
@@ -53,7 +52,7 @@ module.exports = function (path, t) {
     }
 
     lang = langNodePath.node.value;
-    code = textNodePath.node.value;
+    code = path.hub.file.code.slice(bodyNodes[0].node.start, bodyNodes.at(-1).node.end);
   }
 
   const linesNodePath = attrs.lines;
@@ -79,7 +78,7 @@ module.exports = function (path, t) {
     let currentLine = 0;
     let currentIndex = 0;
     lines = parseLineRange(lines);
-    html = html.replace(/.*\n/g, m => {
+    html = html.replace(/.*\n/g, (m) => {
       if (++currentLine === lines[currentIndex]) {
         currentIndex++;
         return `<div class=line-highlight>${m.slice(0, -1)}</div>`;
@@ -111,7 +110,7 @@ module.exports = function (path, t) {
         t.markoTagBody([
           t.markoText(
             `if(localStorage.getItem('${key}') === 'concise'){document.body.classList.add('concise')}`
-          )
+          ),
         ])
       )
     );
@@ -131,23 +130,29 @@ module.exports = function (path, t) {
         concise = highlight(lang, path.get("body.body.0.value").node);
         next.remove();
       } else {
-        concise = highlight(lang, format(code, {
-          filepath: `${path.hub.file.opts.filename}.inline-code-block.marko`,
-          parser: "marko",
-          markoSyntax: "concise"
-        }).trim());
+        concise = highlight(
+          lang,
+          format(code, {
+            filepath: `${path.hub.file.opts.filename}.inline-code-block.marko`,
+            parser: "marko",
+            markoSyntax: "concise",
+          }).trim()
+        );
       }
 
       path.replaceWith(
         t.markoTag(
           importDefault(
             path.hub.file,
-            nodePath.join(__dirname, "../components/code-block-marko/index.marko"),
+            nodePath.join(
+              __dirname,
+              "../components/code-block-marko/index.marko"
+            ),
             "marko_code_block"
           ),
           [
             t.markoAttribute("html", t.stringLiteral(html)),
-            t.markoAttribute("concise", t.stringLiteral(concise))
+            t.markoAttribute("concise", t.stringLiteral(concise)),
           ],
           t.markoTagBody([])
         )
@@ -165,7 +170,7 @@ function parseLineRange(string) {
   var ranges = string.split(",");
   var lines = [];
 
-  ranges.forEach(range => {
+  ranges.forEach((range) => {
     var limits = range.trim().split("-");
     var start = parseInt(limits[0].trim());
     var end = limits[1] ? parseInt(limits[1].trim()) : start;
@@ -218,4 +223,27 @@ function getSingleInnerEmNode(path) {
     const body = path.get("body.body");
     return body.length === 1 && body[0];
   }
+}
+
+/**
+ * Ensures the smallest indentation possible by finding the minimum indented line and
+ * outdenting all other lines by that amount.
+ */
+function redent(str) {
+  const indentReg = /^[ \t]*\S/gm;
+  let match = indentReg.exec(str);
+  let indent = 1;
+  if (match) {
+    indent = match[0].length;
+    while (match = indentReg.exec(str)) {
+      const [{ length }] = match;
+      if (length < indent) indent = length;
+    }
+  }
+
+  if (indent === 1) {
+    return str;
+  }
+
+  return str.replace(new RegExp(`^[ \\t]{${indent - 1}}`, "gm"), "");
 }

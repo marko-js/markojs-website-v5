@@ -1,41 +1,32 @@
 exports.grammar = require("./tmLanguage.json");
 exports.grammarConfig = {
-  embeddedLanguages: ["source.css", "source.js"]
-}
+  embeddedLanguages: ["source.css", "source.ts"],
+};
 exports.editorConfig = {
-  wordPattern: new RegExp(
-    "(-?\\d*\\.\\d\\w*)|([^`~!@$^&*()=+[{\\]}\\\\|;:'\",.<>\\/\\s]+)"
-  ),
-  indentationRules: {
-    increaseIndentPattern: new RegExp(
-      "<(?!\\?|(?:area|base|br|col|frame|hr|html|img|input|link|meta)\\b|[^>]*\\/>)([-_\\.A-Za-z0-9]+)(?=\\s|>)\\b[^>]*>(?!.*<\\/\\1>)|<!--(?!.*-->)|\\{[^}\"']*$"
-    ),
-    decreaseIndentPattern: new RegExp(
-      "^\\s*(<\\/(?!html)[-_\\.A-Za-z0-9]+\\b[^>]*>|-->|\\})"
-    )
-  },
   comments: {
-    blockComment: ["<!--", "-->"]
+    blockComment: ["<!--", "-->"],
   },
   brackets: [
     ["<!--", "-->"],
+    ["${", "}"],
     ["<", ">"],
     ["{", "}"],
-    ["[", "]"],
     ["(", ")"],
-    ["|", "|"]
+    ["[", "]"],
+    ["|", "|"],
   ],
   autoClosingPairs: [
-    { open: "<", close: ">" },
     { open: "{", close: "}" },
     { open: "[", close: "]" },
     { open: "(", close: ")" },
     { open: "|", close: "|" },
+    { open: "'", close: "'", notIn: ["string", "comment"] },
     { open: '"', close: '"', notIn: ["string", "comment"] },
-    { open: "'", close: "'", notIn: ["string"] },
     { open: "`", close: "`", notIn: ["string", "comment"] },
-    { open: "<!--", close: "--", notIn: ["string"] }
+    { open: "<!--", close: "-->", notIn: ["string", "comment"] },
+    { open: "/**", close: " */", notIn: ["string", "comment"] },
   ],
+  autoCloseBefore: ";:.,=}])><`'\" \n\t",
   surroundingPairs: [
     { open: "'", close: "'" },
     { open: '"', close: '"' },
@@ -44,12 +35,15 @@ exports.editorConfig = {
     { open: "[", close: "]" },
     { open: "(", close: ")" },
     { open: "|", close: "|" },
-    { open: "<", close: ">" }
+    { open: "<", close: ">" },
   ],
+  colorizedBracketPairs: [],
   folding: {
     markers: {
       start: new RegExp("^\\s*<!--\\s*#region\\b.*-->"),
-      end: new RegExp("^\\s*<!--\\s*#endregion\\b.*-->")
-    }
-  }
+      end: new RegExp("^\\s*<!--\\s*#endregion\\b.*-->"),
+    },
+  },
+  wordPattern:
+    new RegExp("(-?\\d*\\.\\d\\w*)|([^\\`\\~\\!\\@\\$\\^\\&\\*\\(\\)\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\s]+)"),
 };

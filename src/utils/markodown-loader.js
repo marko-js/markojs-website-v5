@@ -1,5 +1,5 @@
 const path = require("path");
-const marked = require("marked");
+const { marked } = require("marked");
 
 module.exports = function markodown(source) {
   const filePath = this.resourcePath;

@@ -1,8 +1,6 @@
-var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x, {
-  get: (a, b) => (typeof require !== "undefined" ? require : a)[b]
+var __require = /* @__PURE__ */ ((x) => typeof Proxy !== "undefined" ? new Proxy(x, {
+  get: (a, b) => a[b]
 }) : x)(function(x) {
-  if (typeof require !== "undefined")
-    return require.apply(this, arguments);
   throw new Error('Dynamic require of "' + x + '" is not supported');
 });
 
@@ -1972,11 +1970,8 @@ var import_default = {
     tag.replaceWith(parseScript(tag.hub.file, node.rawValue, node.start).body[0]);
   },
   parseOptions: {
-    rootOnly: true,
-    rawOpenTag: true,
-    openTagOnly: true,
-    ignoreAttributes: true,
-    relaxRequireCommas: true
+    statement: true,
+    rawOpenTag: true
   },
   autocomplete: [
     {
@@ -1996,11 +1991,8 @@ var export_default = {
     tag.replaceWith(parseScript2(tag.hub.file, node.rawValue, node.start).body[0]);
   },
   parseOptions: {
-    rootOnly: true,
-    rawOpenTag: true,
-    openTagOnly: true,
-    ignoreAttributes: true,
-    relaxRequireCommas: true
+    statement: true,
+    rawOpenTag: true
   },
   autocomplete: [
     {
@@ -2697,7 +2689,7 @@ var html_comment_default = {
     }
   },
   parseOptions: {
-    state: "parsed-text"
+    text: true
   },
   attributes: {},
   autocomplete: [
@@ -2976,10 +2968,8 @@ var static_default = {
     tag.replaceWith(t35.markoScriptlet(body, true));
   },
   "parse-options": {
-    rootOnly: true,
-    rawOpenTag: true,
-    openTagOnly: true,
-    ignoreAttributes: true
+    statement: true,
+    rawOpenTag: true
   },
   autocomplete: [
     {
