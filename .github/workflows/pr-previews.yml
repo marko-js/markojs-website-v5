@@ -1,7 +1,7 @@
 name: 🍿 Preview pull request
 concurrency: pr-preview-${{ github.ref }}
 env:
-  PR_PREVIEW: true
+  PR_PREVIEW: ${{ github.event.number }}
 on:
   pull_request:
     types:
@@ -28,3 +28,4 @@ jobs:
         uses: rossjrw/pr-preview-action@v1
         with:
           source-dir: ./build/
+          umbrella-dir: .
