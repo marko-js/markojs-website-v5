@@ -1,0 +1,31 @@
+name: 🍿 Preview pull request
+concurrency: pr-preview-${{ github.ref }}
+env:
+  PR_PREVIEW: ${{ github.event.number }}
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - closed # Triggers cleanup
+
+jobs:
+  preview-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🥡 Check out Git repository
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: 🏗 Install and build
+        run: |
+          npm ci --no-progress --no-audit --no-fund
+          npm run build
+
+      - name: 🛫 Deploy/clean up PR preview
+        uses: rossjrw/pr-preview-action@v1
+        with:
+          source-dir: ./build/
+          umbrella-dir: .

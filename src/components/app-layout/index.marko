@@ -1,4 +1,5 @@
 static const mainContentId = 'main';
+static const isPrPreview = process.env.PR_PREVIEW;
 
 <!doctype html>
 <html lang="en">
@@ -7,8 +8,11 @@ static const mainContentId = 'main';
     <title>${input.title ? input.title + " | Marko" : "Marko"}</title>
     <link rel="icon" type="image/png" sizes="32x32" href="./favicon.png"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <if(isPrPreview)>
+      <meta name="robots" content="none"/>
+    </if>
     <meta
-      name="Description"
+      name="description"
       content="Marko is a friendly (and fast!) UI library that makes building web apps fun."/>
     <script>
       if (window.self !== window.top) {

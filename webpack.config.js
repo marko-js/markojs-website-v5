@@ -9,6 +9,7 @@ const { getServerConfig, getBrowserConfigs } = configBuilder({
   entry: path.join(__dirname, "src/pages"),
   production
 });
+const prPreview = process.env.PR_PREVIEW;
 
 // globally register <code-block> so it can be used by the markdown files
 taglib.register(
@@ -126,6 +127,10 @@ function shared(config) {
   const fileLoader = config.module.rules.find(({ test }) => typeof test === "function");
   const originalTest = fileLoader.test;
   fileLoader.test = file => !/\.(md)$/.test(file) && originalTest(file);
+
+  if (prPreview) {
+    config.output.publicPath = `/website/pr-${prPreview}/assets/`;
+  }
   
   config.module.rules.push({
     test: /\.md$/,
