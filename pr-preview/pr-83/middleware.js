@@ -1609,7 +1609,7 @@ app_layout_index_marko_marko_template._ = renderer_js_default()(function (input,
     out.w("<meta name=robots content=none>");
   }
 
-  out.w("<meta name=Description content=\"Marko is a friendly (and fast!) UI library that makes building web apps fun.\"><script>\n      if (window.self !== window.top) {\n        document.documentElement.classList.add(\"iframe\");\n      }\n    </script>");
+  out.w("<meta name=description content=\"Marko is a friendly (and fast!) UI library that makes building web apps fun.\"><script>\n      if (window.self !== window.top) {\n        document.documentElement.classList.add(\"iframe\");\n      }\n    </script>");
   out.global.___renderAssets && out.global.___renderAssets(out);
   out.w(`</head><body${attr_js_default()("class", class_value_js_default()(input.class))}>`);
 
