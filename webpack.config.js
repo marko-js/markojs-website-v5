@@ -9,7 +9,6 @@ const { getServerConfig, getBrowserConfigs } = configBuilder({
   entry: path.join(__dirname, "src/pages"),
   production
 });
-
 const prPreview = process.env.PR_PREVIEW;
 
 // globally register <code-block> so it can be used by the markdown files
