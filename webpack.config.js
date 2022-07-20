@@ -130,7 +130,7 @@ function shared(config) {
   fileLoader.test = file => !/\.(md)$/.test(file) && originalTest(file);
 
   if (prPreview) {
-    config.output.publicPath = `/website/pr-${prPreview}`;
+    config.output.publicPath = `/website/pr-${prPreview}/assets/`;
   }
   
   config.module.rules.push({
