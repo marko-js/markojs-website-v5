@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: 🥡 Check out Git repository
         uses: actions/checkout@v2
+        with:
+          submodules: true
 
       - name: 🏗 Install and build
         run: |
