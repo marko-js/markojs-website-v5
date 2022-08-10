@@ -1,6 +1,6 @@
 exports.grammar = require("./tmLanguage.json");
 exports.grammarConfig = {
-  embeddedLanguages: ["source.css", "source.js"]
+  embeddedLanguages: ["source.css", "source.ts"]
 }
 
 exports.editorConfig = {

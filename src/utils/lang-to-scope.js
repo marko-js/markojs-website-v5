@@ -1,6 +1,13 @@
-module.exports = lang => {
-  if (lang === "js" || lang === "javascript" || lang === "json" || lang === "jsx") {
-    return "source.js";
+module.exports = (lang) => {
+  if (
+    lang === "ts" ||
+    lang === "typescript" ||
+    lang === "js" ||
+    lang === "javascript" ||
+    lang === "json" ||
+    lang === "jsx"
+  ) {
+    return "source.ts";
   } else if (lang === "css") {
     return "source.css";
   } else if (lang === "html") {
@@ -10,6 +17,6 @@ module.exports = lang => {
   } else if (lang === "bash") {
     return "source.shell";
   } else {
-    return "text.basic"
+    return "text.basic";
   }
-}
+};

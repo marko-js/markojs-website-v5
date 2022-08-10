@@ -10,15 +10,21 @@ internalModuleLookup.path = () => require("path");
 internalModuleLookup.url = () => require("url");
 
 if (process.env.NODE_ENV === "production") {
-  internalModuleLookup["@marko/runtime-fluurt/dist/dom"] = () => require("../../../browser-shims/v6/runtime");
+  internalModuleLookup["@marko/runtime-fluurt/dist/dom"] = () =>
+    require("../../../browser-shims/v6/runtime");
 } else {
-  internalModuleLookup["@marko/runtime-fluurt/dist/debug/dom"] = () => require("../../../browser-shims/v6/runtime");
+  internalModuleLookup["@marko/runtime-fluurt/dist/debug/dom"] = () =>
+    require("../../../browser-shims/v6/runtime");
 }
 
 [
   require.context("@marko/translator-default/dist", true, /\.(js(on)?)$/),
   require.context("@marko/build/dist/components", true, /\.(js(on)?|marko)$/),
-  require.context("@marko/tags-api-preview/dist", true, /\.(js(on)?|marko)$/),
+  require.context(
+    "../../../node_modules/@marko/tags-api-preview/",
+    true,
+    /\.(mjs|json|marko)$/
+  ),
   ...(process.env.NODE_ENV === "production"
     ? [
         require.context("marko/dist/core-tags", true, /\.(js(on)?)$/),
@@ -30,11 +36,18 @@ if (process.env.NODE_ENV === "production") {
       ]),
 ].forEach((req) => {
   req.keys().forEach((key) => {
-    const file = path.resolve(req.resolve(key));
+    const file = path.resolve(req.resolve(key).replace(/^[./]+\/node_modules\//, "/node_modules/"));
     const dir = path.dirname(file);
-    internalModuleLookup[file] = () => req(key);
+    internalModuleLookup[file] = () => {
+      window.__dirname = dir;
+      window.__filename = file;
+      return req(key);
+    };
     fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(file, path.extname(file) === ".json" ? JSON.stringify(req(key)) : "");
+    fs.writeFileSync(
+      file,
+      path.extname(file) === ".json" ? JSON.stringify(req(key)) : ""
+    );
   });
 });
 
