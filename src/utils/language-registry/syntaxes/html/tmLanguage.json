@@ -180,12 +180,12 @@
 										{
 											"captures": {
 												"0": {
-													"name": "source.js"
+													"name": "source.ts"
 												},
 												"1": {
 													"patterns": [
 														{
-															"include": "source.js"
+															"include": "source.ts"
 														}
 													]
 												}
@@ -200,14 +200,14 @@
 													"name": "punctuation.definition.string.begin.html"
 												}
 											},
-											"contentName": "source.js",
+											"contentName": "source.ts",
 											"end": "(\")",
 											"endCaptures": {
 												"0": {
 													"name": "punctuation.definition.string.end.html"
 												},
 												"1": {
-													"name": "source.js-ignored-vscode"
+													"name": "source.ts-ignored-vscode"
 												}
 											},
 											"name": "string.quoted.double.html",
@@ -217,7 +217,7 @@
 														"0": {
 															"patterns": [
 																{
-																	"include": "source.js"
+																	"include": "source.ts"
 																}
 															]
 														}
@@ -258,14 +258,14 @@
 													"name": "punctuation.definition.string.begin.html"
 												}
 											},
-											"contentName": "source.js",
+											"contentName": "source.ts",
 											"end": "(')",
 											"endCaptures": {
 												"0": {
 													"name": "punctuation.definition.string.end.html"
 												},
 												"1": {
-													"name": "source.js-ignored-vscode"
+													"name": "source.ts-ignored-vscode"
 												}
 											},
 											"name": "string.quoted.single.html",
@@ -275,7 +275,7 @@
 														"0": {
 															"patterns": [
 																{
-																	"include": "source.js"
+																	"include": "source.ts"
 																}
 															]
 														}
@@ -1892,14 +1892,14 @@
 													"name": "punctuation.definition.tag.begin.html"
 												},
 												"2": {
-													"name": "source.js-ignored-vscode"
+													"name": "source.ts-ignored-vscode"
 												}
 											},
 											"patterns": [
 												{
 													"begin": "\\G",
 													"end": "(?=</(?i:script))",
-													"name": "source.js",
+													"name": "source.ts",
 													"patterns": [
 														{
 															"begin": "(^[ \\t]+)?(?=//)",
@@ -1933,7 +1933,7 @@
 															"name": "comment.block.js"
 														},
 														{
-															"include": "source.js"
+															"include": "source.ts"
 														}
 													]
 												}

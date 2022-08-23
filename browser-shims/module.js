@@ -4,7 +4,7 @@ const resolveExports = require("resolve.exports");
 
 const Module = {
   _nodeModulePaths: nodeModulePaths,
-  _resolveFilename: function(target, fromModule) {
+  _resolveFilename: function (target, fromModule) {
     return resolve.sync(target, {
       basedir: path.dirname(fromModule.filename),
       paths: fromModule.paths,
@@ -15,17 +15,21 @@ const Module = {
           } catch {}
         } else {
           try {
-            return resolveExports.resolve(pkg, relativePath, Module._resolveExportsOptions);
+            return resolveExports.resolve(
+              pkg,
+              relativePath,
+              Module._resolveExportsOptions
+            );
           } catch {}
         }
 
         return relativePath;
-      }
+      },
     });
   },
   _resolveExportsOptions: {
-    browser: true
-  }
+    browser: true,
+  },
 };
 
 module.exports = Module;
