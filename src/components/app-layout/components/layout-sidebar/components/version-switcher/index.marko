@@ -1,8 +1,21 @@
 import { version } from "marko/package.json";
 
-<select on-change('switchVersion')>
-    <option value="current" selected>${version}</option>
-    <option value="http://marko-v4.github.io/docs/">4.x</option>
-    <option value="http://v3.markojs.com/docs/">3.x</option>
-    <option value="http://marko-v2.github.io/docs/">2.x</option>
-</select>
+<label.version-select>version${' '}
+    <select on-change('switchVersion')>
+        <option value="current">${version}</option>
+        <option value="https://marko-v4.github.io/docs/">4.x</option>
+        <option value="http://v3.markojs.com/docs/">3.x</option>
+        <option value="http://marko-v2.github.io/docs/">2.x</option>
+    </select>
+</label>
+
+style {
+    .version-select {
+        display: inline-block;
+        font-size: 0.8rem;
+        color: #666;
+    }
+    .version-select > select {
+        vertical-align: bottom;
+    }
+}

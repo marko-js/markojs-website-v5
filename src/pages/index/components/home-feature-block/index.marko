@@ -1,7 +1,7 @@
-<section.home-feature-block class=[input.class, input.align && `home-feature-block-${input.align}`, !input.action && `home-feature-block-actionless`]>
-    <div.home-feature-block-container>
+<section.home-feature-block class=[input.class, !input.action && `home-feature-block-actionless`]>
+    <div.home-feature-block-container class=[input.align && `home-feature-block-container--${input.align}`]>
         <div.home-feature-block-content>
-            <heading tag="h1" class="home-feature-block-title" ...input.title/>
+            <heading class=["home-feature-block-title", input.title?.class] ...input.title/>
             <div.home-feature-block-content-body>
               <${input.content}/>
             </div>
@@ -22,14 +22,11 @@
 
 style {
   .home-feature-block {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width:100%;
       padding:2em;
   }
   .home-feature-block-title {
       color:#fff;
+      font-size: 2.6em;
   }
   .home-feature-block-container {
       display: grid;
@@ -39,6 +36,7 @@ style {
           "action";
       gap: 2em 3em;
       max-width: 70em;
+      margin: auto;
   }
   .home-feature-block-actionless
   .home-feature-block-container {
@@ -48,7 +46,6 @@ style {
   }
   .home-feature-block-content {
       grid-area:content;
-      text-align: center;
   }
   .home-feature-block-content p {
       margin-top:0.5rem;
@@ -60,7 +57,6 @@ style {
   }
   .home-feature-block-action {
       grid-area:action;
-      text-align: center;
   }
   .home-feature-block-content-body {
       font-size: 1.2em;
@@ -73,36 +69,27 @@ style {
       border:1px solid #fff;
       color:#fff;
   }
-  .home-feature-block-action a:hover {
-      color:#fff;
+  .home-feature-block-action a:is(:hover, :focus) {
       background-color:rgba(255,255,255,0.15);
-      text-decoration:none;
-      cursor: pointer;
   }
   @media (min-width: 60em) {
-    .home-feature-block-left
-    .home-feature-block-container {
+    .home-feature-block-container--left {
         grid-template-areas: 
             "content visual"
             "action  visual";
         gap: 1em 3em;
     }
-    .home-feature-block-right
-    .home-feature-block-container {
+    .home-feature-block-container--right {
         grid-template-areas: 
             "visual content"
             "visual action";
         gap: 1em 3em;
     }
-    .home-feature-block-left
-    .home-feature-block-content,
-    .home-feature-block-right
-    .home-feature-block-content,
-    .home-feature-block-left
+  }
+  @media (max-width: 60em) {
     .home-feature-block-action,
-    .home-feature-block-right
-    .home-feature-block-action {
-        text-align:left;
+    .home-feature-block-content {
+        text-align: center;
     }
   }
 }

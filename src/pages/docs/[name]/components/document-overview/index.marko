@@ -4,7 +4,7 @@ import formatSlug from '../../../../../utils/format-slug';
 <doc-list ...input/>
 
 <macro|{ title, docs }| name="doc-list">
-    <ul>
+    <ol>
         <for|doc| of=docs>
             <li>
                 <if(typeof doc === 'object')>
@@ -16,5 +16,5 @@ import formatSlug from '../../../../../utils/format-slug';
                 </else>
             </li>
         </for>
-    </ul>
+    </ol>
 </macro>

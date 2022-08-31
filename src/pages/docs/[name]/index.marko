@@ -7,7 +7,7 @@ $ const doc = documentLookup[params.name];
 <app-layout.docs title=doc.title currentDoc=params.name toc=doc.toc footer=false>
     <div.doc-layout>
         <div.doc-container>
-            <div.doc-content>
+            <article.doc-content>
                 <if(!doc.overview)>
                     <${doc.template}/>
                     <edit-on-github ...doc/>
@@ -17,7 +17,7 @@ $ const doc = documentLookup[params.name];
                     <document-overview ...doc/>
                 </else>
                 <app-footer.doc-footer/>
-            </div>
+            </article>
         </div>
     </div>
 </app-layout>
