@@ -34,11 +34,7 @@ module.exports = function markodown(source) {
     return output;
   };
 
-  markedRenderer.blockquote = function(quote) {
-    var match = /^<p><strong>(\w+):<\/strong>/.exec(quote);
-    var className = match && match[1].toLowerCase();
-    return `<blockquote class="${className}">${quote}</blockquote>`;
-  }
+  markedRenderer.blockquote = blockquoteOrCallout;
 
   markedRenderer.heading = function(text, level) {
     var anchorName = getAnchorName(text, anchorCache);
@@ -178,3 +174,20 @@ function TOC() {
     }
   };
 };
+
+// GitHub requires “Note” and “Warning” to be uppercase. Such as it is.
+const calloutRoles = {
+  Note: "doc-tip note",
+  Warning: "doc-notice note",
+  ProTip: "doc-tip note"
+};
+
+function blockquoteOrCallout(html) {
+  // See https://github.com/marko-js/ebay-internal/issues/3 for what this regex needs to match
+  const match = /^<p><strong>(\w+)<\/strong>/.exec(html)?.[1];
+  if (calloutRoles[match]) {
+    return `<aside role="${calloutRoles[match]}" class="callout-${match.toLowerCase()}">${html}</aside>`;
+  } else {
+    return `<blockquote>${html}</blockquote>`;
+  }
+}

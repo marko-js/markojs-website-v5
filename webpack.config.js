@@ -63,6 +63,7 @@ module.exports = [
 
     config.resolve = {
       ...config.resolve,
+      fallback: { constants: false },
       alias: {
         "@marko/compiler": path.join(__dirname, "browser-shims/compiler"),
         "@marko/translator-fluurt": path.join(__dirname, "browser-shims/translator.js"),

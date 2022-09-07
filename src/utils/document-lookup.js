@@ -11,10 +11,10 @@ const docsByRepo = {
     prefix: "packages/",
     docs: importAll.sync("../../node_modules/marko/docs/*.md")
   },
-  "marko-js/examples": {
-    trim: "../../examples/",
-    docs: importAll.sync("../../examples/examples/color-picker/README.md")
-  }
+  // "marko-js/examples": {
+  //   trim: "../../examples/",
+  //   docs: importAll.sync("../../examples/examples/color-picker/README.md")
+  // }
 }
 
 Object.keys(docsByRepo).forEach(repo => {
