@@ -8,6 +8,7 @@ const Module = {
     return resolve.sync(target, {
       basedir: path.dirname(fromModule.filename),
       paths: fromModule.paths,
+      extensions: [".js", ".json", ".marko", ".mjs"],
       pathFilter(pkg, _, relativePath) {
         if (/^index(\.[^/\\]+)?$/.test(relativePath)) {
           try {
