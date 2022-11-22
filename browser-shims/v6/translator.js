@@ -1,6 +1,8 @@
-var __require = /* @__PURE__ */ ((x) => typeof Proxy !== "undefined" ? new Proxy(x, {
-  get: (a, b) => a[b]
+var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x, {
+  get: (a, b) => (typeof require !== "undefined" ? require : a)[b]
 }) : x)(function(x) {
+  if (typeof require !== "undefined")
+    return require.apply(this, arguments);
   throw new Error('Dynamic require of "' + x + '" is not supported');
 });
 
@@ -19,79 +21,10 @@ function getMarkoOpts() {
 }
 
 // src/visitors/program/html.ts
-import { types as t8 } from "@marko/compiler";
+import { types as t7 } from "@marko/compiler";
 
-// src/util/apply-hydrate.ts
-import { types as t4 } from "@marko/compiler";
-
-// src/util/references.ts
-import { types as t2 } from "@marko/compiler";
-
-// src/util/sorted-arr.ts
-function insertInArray(compare, arr, val) {
-  const len = arr.length;
-  let max = len;
-  let pos = 0;
-  while (pos < max) {
-    const mid = pos + max >>> 1;
-    const compareResult = compare(arr[mid], val);
-    if (compareResult === 0)
-      return arr;
-    if (compareResult > 0)
-      max = mid;
-    else
-      pos = mid + 1;
-  }
-  let cur = val;
-  while (pos < len) {
-    const next = cur;
-    cur = arr[pos];
-    arr[pos++] = next;
-  }
-  arr[len] = cur;
-  return arr;
-}
-function findIndex(compare, arr, val) {
-  let max = arr.length;
-  let pos = 0;
-  while (pos < max) {
-    const mid = pos + max >>> 1;
-    const compareResult = compare(arr[mid], val);
-    if (compareResult === 0)
-      return mid;
-    if (compareResult > 0)
-      max = mid;
-    else
-      pos = mid + 1;
-  }
-  return -1;
-}
-function createSortedCollection(compare) {
-  return {
-    insert(data, val, immutable = false) {
-      if (data) {
-        if (Array.isArray(data)) {
-          return insertInArray(compare, immutable ? [...data] : data, val);
-        } else {
-          const compareResult = compare(data, val);
-          if (compareResult !== 0) {
-            return compareResult < 0 ? [data, val] : [val, data];
-          }
-        }
-      }
-      return val;
-    },
-    find(data, val) {
-      if (data) {
-        if (Array.isArray(data)) {
-          return data[findIndex(compare, data, val)];
-        } else {
-          return data === val ? data : void 0;
-        }
-      }
-    }
-  };
-}
+// src/util/signals.ts
+import { types as t3 } from "@marko/compiler";
 
 // src/util/tag-name-type.ts
 import { types as t } from "@marko/compiler";
@@ -188,9 +121,12 @@ function analyzeTagNameType(tag) {
           type = 2 /* DynamicTag */;
         }
       }
-      extra.tagNameType = type;
+      extra.tagNameType = isOutputHTML() ? type : 2 /* DynamicTag */;
       extra.tagNameNullable = nullable;
       extra.tagNameDynamic = true;
+    }
+    if (extra.tagNameType === void 0) {
+      extra.tagNameType = 2 /* DynamicTag */;
     }
   }
   return extra.tagNameType;
@@ -254,6 +190,79 @@ function forEachSectionIdReverse(fn) {
   }
 }
 
+// src/util/sorted-arr.ts
+function insertInArray(compare, arr, val) {
+  const len = arr.length;
+  let max = len;
+  let pos = 0;
+  while (pos < max) {
+    const mid = pos + max >>> 1;
+    const compareResult = compare(arr[mid], val);
+    if (compareResult === 0)
+      return arr;
+    if (compareResult > 0)
+      max = mid;
+    else
+      pos = mid + 1;
+  }
+  let cur = val;
+  while (pos < len) {
+    const next = cur;
+    cur = arr[pos];
+    arr[pos++] = next;
+  }
+  arr[len] = cur;
+  return arr;
+}
+function findIndex(compare, arr, val) {
+  let max = arr.length;
+  let pos = 0;
+  while (pos < max) {
+    const mid = pos + max >>> 1;
+    const compareResult = compare(arr[mid], val);
+    if (compareResult === 0)
+      return mid;
+    if (compareResult > 0)
+      max = mid;
+    else
+      pos = mid + 1;
+  }
+  return -1;
+}
+function createSortedCollection(compare) {
+  return {
+    insert(data, val, immutable = false) {
+      if (data) {
+        if (Array.isArray(data)) {
+          return insertInArray(compare, immutable ? [...data] : data, val);
+        } else {
+          const compareResult = compare(data, val);
+          if (compareResult !== 0) {
+            return compareResult < 0 ? [data, val] : [val, data];
+          }
+        }
+      }
+      return val;
+    },
+    find(data, val) {
+      if (data) {
+        if (Array.isArray(data)) {
+          return data[findIndex(compare, data, val)];
+        } else {
+          return data === val ? data : void 0;
+        }
+      }
+    },
+    count(data) {
+      if (data === void 0)
+        return 0;
+      if (!Array.isArray(data))
+        return 1;
+      return data.length;
+    }
+  };
+}
+
 // src/util/reserve.ts
 var [getReservesByType] = createSectionState("reservesByType", () => [void 0, void 0, void 0]);
 function reserveScope(type, sectionId, node, name, size = 0) {
@@ -299,17 +308,690 @@ function assignFinalIds() {
 function compareReserves(a, b) {
   return a.sectionId - b.sectionId || a.type - b.type || a.id - b.id;
 }
-var { insert: insertReserve } = createSortedCollection(compareReserves);
+var { insert: insertReserve, count: countReserves } = createSortedCollection(compareReserves);
+
+// src/util/runtime.ts
+import { types as t2 } from "@marko/compiler";
+import { importNamed } from "@marko/babel-utils";
+var pureFunctions = [
+  "createRenderFn",
+  "createRenderer",
+  "source",
+  "derivation",
+  "subscriber",
+  "closure",
+  "loop",
+  "conditional",
+  "destructureSources",
+  "bind",
+  "bindRenderer",
+  "inLoopScope",
+  "inConditionalScope"
+];
+function importRuntime(name) {
+  const { output } = getMarkoOpts();
+  return importNamed(currentProgramPath.hub.file, getRuntimePath(output), name);
+}
+function callRuntime(name, ...args) {
+  const callExpression2 = t2.callExpression(importRuntime(name), filterArguments(args));
+  if (pureFunctions.includes(name)) {
+    callExpression2.leadingComments = [
+      {
+        type: "CommentBlock",
+        value: ` @__PURE__ `
+      }
+    ];
+  }
+  return callExpression2;
+}
+function getHTMLRuntime() {
+  return getRuntime("html");
+}
+function getRuntime(output) {
+  return __require(getRuntimePath(output));
+}
+function getRuntimePath(output) {
+  const { optimize } = getMarkoOpts();
+  return `@marko/runtime-fluurt/${false ? "src" : optimize ? "dist" : "dist/debug"}/${output === "html" ? "html" : "dom"}`;
+}
+function callRead(reference, targetSectionId) {
+  return t2.memberExpression(getScopeExpression(reference, targetSectionId), t2.numericLiteral(reference.id), true);
+}
+function getScopeExpression(reference, sectionId) {
+  const diff = reference.sectionId !== sectionId ? 1 : 0;
+  let scope = scopeIdentifier;
+  for (let i = 0; i < diff; i++) {
+    scope = t2.memberExpression(scope, t2.identifier("_"));
+  }
+  return scope;
+}
+function filterArguments(args) {
+  const filteredArgs = [];
+  for (let i = args.length; i--; ) {
+    const arg = args[i];
+    if (arg || filteredArgs.length) {
+      filteredArgs[i] = arg || t2.nullLiteral();
+    }
+  }
+  return filteredArgs;
+}
+
+// src/util/signals.ts
+import { getTemplateId } from "@marko/babel-utils";
+var [getSignals] = createSectionState("signals", () => /* @__PURE__ */ new Map());
+var [getSubscribeBuilder, _setSubscribeBuilder] = createSectionState("queue");
+var [getClosures] = createSectionState("closures", () => []);
+function setSubscriberBuilder(tag, builder) {
+  _setSubscribeBuilder(getSectionId(tag.get("body")), builder);
+}
+function getSignal(sectionId, reserve) {
+  const key = !Array.isArray(reserve) ? reserve : reserve.map((r) => `${r.sectionId}/${r.id}`).sort().join("-");
+  const signals = getSignals(sectionId);
+  let signal = signals.get(key);
+  if (!signal) {
+    signals.set(key, signal = {
+      identifier: t3.identifier(generateSignalName(sectionId, reserve)),
+      reserve,
+      sectionId,
+      render: [],
+      hydrate: [],
+      subscribers: []
+    });
+    if (!reserve) {
+      signal.build = () => {
+        for (const subscriber of signal.subscribers) {
+          signal.render.push(t3.expressionStatement(callRuntime("notifySignal", scopeIdentifier, subscriber)));
+        }
+        return t3.arrowFunctionExpression([scopeIdentifier], t3.blockStatement(signal.render));
+      };
+    } else if (Array.isArray(reserve)) {
+      subscribe(reserve, signal);
+      signal.build = () => {
+        return callRuntime("subscriber", t3.arrayExpression(signal.subscribers), t3.numericLiteral(reserve.length), getComputeFn(sectionId, t3.blockStatement(signal.render), reserve));
+      };
+    } else if (reserve.sectionId !== sectionId) {
+      getClosures(sectionId).push(signal.identifier);
+      signal.build = () => {
+        const builder = getSubscribeBuilder(sectionId);
+        const provider = getSignal(reserve.sectionId, reserve);
+        if (builder) {
+          provider.subscribers.push(builder(signal.identifier));
+        } else if (!provider.hasDynamicSubscribers) {
+          provider.hasDynamicSubscribers = true;
+          provider.subscribers.push(callRuntime("dynamicSubscribers", t3.numericLiteral(reserve.id)));
+        }
+        return callRuntime(builder ? "closure" : "dynamicClosure", t3.numericLiteral(1), t3.numericLiteral(reserve.id), t3.arrayExpression(signal.subscribers), t3.arrowFunctionExpression([scopeIdentifier, t3.identifier(reserve.name)], t3.blockStatement(signal.render)));
+      };
+    } else {
+      signal.build = () => {
+        return t3.stringLiteral("SIGNAL NOT INITIALIZED");
+      };
+    }
+  }
+  return signal;
+}
+function initSource(reserve) {
+  const sectionId = reserve.sectionId;
+  const signal = getSignal(sectionId, reserve);
+  signal.build = () => {
+    return callRuntime("source", t3.numericLiteral(reserve.id), t3.arrayExpression(signal.subscribers), t3.arrowFunctionExpression([scopeIdentifier, t3.identifier(reserve.name)], t3.blockStatement(signal.render)));
+  };
+  return signal;
+}
+function initDerivation(reserve, providers, compute) {
+  const sectionId = reserve.sectionId;
+  const signal = getSignal(sectionId, reserve);
+  signal.build = () => {
+    return callRuntime("derivation", t3.numericLiteral(reserve.id), t3.numericLiteral(Array.isArray(providers) ? providers.length : 1), t3.arrayExpression(signal.subscribers), getComputeFn(sectionId, compute, providers), t3.arrowFunctionExpression([scopeIdentifier, t3.identifier(reserve.name)], t3.blockStatement(signal.render)));
+  };
+  subscribe(providers, signal);
+  return signal;
+}
+function getComputeFn(sectionId, body, references) {
+  const params = [scopeIdentifier];
+  if (Array.isArray(references)) {
+    references.forEach((binding) => params.push(t3.assignmentPattern(t3.identifier(binding.name), callRead(binding, sectionId))));
+  } else if (references) {
+    params.push(t3.assignmentPattern(t3.identifier(references.name), callRead(references, sectionId)));
+  }
+  return t3.arrowFunctionExpression(params, body);
+}
+function subscribe(provider, subscriber) {
+  if (Array.isArray(provider)) {
+    provider.forEach((p) => subscribe(p, subscriber));
+    return;
+  }
+  const providerSignal = getSignal(subscriber.sectionId, provider);
+  providerSignal.subscribers.push(subscriber.identifier);
+}
+function generateSignalName(sectionId, references) {
+  let name;
+  if (references) {
+    if (Array.isArray(references)) {
+      name = "expr";
+      for (const ref of references) {
+        name += `_${ref.name}`;
+      }
+    } else {
+      name = references.name;
+    }
+  } else {
+    name = "setup";
+  }
+  name += sectionId ? currentProgramPath.node.extra.sectionNames[sectionId].replace("_", "$") : "";
+  return currentProgramPath.scope.generateUid(name);
+}
+function queueSource(source, value, targetSectionId) {
+  return callRuntime("queueSource", getScopeExpression2(source.sectionId, targetSectionId), source.identifier, value);
+}
+function getScopeExpression2(ownerSectionId, sectionId) {
+  const diff = ownerSectionId !== sectionId ? 1 : 0;
+  let scope = scopeIdentifier;
+  for (let i = 0; i < diff; i++) {
+    scope = t3.memberExpression(scope, t3.identifier("_"));
+  }
+  return scope;
+}
+function finalizeSignalArgs(args) {
+  for (let i = args.length - 1; i >= 0; i--) {
+    const arg = args[i];
+    if (t3.isArrowFunctionExpression(arg)) {
+      const body = arg.body.body;
+      if (body) {
+        if (body.length === 0) {
+          if (i === args.length - 1) {
+            args.length = i;
+          } else {
+            args[i] = t3.nullLiteral();
+          }
+        } else if (body.length === 1 && t3.isExpressionStatement(body[0])) {
+          arg.body = body[0].expression;
+        }
+      }
+    }
+  }
+}
+function addStatement(type, targetSectionId, references, statement) {
+  const reserve = references?.references;
+  const signal = getSignal(targetSectionId, reserve);
+  const statements = signal[type === "apply" ? "render" : "hydrate"] ??= [];
+  if (Array.isArray(statement)) {
+    statements.push(...statement);
+  } else {
+    statements.push(statement);
+  }
+}
+function getHydrateRegisterId(sectionId, references) {
+  const {
+    markoOpts: { optimize },
+    opts: { filename }
+  } = currentProgramPath.hub.file;
+  let name = "";
+  if (references) {
+    if (Array.isArray(references)) {
+      for (const ref of references) {
+        name += `_${ref.name}`;
+      }
+    } else {
+      name += `_${references.name}`;
+    }
+  }
+  return getTemplateId(optimize, `${filename}_${sectionId}${name}`);
+}
+function writeSignals(sectionId) {
+  const signals = getSignals(sectionId);
+  const declarations = Array.from(signals.values()).sort(sortSignals).flatMap((signal) => {
+    const value = signal.build();
+    const signalDeclarator = t3.variableDeclarator(signal.identifier, value);
+    let hydrateDeclarator;
+    if (signal.hydrate.length) {
+      const hydrateIdentifier = t3.identifier("_hydrate" + signal.identifier.name);
+      if (signal.reserve) {
+        signal.hydrate.unshift(t3.variableDeclaration("const", (Array.isArray(signal.reserve) ? signal.reserve : [signal.reserve]).map((binding) => t3.variableDeclarator(t3.identifier(binding.name), callRead(binding, sectionId)))));
+      }
+      hydrateDeclarator = t3.variableDeclarator(hydrateIdentifier, callRuntime("register", t3.stringLiteral(getHydrateRegisterId(sectionId, signal.reserve)), t3.arrowFunctionExpression([scopeIdentifier], signal.hydrate.length === 1 && t3.isExpressionStatement(signal.hydrate[0]) ? signal.hydrate[0].expression : t3.blockStatement(signal.hydrate))));
+      signal.render.push(t3.expressionStatement(callRuntime("queueHydrate", scopeIdentifier, hydrateIdentifier)));
+    }
+    if (t3.isCallExpression(value)) {
+      finalizeSignalArgs(value.arguments);
+    }
+    return hydrateDeclarator ? [
+      t3.variableDeclaration("const", [hydrateDeclarator]),
+      t3.variableDeclaration("const", [signalDeclarator])
+    ] : t3.variableDeclaration("const", [signalDeclarator]);
+  });
+  const newPaths = currentProgramPath.pushContainer("body", declarations);
+  newPaths.forEach((newPath) => newPath.traverse(bindFunctionsVisitor, { root: newPath, sectionId }));
+}
+function sortSignals(a, b) {
+  const aReserves = getReserves(a);
+  const bReserves = getReserves(b);
+  for (let i = Math.max(aReserves.length, bReserves.length) - 1; i >= 0; i--) {
+    const diff = (bReserves[i] ?? -1) - (aReserves[i] ?? -1);
+    if (diff !== 0)
+      return diff;
+  }
+  return 0;
+}
+function getReserves({ reserve }) {
+  if (!reserve) {
+    return [];
+  } else if (Array.isArray(reserve)) {
+    return reserve.map(getMappedId).sort();
+  } else {
+    return [getMappedId(reserve)];
+  }
+}
+function getMappedId(reserve) {
+  return (reserve.type === 0 ? 1 : 0) * 1e4 + reserve.id;
+}
+function addHTMLHydrateCall(sectionId, references) {
+  addStatement("hydrate", sectionId, references, void 0);
+}
+function writeHTMLHydrateStatements(path3) {
+  const sectionId = getOrCreateSectionId(path3);
+  const allSignals = Array.from(getSignals(sectionId).values());
+  path3.unshiftContainer("body", t3.variableDeclaration("const", [
+    t3.variableDeclarator(scopeIdentifier, callRuntime("nextScopeId"))
+  ]));
+  if (!allSignals.length)
+    return;
+  const refs = [];
+  for (let i = allSignals.length; i--; ) {
+    if (allSignals[i].hydrate.length) {
+      const references = allSignals[i].reserve;
+      if (references) {
+        if (Array.isArray(references)) {
+          for (const ref of references) {
+            insertReserve(refs, ref);
+          }
+        } else {
+          insertReserve(refs, references);
+        }
+      }
+      path3.pushContainer("body", t3.expressionStatement(callRuntime("writeHydrateCall", scopeIdentifier, t3.stringLiteral(getHydrateRegisterId(sectionId, references)))));
+    }
+  }
+  if (refs.length) {
+    path3.pushContainer("body", t3.expressionStatement(callRuntime("writeHydrateScope", scopeIdentifier, t3.objectExpression(refs.reduce((acc, ref) => {
+      acc.push(t3.objectProperty(t3.numericLiteral(ref.id), t3.identifier(ref.name)));
+      return acc;
+    }, [])))));
+  }
+}
+var bindFunctionsVisitor = {
+  FunctionExpression: { exit: bindFunction },
+  ArrowFunctionExpression: { exit: bindFunction }
+};
+function bindFunction(fn, { root, sectionId }) {
+  const { node } = fn;
+  const { extra } = node;
+  const references = extra?.references?.references;
+  const program = fn.hub.file.path;
+  const functionIdentifier = program.scope.generateUidIdentifier(extra?.name);
+  let parent = fn.parentPath;
+  while (parent) {
+    if (parent.isFunction())
+      break;
+    if (parent === root)
+      return;
+    parent = parent.parentPath;
+  }
+  if (references) {
+    if (node.body.type !== "BlockStatement") {
+      node.body = t3.blockStatement([t3.returnStatement(node.body)]);
+    }
+    node.body.body.unshift(t3.variableDeclaration("const", (Array.isArray(references) ? references : [references]).map((binding) => t3.variableDeclarator(t3.identifier(binding.name), callRead(binding, sectionId)))));
+  }
+  root.insertBefore(t3.variableDeclaration("const", [
+    t3.variableDeclarator(functionIdentifier, node)
+  ]));
+  node.params.unshift(scopeIdentifier);
+  fn.replaceWith(callRuntime("bind", scopeIdentifier, functionIdentifier));
+}
+function getSetup(sectionId) {
+  return getSignals(sectionId).get(void 0)?.identifier;
+}
+
+// src/util/writer.ts
+import { types as t6 } from "@marko/compiler";
+
+// src/util/to-template-string-or-literal.ts
+import { types as t4 } from "@marko/compiler";
+function toTemplateOrStringLiteral(parts) {
+  const strs = [];
+  const exprs = [];
+  let curStr = parts[0];
+  for (let i = 1; i < parts.length; i++) {
+    let content = parts[i];
+    if (typeof content === "object") {
+      if (t4.isStringLiteral(content)) {
+        content = content.value;
+      } else if (t4.isTemplateLiteral(content)) {
+        let nextIndex = i + 1;
+        const exprLen = content.expressions.length;
+        shiftItems(parts, nextIndex, content.quasis.length + exprLen);
+        for (let j = 0; j < exprLen; j++) {
+          parts[nextIndex++] = content.quasis[j].value.raw;
+          parts[nextIndex++] = content.expressions[j];
+        }
+        parts[nextIndex] = content.quasis[exprLen].value.raw;
+        continue;
+      } else {
+        exprs.push(content);
+        strs.push(curStr);
+        curStr = "";
+        continue;
+      }
+    }
+    curStr += content;
+  }
+  if (exprs.length) {
+    strs.push(curStr);
+    return t4.templateLiteral(strs.map((raw) => t4.templateElement({ raw })), exprs);
+  } else if (curStr) {
+    return t4.stringLiteral(curStr);
+  }
+}
+function appendLiteral(arr, str) {
+  arr[arr.length - 1] += str;
+}
+function shiftItems(list, start, offset) {
+  for (let i = list.length - 1; i >= start; i--) {
+    list[i + offset] = list[i];
+  }
+}
+
+// src/util/walks.ts
+import { types as t5 } from "@marko/compiler";
+var [getWalks] = createSectionState("walks", () => [""]);
+var [getWalkComment] = createSectionState("walkComment", () => []);
+var [getSteps] = createSectionState("steps", () => []);
+var walkCodeToName = {
+  [32 /* Get */]: "get",
+  [33 /* Before */]: "before",
+  [35 /* After */]: "after",
+  [36 /* Inside */]: "inside",
+  [37 /* Replace */]: "replace",
+  [38 /* EndChild */]: "endChild",
+  [40 /* Skip */]: "skip",
+  [47 /* BeginChild */]: "beginChild",
+  [67 /* Next */]: "next",
+  [97 /* Over */]: "over",
+  [107 /* Out */]: "out",
+  [117 /* Multiplier */]: "multiplier",
+  [46 /* SkipEnd */]: "skipEnd",
+  [66 /* BeginChildEnd */]: "beginChildEnd",
+  [91 /* NextEnd */]: "nextEnd",
+  [106 /* OverEnd */]: "overEnd",
+  [116 /* OutEnd */]: "outEnd",
+  [126 /* MultiplierEnd */]: "multiplierEnd"
+};
+function enter(path3) {
+  getSteps(getSectionId(path3)).push(0 /* enter */);
+}
+function exit(path3) {
+  getSteps(getSectionId(path3)).push(1 /* exit */);
+}
+function enterShallow(path3) {
+  getSteps(getSectionId(path3)).push(0 /* enter */, 1 /* exit */);
+}
+function injectWalks(path3, childIndex, expr) {
+  const walks = getWalks(getSectionId(path3));
+  const walkComment = getWalkComment(getSectionId(path3));
+  walkComment.push(`${walkCodeToName[47 /* BeginChild */]}(${childIndex})`, expr.name, walkCodeToName[38 /* EndChild */]);
+  appendLiteral(walks, nCodeString(47 /* BeginChild */, childIndex));
+  walks.push(expr, String.fromCharCode(38 /* EndChild */));
+}
+function visit(path3, code) {
+  const { reserve } = path3.node.extra;
+  if (code && (!reserve || reserve.type !== 0 /* Visit */)) {
+    throw path3.buildCodeFrameError("Tried to visit a node that was not marked as needing to visit during analyze.");
+  }
+  const sectionId = getSectionId(path3);
+  const steps = getSteps(sectionId);
+  const walks = getWalks(sectionId);
+  const walkComment = getWalkComment(sectionId);
+  if (code && isOutputHTML()) {
+    writeTo(path3)`${callRuntime("markHydrateNode", scopeIdentifier, t5.numericLiteral(reserve.id))}`;
+  } else {
+    let walkString = "";
+    if (steps.length) {
+      const walks2 = [];
+      let depth = 0;
+      for (const step of steps) {
+        if (step === 0 /* enter */) {
+          depth++;
+          walks2.push(67 /* Next */);
+        } else {
+          depth--;
+          if (depth >= 0) {
+            walks2.length = walks2.lastIndexOf(67 /* Next */);
+            walks2.push(97 /* Over */);
+          } else {
+            walks2.length = walks2.lastIndexOf(107 /* Out */) + 1;
+            walks2.push(107 /* Out */);
+            depth = 0;
+          }
+        }
+      }
+      let current = walks2[0];
+      let count = 0;
+      for (const walk of walks2) {
+        if (walk !== current) {
+          walkComment.push(`${walkCodeToName[current]}(${count})`);
+          walkString += nCodeString(current, count);
+          current = walk;
+          count = 1;
+        } else {
+          count++;
+        }
+      }
+      walkComment.push(`${walkCodeToName[current]}(${count})`);
+      walkString += nCodeString(current, count);
+      steps.length = 0;
+    }
+    if (code !== void 0) {
+      if (code !== 32 /* Get */) {
+        writeTo(path3)`<!>`;
+      }
+      walkComment.push(`${walkCodeToName[code]}`);
+      walkString += String.fromCharCode(code);
+    }
+    if (reserve?.size) {
+      walkComment.push(`${walkCodeToName[40 /* Skip */]}(${reserve.size})`);
+      walkString += nCodeString(40 /* Skip */, reserve.size);
+    }
+    appendLiteral(walks, walkString);
+  }
+}
+function nCodeString(code, number) {
+  switch (code) {
+    case 67 /* Next */:
+      return toCharString(number, code, 20 /* Next */);
+    case 97 /* Over */:
+      return toCharString(number, code, 10 /* Over */);
+    case 107 /* Out */:
+      return toCharString(number, code, 10 /* Out */);
+    case 47 /* BeginChild */:
+      return toCharString(number, code, 20 /* BeginChild */);
+    case 40 /* Skip */:
+      return toCharString(number, code, 7 /* Skip */);
+    default:
+      throw new Error(`Unexpected walk code: ${code}`);
+  }
+}
+function toCharString(number, startCode, rangeSize) {
+  let result = "";
+  if (number >= rangeSize) {
+    const multiplier = Math.floor(number / rangeSize);
+    result += toCharString(multiplier, 117 /* Multiplier */, 10 /* Multiplier */);
+    number -= multiplier * rangeSize;
+  }
+  result += String.fromCharCode(startCode + number);
+  return result;
+}
+function getWalkString(sectionId) {
+  const walkLiteral = toTemplateOrStringLiteral(getWalks(sectionId)) || t5.stringLiteral("");
+  if (walkLiteral.value !== "") {
+    walkLiteral.leadingComments = [
+      {
+        type: "CommentBlock",
+        value: " " + getWalkComment(sectionId).join(", ") + " "
+      }
+    ];
+  }
+  return walkLiteral;
+}
+
+// src/util/writer.ts
+var [getRenderer] = createSectionState("renderer", (sectionId) => {
+  const name = currentProgramPath.node.extra.sectionNames[sectionId];
+  return t6.identifier(name);
+});
+var [getWrites] = createSectionState("writes", () => [""]);
+function writeTo(path3) {
+  const sectionId = getSectionId(path3);
+  return (strs, ...exprs) => {
+    const exprsLen = exprs.length;
+    const writes = getWrites(sectionId);
+    appendLiteral(writes, strs[0]);
+    for (let i = 0; i < exprsLen; i++) {
+      writes.push(exprs[i], strs[i + 1]);
+    }
+  };
+}
+function consumeHTML(path3) {
+  const writes = getWrites(getSectionId(path3));
+  const result = toTemplateOrStringLiteral(writes);
+  writes.length = 0;
+  writes[0] = "";
+  if (result) {
+    return t6.expressionStatement(callRuntime("write", result));
+  }
+}
+function hasPendingHTML(path3) {
+  const writes = getWrites(getSectionId(path3));
+  return Boolean(writes.length > 1 || writes[0]);
+}
+function flushBefore(path3) {
+  const expr = consumeHTML(path3);
+  if (expr) {
+    path3.insertBefore(expr)[0].skip();
+  }
+}
+function flushInto(path3) {
+  const target = path3.isProgram() ? path3 : path3.get("body");
+  const expr = consumeHTML(target);
+  if (expr) {
+    target.pushContainer("body", expr)[0].skip();
+  }
+}
+function getSectionMeta(sectionId) {
+  const writes = getWrites(sectionId);
+  return {
+    apply: getSetup(sectionId),
+    walks: getWalkString(sectionId),
+    writes: toTemplateOrStringLiteral(writes) || t6.stringLiteral("")
+  };
+}
+
+// src/util/is-static.ts
+function isStatic(path3) {
+  return path3.isImportDeclaration() || path3.isExportDeclaration() || path3.isMarkoScriptlet({ static: true });
+}
+
+// src/visitors/program/html.ts
+var html_default = {
+  translate: {
+    exit(program) {
+      flushInto(program);
+      writeHTMLHydrateStatements(program);
+      const renderContent = [];
+      for (const child of program.get("body")) {
+        if (!isStatic(child)) {
+          renderContent.push(child.node);
+          child.remove();
+        } else if (child.isMarkoScriptlet()) {
+          child.replaceWithMultiple(child.node.body);
+        }
+      }
+      const rendererId = program.scope.generateUidIdentifier("renderer");
+      const { attrs } = program.node.extra;
+      program.pushContainer("body", [
+        t7.variableDeclaration("const", [
+          t7.variableDeclarator(rendererId, t7.arrowFunctionExpression([attrs ? attrs.var : t7.identifier("input")], t7.blockStatement(renderContent)))
+        ]),
+        t7.exportDefaultDeclaration(rendererId),
+        t7.exportNamedDeclaration(t7.variableDeclaration("const", [
+          t7.variableDeclarator(t7.identifier("render"), callRuntime("createRenderer", rendererId))
+        ]))
+      ]);
+    }
+  }
+};
+
+// src/visitors/program/dom.ts
+import { types as t8 } from "@marko/compiler";
+var dom_default = {
+  translate: {
+    exit(program) {
+      visit(program);
+      const sectionId = getSectionId(program);
+      const templateIdentifier = t8.identifier("template");
+      const walksIdentifier = t8.identifier("walks");
+      const setupIdentifier = t8.identifier("setup");
+      const attrsSignalIdentifier = t8.identifier("attrs");
+      const { attrs } = program.node.extra;
+      const { walks, writes, apply } = getSectionMeta(sectionId);
+      forEachSectionIdReverse((childSectionId) => {
+        writeSignals(childSectionId);
+        if (childSectionId !== sectionId) {
+          const { walks: walks2, writes: writes2, apply: apply2 } = getSectionMeta(childSectionId);
+          const closures = getClosures(childSectionId);
+          const identifier = getRenderer(childSectionId);
+          program.node.body.push(t8.variableDeclaration("const", [
+            t8.variableDeclarator(identifier, callRuntime("createRenderer", writes2, walks2, apply2, closures.length && t8.arrayExpression(closures)))
+          ]));
+        }
+      });
+      if (attrs) {
+        const exportSpecifiers = [];
+        const subscribers = [];
+        const statements = [];
+        for (const name in attrs.bindings) {
+          const bindingIdentifier = attrs.bindings[name];
+          const signalIdentifier = getSignal(sectionId, bindingIdentifier.extra.reserve).identifier;
+          exportSpecifiers.push(t8.exportSpecifier(signalIdentifier, bindingIdentifier.extra.reserve.exportIdentifier));
+          subscribers.push(signalIdentifier);
+          statements.push(t8.expressionStatement(callRuntime("setSource", scopeIdentifier, signalIdentifier, bindingIdentifier)));
+        }
+        program.node.body.push(t8.exportNamedDeclaration(t8.variableDeclaration("const", [
+          t8.variableDeclarator(attrsSignalIdentifier, callRuntime("destructureSources", t8.arrayExpression(subscribers), t8.arrowFunctionExpression([scopeIdentifier, attrs.var], t8.blockStatement(statements))))
+        ])), t8.exportNamedDeclaration(null, exportSpecifiers));
+      }
+      program.node.body.push(t8.exportNamedDeclaration(t8.variableDeclaration("const", [
+        t8.variableDeclarator(templateIdentifier, writes || t8.stringLiteral(""))
+      ])), t8.exportNamedDeclaration(t8.variableDeclaration("const", [
+        t8.variableDeclarator(walksIdentifier, walks || t8.stringLiteral(""))
+      ])), t8.exportNamedDeclaration(t8.variableDeclaration("const", [
+        t8.variableDeclarator(setupIdentifier, t8.isNullLiteral(apply) || !apply ? t8.functionExpression(null, [], t8.blockStatement([])) : apply)
+      ])));
+      program.node.body.push(t8.exportDefaultDeclaration(callRuntime("createRenderFn", templateIdentifier, walksIdentifier, setupIdentifier, attrs && attrsSignalIdentifier)));
+    }
+  }
+};
 
 // src/util/references.ts
+import { types as t9 } from "@marko/compiler";
 var [getReferenceGroups] = createSectionState("apply", () => [
   {
     sectionId: 0,
     index: 0,
     count: 0,
     references: void 0,
-    apply: t2.identifier(""),
-    hydrate: t2.identifier("")
+    apply: t9.identifier(""),
+    hydrate: t9.identifier("")
   }
 ]);
 function trackReferences(tag) {
@@ -333,8 +1015,8 @@ function trackReferencesForBindings(sectionId, path3, reserveType = 1 /* Store *
       index: 0,
       count: 0,
       references: binding,
-      apply: t2.identifier(""),
-      hydrate: t2.identifier("")
+      apply: t9.identifier(""),
+      hydrate: t9.identifier("")
     });
     for (const reference of references) {
       const fnRoot = getFnRoot(reference.scope.path);
@@ -389,8 +1071,8 @@ function getOrCreateReferenceGroup(sectionId, references) {
     index: 0,
     count: 1,
     references,
-    apply: t2.identifier(""),
-    hydrate: t2.identifier("")
+    apply: t9.identifier(""),
+    hydrate: t9.identifier("")
   };
   const referenceGroups = getReferenceGroups(sectionId);
   const existingGroup = findReferenceGroup(referenceGroups, newGroup);
@@ -515,540 +1197,6 @@ function generateReferenceGroupName(type, sectionId, references) {
   }
   return currentProgramPath.scope.generateUid(name);
 }
-
-// src/util/runtime.ts
-import { types as t3 } from "@marko/compiler";
-import { importNamed } from "@marko/babel-utils";
-function importRuntime(name) {
-  const { output } = getMarkoOpts();
-  return importNamed(currentProgramPath.hub.file, getRuntimePath(output), name);
-}
-function callRuntime(name, ...args) {
-  return t3.callExpression(importRuntime(name), args.filter(Boolean));
-}
-function getHTMLRuntime() {
-  return getRuntime("html");
-}
-function getRuntime(output) {
-  return __require(getRuntimePath(output));
-}
-function getRuntimePath(output) {
-  const { optimize } = getMarkoOpts();
-  return `@marko/runtime-fluurt/${false ? "src" : optimize ? "dist" : "dist/debug"}/${output === "html" ? "html" : "dom"}`;
-}
-function callRead(reference, targetSectionId) {
-  return t3.memberExpression(getScopeExpression(reference, targetSectionId), t3.numericLiteral(reference.id), true);
-}
-function callQueue({ apply, index }, reference, value, targetSectionId) {
-  return callRuntime("queue", getScopeExpression(reference, targetSectionId), apply, t3.numericLiteral(index - 1), value);
-}
-function getScopeExpression(reference, sectionId) {
-  const diff = reference.sectionId !== sectionId ? 1 : 0;
-  let scope = scopeIdentifier;
-  for (let i = 0; i < diff; i++) {
-    scope = t3.memberExpression(scope, t3.identifier("_"));
-  }
-  return scope;
-}
-
-// src/util/apply-hydrate.ts
-import { getTemplateId } from "@marko/babel-utils";
-var [getApplyStatements] = createSectionState("applyStatements", () => []);
-var [getHydrateStatements] = createSectionState("hydrateStatements", () => []);
-var [getQueueBuilder, _setQueueBuilder] = createSectionState("queue");
-function setQueueBuilder(tag, builder) {
-  _setQueueBuilder(getSectionId(tag.get("body")), builder);
-}
-function addStatement(type, targetSectionId, references, statement) {
-  const statementsIndex = references?.index ?? 0;
-  const allStatements = type === "apply" ? getApplyStatements(targetSectionId) : getHydrateStatements(targetSectionId);
-  const statements = allStatements[statementsIndex] ??= [];
-  if (Array.isArray(statement)) {
-    statements.push(...statement);
-  } else {
-    statements.push(statement);
-  }
-}
-function getHydrateRegisterId(sectionId, references) {
-  const {
-    markoOpts: { optimize },
-    opts: { filename }
-  } = currentProgramPath.hub.file;
-  let name = "";
-  if (references) {
-    if (Array.isArray(references)) {
-      for (const ref of references) {
-        name += `_${ref.name}`;
-      }
-    } else {
-      name += `_${references.name}`;
-    }
-  }
-  return getTemplateId(optimize, `${filename}_${sectionId}${name}`);
-}
-function writeAllStatementGroups() {
-  forEachSectionIdReverse((sectionId) => {
-    writeHydrateGroups(sectionId);
-    writeApplyGroups(sectionId);
-  });
-}
-var [getClosurePriorities] = createSectionState("closurePriorities", () => []);
-function writeApplyGroups(sectionId) {
-  const allStatements = getApplyStatements(sectionId);
-  const numReferenceGroups = currentProgramPath.node.extra.referenceGroups[sectionId].length;
-  if (!numReferenceGroups)
-    return;
-  for (let i = numReferenceGroups; i--; ) {
-    const statements = allStatements[i] ?? [];
-    if (i === 0 && !statements.length)
-      continue;
-    const referenceGroup = getReferenceGroup(sectionId, i);
-    const { references, apply: identifier } = referenceGroup;
-    const queuePriority = t4.numericLiteral(i - 1);
-    let params;
-    let body;
-    if (references) {
-      if (Array.isArray(references)) {
-        params = references.map((binding) => t4.assignmentPattern(t4.identifier(binding.name), callRead(binding, sectionId)));
-        body = t4.blockStatement(statements);
-        for (const binding of references) {
-          addStatement("apply", sectionId, getReferenceGroup(sectionId, binding), t4.expressionStatement(callRuntime("queue", scopeIdentifier, identifier, queuePriority)));
-        }
-      } else if (references.sectionId !== sectionId) {
-        params = [
-          t4.assignmentPattern(t4.identifier(references.name), callRead(references, sectionId))
-        ];
-        body = t4.blockStatement(statements);
-        const factory = getQueueBuilder(sectionId);
-        if (factory) {
-          const closurePriority = t4.numericLiteral(NaN);
-          getClosurePriorities(references.sectionId).push(closurePriority);
-          addStatement("apply", references.sectionId, getReferenceGroup(references.sectionId, references), t4.expressionStatement(factory(referenceGroup, closurePriority)));
-          addStatement("apply", sectionId, void 0, t4.expressionStatement(callRuntime("queue", scopeIdentifier, identifier, queuePriority)));
-        }
-      } else {
-        const param = t4.identifier(references.name);
-        params = [param];
-        body = t4.blockStatement([
-          t4.ifStatement(callRuntime("write", scopeIdentifier, t4.numericLiteral(references.id), param), t4.blockStatement(statements))
-        ]);
-      }
-    } else {
-      params = [];
-      body = t4.blockStatement(statements);
-    }
-    const [fnPath] = currentProgramPath.pushContainer("body", t4.functionDeclaration(identifier, [scopeIdentifier, ...params], body));
-    fnPath.traverse(bindFunctionsVisitor, { root: fnPath, sectionId });
-  }
-  const closurePriorities = getClosurePriorities(sectionId);
-  for (let i = 0; i < closurePriorities.length; i++) {
-    closurePriorities[i].value = i + allStatements.length;
-  }
-}
-function writeHydrateGroups(sectionId) {
-  const allStatements = getHydrateStatements(sectionId);
-  for (let i = allStatements.length; i--; ) {
-    const statements = allStatements[i];
-    if (!statements?.length)
-      continue;
-    const referenceGroup = getReferenceGroup(sectionId, i);
-    const { references, hydrate: identifier } = referenceGroup;
-    const params = references ? (Array.isArray(references) ? references : [references]).map((binding) => t4.assignmentPattern(t4.identifier(binding.name), callRead(binding, sectionId))) : [];
-    const [fnPath] = currentProgramPath.pushContainer("body", [
-      t4.functionDeclaration(identifier, [scopeIdentifier, ...params], t4.blockStatement(statements)),
-      t4.expressionStatement(callRuntime("register", t4.stringLiteral(getHydrateRegisterId(sectionId, references)), identifier))
-    ]);
-    fnPath.traverse(bindFunctionsVisitor, { root: fnPath, sectionId });
-    addStatement("apply", sectionId, getReferenceGroup(sectionId, references), t4.expressionStatement(callRuntime("queueHydrate", scopeIdentifier, identifier)));
-  }
-}
-function addHTMLHydrateCall(sectionId, references) {
-  addStatement("hydrate", sectionId, references, void 0);
-}
-function writeHTMLHydrateStatements(path3) {
-  const sectionId = getOrCreateSectionId(path3);
-  const allStatements = getHydrateStatements(sectionId);
-  path3.unshiftContainer("body", t4.variableDeclaration("const", [
-    t4.variableDeclarator(scopeIdentifier, callRuntime("nextScopeId"))
-  ]));
-  if (!allStatements.length)
-    return;
-  const refs = [];
-  for (let i = allStatements.length; i--; ) {
-    if (allStatements[i]?.length) {
-      const { references } = getReferenceGroup(sectionId, i);
-      if (references) {
-        if (Array.isArray(references)) {
-          for (const ref of references) {
-            insertReserve(refs, ref);
-          }
-        } else {
-          insertReserve(refs, references);
-        }
-      }
-      path3.pushContainer("body", t4.expressionStatement(callRuntime("writeHydrateCall", scopeIdentifier, t4.stringLiteral(getHydrateRegisterId(sectionId, references)))));
-    }
-  }
-  path3.pushContainer("body", t4.expressionStatement(callRuntime("writeHydrateScope", scopeIdentifier, t4.objectExpression(refs.reduce((acc, ref) => {
-    acc.push(t4.objectProperty(t4.numericLiteral(ref.id), t4.identifier(ref.name)));
-    return acc;
-  }, [])))));
-}
-var bindFunctionsVisitor = {
-  FunctionExpression: { exit: bindFunction },
-  ArrowFunctionExpression: { exit: bindFunction }
-};
-function bindFunction(fn, { root, sectionId }) {
-  const { node } = fn;
-  const { extra } = node;
-  const references = extra?.references?.references;
-  const program = fn.hub.file.path;
-  const functionIdentifier = program.scope.generateUidIdentifier(extra?.name);
-  if (references) {
-    if (node.body.type !== "BlockStatement") {
-      node.body = t4.blockStatement([t4.returnStatement(node.body)]);
-    }
-    node.body.body.unshift(t4.variableDeclaration("const", (Array.isArray(references) ? references : [references]).map((binding) => t4.variableDeclarator(t4.identifier(binding.name), callRead(binding, sectionId)))));
-  }
-  root.insertBefore(t4.variableDeclaration("const", [
-    t4.variableDeclarator(functionIdentifier, node)
-  ]));
-  node.params.unshift(scopeIdentifier);
-  fn.replaceWith(callRuntime("bind", scopeIdentifier, functionIdentifier));
-}
-function getDefaultApply(sectionId) {
-  const [firstApplyStatements] = getApplyStatements(sectionId);
-  return firstApplyStatements ? getReferenceGroup(sectionId, 0).apply : t4.nullLiteral();
-}
-
-// src/util/writer.ts
-import { types as t7 } from "@marko/compiler";
-
-// src/util/to-template-string-or-literal.ts
-import { types as t5 } from "@marko/compiler";
-function toTemplateOrStringLiteral(parts) {
-  const strs = [];
-  const exprs = [];
-  let curStr = parts[0];
-  for (let i = 1; i < parts.length; i++) {
-    let content = parts[i];
-    if (typeof content === "object") {
-      if (t5.isStringLiteral(content)) {
-        content = content.value;
-      } else if (t5.isTemplateLiteral(content)) {
-        let nextIndex = i + 1;
-        const exprLen = content.expressions.length;
-        shiftItems(parts, nextIndex, content.quasis.length + exprLen);
-        for (let j = 0; j < exprLen; j++) {
-          parts[nextIndex++] = content.quasis[j].value.raw;
-          parts[nextIndex++] = content.expressions[j];
-        }
-        parts[nextIndex] = content.quasis[exprLen].value.raw;
-        continue;
-      } else {
-        exprs.push(content);
-        strs.push(curStr);
-        curStr = "";
-        continue;
-      }
-    }
-    curStr += content;
-  }
-  if (exprs.length) {
-    strs.push(curStr);
-    return t5.templateLiteral(strs.map((raw) => t5.templateElement({ raw })), exprs);
-  } else if (curStr) {
-    return t5.stringLiteral(curStr);
-  }
-}
-function appendLiteral(arr, str) {
-  arr[arr.length - 1] += str;
-}
-function shiftItems(list, start, offset) {
-  for (let i = list.length - 1; i >= start; i--) {
-    list[i + offset] = list[i];
-  }
-}
-
-// src/util/walks.ts
-import { types as t6 } from "@marko/compiler";
-var [getWalks] = createSectionState("walks", () => [""]);
-var [getWalkComment] = createSectionState("walkComment", () => []);
-var [getSteps] = createSectionState("steps", () => []);
-var walkCodeToName = {
-  [32 /* Get */]: "get",
-  [33 /* Before */]: "before",
-  [35 /* After */]: "after",
-  [36 /* Inside */]: "inside",
-  [37 /* Replace */]: "replace",
-  [38 /* EndChild */]: "endChild",
-  [40 /* Skip */]: "skip",
-  [47 /* BeginChild */]: "beginChild",
-  [67 /* Next */]: "next",
-  [97 /* Over */]: "over",
-  [107 /* Out */]: "out",
-  [117 /* Multiplier */]: "multiplier",
-  [46 /* SkipEnd */]: "skipEnd",
-  [66 /* BeginChildEnd */]: "beginChildEnd",
-  [91 /* NextEnd */]: "nextEnd",
-  [106 /* OverEnd */]: "overEnd",
-  [116 /* OutEnd */]: "outEnd",
-  [126 /* MultiplierEnd */]: "multiplierEnd"
-};
-function enter(path3) {
-  getSteps(getSectionId(path3)).push(0 /* enter */);
-}
-function exit(path3) {
-  getSteps(getSectionId(path3)).push(1 /* exit */);
-}
-function enterShallow(path3) {
-  getSteps(getSectionId(path3)).push(0 /* enter */, 1 /* exit */);
-}
-function injectWalks(path3, childIndex, expr) {
-  const walks = getWalks(getSectionId(path3));
-  const walkComment = getWalkComment(getSectionId(path3));
-  walkComment.push(`${walkCodeToName[47 /* BeginChild */]}(${childIndex})`, expr.name, walkCodeToName[38 /* EndChild */]);
-  appendLiteral(walks, nCodeString(47 /* BeginChild */, childIndex));
-  walks.push(expr, String.fromCharCode(38 /* EndChild */));
-}
-function visit(path3, code) {
-  const { reserve } = path3.node.extra;
-  if (code && (!reserve || reserve.type !== 0 /* Visit */)) {
-    throw path3.buildCodeFrameError("Tried to visit a node that was not marked as needing to visit during analyze.");
-  }
-  const sectionId = getSectionId(path3);
-  const steps = getSteps(sectionId);
-  const walks = getWalks(sectionId);
-  const walkComment = getWalkComment(sectionId);
-  if (code && isOutputHTML()) {
-    writeTo(path3)`${callRuntime("markHydrateNode", scopeIdentifier, t6.numericLiteral(reserve.id))}`;
-  } else {
-    let walkString = "";
-    if (steps.length) {
-      const walks2 = [];
-      let depth = 0;
-      for (const step of steps) {
-        if (step === 0 /* enter */) {
-          depth++;
-          walks2.push(67 /* Next */);
-        } else {
-          depth--;
-          if (depth >= 0) {
-            walks2.length = walks2.lastIndexOf(67 /* Next */);
-            walks2.push(97 /* Over */);
-          } else {
-            walks2.length = walks2.lastIndexOf(107 /* Out */) + 1;
-            walks2.push(107 /* Out */);
-            depth = 0;
-          }
-        }
-      }
-      let current = walks2[0];
-      let count = 0;
-      for (const walk of walks2) {
-        if (walk !== current) {
-          walkComment.push(`${walkCodeToName[current]}(${count})`);
-          walkString += nCodeString(current, count);
-          current = walk;
-          count = 1;
-        } else {
-          count++;
-        }
-      }
-      walkComment.push(`${walkCodeToName[current]}(${count})`);
-      walkString += nCodeString(current, count);
-      steps.length = 0;
-    }
-    if (code !== void 0) {
-      if (code !== 32 /* Get */) {
-        writeTo(path3)`<!>`;
-      }
-      walkComment.push(`${walkCodeToName[code]}`);
-      walkString += String.fromCharCode(code);
-    }
-    if (reserve?.size) {
-      walkComment.push(`${walkCodeToName[40 /* Skip */]}(${reserve.size})`);
-      walkString += nCodeString(40 /* Skip */, reserve.size);
-    }
-    appendLiteral(walks, walkString);
-  }
-}
-function nCodeString(code, number) {
-  switch (code) {
-    case 67 /* Next */:
-      return toCharString(number, code, 20 /* Next */);
-    case 97 /* Over */:
-      return toCharString(number, code, 10 /* Over */);
-    case 107 /* Out */:
-      return toCharString(number, code, 10 /* Out */);
-    case 47 /* BeginChild */:
-      return toCharString(number, code, 20 /* BeginChild */);
-    case 40 /* Skip */:
-      return toCharString(number, code, 7 /* Skip */);
-    default:
-      throw new Error(`Unexpected walk code: ${code}`);
-  }
-}
-function toCharString(number, startCode, rangeSize) {
-  let result = "";
-  if (number >= rangeSize) {
-    const multiplier = Math.floor(number / rangeSize);
-    result += toCharString(multiplier, 117 /* Multiplier */, 10 /* Multiplier */);
-    number -= multiplier * rangeSize;
-  }
-  result += String.fromCharCode(startCode + number);
-  return result;
-}
-function getWalkString(sectionId) {
-  const walkLiteral = toTemplateOrStringLiteral(getWalks(sectionId)) || t6.stringLiteral("");
-  if (walkLiteral.value !== "") {
-    walkLiteral.leadingComments = [
-      {
-        type: "CommentBlock",
-        value: " " + getWalkComment(sectionId).join(", ") + " "
-      }
-    ];
-  }
-  return walkLiteral;
-}
-
-// src/util/writer.ts
-var [getRenderer] = createSectionState("renderer", (sectionId) => {
-  const name = currentProgramPath.node.extra.sectionNames[sectionId];
-  return t7.identifier(name);
-});
-var [getWrites] = createSectionState("writes", () => [""]);
-function writeTo(path3) {
-  const sectionId = getSectionId(path3);
-  return (strs, ...exprs) => {
-    const exprsLen = exprs.length;
-    const writes = getWrites(sectionId);
-    appendLiteral(writes, strs[0]);
-    for (let i = 0; i < exprsLen; i++) {
-      writes.push(exprs[i], strs[i + 1]);
-    }
-  };
-}
-function consumeHTML(path3) {
-  const writes = getWrites(getSectionId(path3));
-  const result = toTemplateOrStringLiteral(writes);
-  writes.length = 0;
-  writes[0] = "";
-  if (result) {
-    return t7.expressionStatement(callRuntime("write", result));
-  }
-}
-function hasPendingHTML(path3) {
-  const writes = getWrites(getSectionId(path3));
-  return Boolean(writes.length > 1 || writes[0]);
-}
-function flushBefore(path3) {
-  const expr = consumeHTML(path3);
-  if (expr) {
-    path3.insertBefore(expr)[0].skip();
-  }
-}
-function flushInto(path3) {
-  const target = path3.isProgram() ? path3 : path3.get("body");
-  const expr = consumeHTML(target);
-  if (expr) {
-    target.pushContainer("body", expr)[0].skip();
-  }
-}
-function getSectionMeta(sectionId) {
-  const writes = getWrites(sectionId);
-  return {
-    apply: getDefaultApply(sectionId),
-    walks: getWalkString(sectionId),
-    writes: toTemplateOrStringLiteral(writes) || t7.stringLiteral("")
-  };
-}
-
-// src/util/is-static.ts
-function isStatic(path3) {
-  return path3.isImportDeclaration() || path3.isExportDeclaration() || path3.isMarkoScriptlet({ static: true });
-}
-
-// src/visitors/program/html.ts
-var html_default = {
-  translate: {
-    exit(program) {
-      flushInto(program);
-      writeHTMLHydrateStatements(program);
-      const renderContent = [];
-      for (const child of program.get("body")) {
-        if (!isStatic(child)) {
-          renderContent.push(child.node);
-          child.remove();
-        } else if (child.isMarkoScriptlet()) {
-          child.replaceWithMultiple(child.node.body);
-        }
-      }
-      const rendererId = program.scope.generateUidIdentifier("renderer");
-      const { attrs } = program.node.extra;
-      program.pushContainer("body", [
-        t8.variableDeclaration("const", [
-          t8.variableDeclarator(rendererId, t8.arrowFunctionExpression([attrs ? attrs.var : t8.identifier("input")], t8.blockStatement(renderContent)))
-        ]),
-        t8.exportDefaultDeclaration(rendererId),
-        t8.exportNamedDeclaration(t8.variableDeclaration("const", [
-          t8.variableDeclarator(t8.identifier("render"), callRuntime("createRenderer", rendererId))
-        ]))
-      ]);
-    }
-  }
-};
-
-// src/visitors/program/dom.ts
-import { types as t9 } from "@marko/compiler";
-var dom_default = {
-  translate: {
-    exit(program) {
-      visit(program);
-      const sectionId = getSectionId(program);
-      const templateIdentifier = t9.identifier("template");
-      const walksIdentifier = t9.identifier("walks");
-      const applyIdentifier = t9.identifier("apply");
-      const applyAttrsIdentifier = t9.identifier("applyAttrs");
-      const { attrs } = program.node.extra;
-      const { walks, writes, apply } = getSectionMeta(sectionId);
-      writeAllStatementGroups();
-      const childRendererDeclarators = [];
-      forEachSectionId((childSectionId) => {
-        if (childSectionId !== sectionId) {
-          const { walks: walks2, writes: writes2, apply: apply2 } = getSectionMeta(childSectionId);
-          const identifier = getRenderer(childSectionId);
-          childRendererDeclarators.push(t9.variableDeclarator(identifier, callRuntime("createRenderer", writes2, walks2, apply2)));
-        }
-      });
-      if (attrs) {
-        const exportSpecifiers = [];
-        program.node.body.push(t9.exportNamedDeclaration(t9.variableDeclaration("const", [
-          t9.variableDeclarator(applyAttrsIdentifier, t9.functionExpression(null, [scopeIdentifier, attrs.var], t9.blockStatement(Object.keys(attrs.bindings).map((name) => {
-            const bindingIdentifier = attrs.bindings[name];
-            const { apply: applyIdentifier2 } = getReferenceGroup(sectionId, bindingIdentifier.extra.reserve);
-            exportSpecifiers.push(t9.exportSpecifier(applyIdentifier2, bindingIdentifier.extra.reserve.exportIdentifier));
-            return t9.expressionStatement(t9.callExpression(applyIdentifier2, [
-              scopeIdentifier,
-              bindingIdentifier
-            ]));
-          }))))
-        ])), t9.exportNamedDeclaration(null, exportSpecifiers));
-      }
-      program.node.body.push(t9.exportNamedDeclaration(t9.variableDeclaration("const", [
-        t9.variableDeclarator(templateIdentifier, writes || t9.stringLiteral(""))
-      ])), t9.exportNamedDeclaration(t9.variableDeclaration("const", [
-        t9.variableDeclarator(walksIdentifier, walks || t9.stringLiteral(""))
-      ])), t9.exportNamedDeclaration(t9.variableDeclaration("const", [
-        t9.variableDeclarator(applyIdentifier, t9.isNullLiteral(apply) ? t9.functionExpression(null, [], t9.blockStatement([])) : apply)
-      ])));
-      if (childRendererDeclarators.length) {
-        program.node.body.push(t9.variableDeclaration("const", childRendererDeclarators));
-      }
-      program.node.body.push(t9.exportDefaultDeclaration(callRuntime("createRenderFn", templateIdentifier, walksIdentifier, applyIdentifier, attrs && applyAttrsIdentifier)));
-    }
-  }
-};
 
 // src/visitors/program/index.ts
 var currentProgramPath;
@@ -1475,91 +1623,104 @@ var custom_tag_default = {
       }
     },
     exit(tag) {
-      const tagSectionId = getSectionId(tag);
-      const tagBody = tag.get("body");
-      const tagBodySectionId = getSectionId(tagBody);
-      const isHTML = isOutputHTML();
-      const { node } = tag;
-      const write = writeTo(tag);
-      const binding = node.extra.reserve;
-      let tagIdentifier;
-      let tagAttrsIdentifier;
-      if (isHTML) {
-        flushInto(tag);
-        writeHTMLHydrateStatements(tagBody);
-      }
-      if (t16.isStringLiteral(node.name)) {
-        const { file } = tag.hub;
-        const tagName = node.name.value;
-        const tags = file.metadata.marko.tags;
-        const tagDef = getTagDef2(tag);
-        const template = tagDef?.template;
-        const relativePath = template && resolveRelativePath(file, template);
-        const childFile = loadFileForTag(tag);
-        const childProgram = childFile.ast.program;
-        if (!relativePath) {
-          throw tag.get("name").buildCodeFrameError(`Unable to find entry point for custom tag <${tagName}>.`);
-        }
-        if (isHTML) {
-          tagIdentifier = importDefault(file, relativePath, tagName);
-        } else {
-          tagIdentifier = importNamed2(file, relativePath, "apply", tagName);
-          if (childProgram.extra.attrs) {
-            tagAttrsIdentifier = importNamed2(file, relativePath, "applyAttrs", `${tagName}_attrs`);
-          }
-          write`${importNamed2(file, relativePath, "template", `${tagName}_template`)}`;
-          injectWalks(tag, binding.id, importNamed2(file, relativePath, "walks", `${tagName}_walks`));
-        }
-        if (!tags.includes(relativePath)) {
-          tags.push(relativePath);
-        }
+      if (isOutputHTML()) {
+        translateHTML(tag);
       } else {
-        tagIdentifier = node.name;
-      }
-      const tagVar = node.var;
-      const attrsObject = attrsToObject(tag, true);
-      const renderBodyProp = getRenderBodyProp(attrsObject);
-      if (isHTML && node.extra.tagNameNullable) {
-        let renderBodyId = void 0;
-        let renderTagExpr = callExpression(tagIdentifier, attrsToObject(tag));
-        if (renderBodyProp) {
-          renderBodyId = tag.scope.generateUidIdentifier("renderBody");
-          const [renderBodyPath] = tag.insertBefore(t16.functionDeclaration(renderBodyId, renderBodyProp.params, renderBodyProp.body));
-          renderBodyPath.skip();
-          attrsObject.properties[attrsObject.properties.length - 1] = t16.objectProperty(t16.identifier("renderBody"), renderBodyId);
-        }
-        if (tagVar) {
-          translateVar(tag, t16.unaryExpression("void", t16.numericLiteral(0)), "let");
-          renderTagExpr = t16.assignmentExpression("=", tagVar, renderTagExpr);
-        }
-        tag.replaceWith(t16.ifStatement(tagIdentifier, t16.expressionStatement(renderTagExpr), renderBodyId && callStatement(renderBodyId)))[0].skip();
-      } else {
-        if (isHTML) {
-          if (tagVar) {
-            translateVar(tag, callExpression(tagIdentifier, attrsObject));
-            tag.remove();
-          } else {
-            tag.replaceWith(callStatement(tagIdentifier, attrsObject))[0].skip();
-          }
-        } else {
-          if (renderBodyProp) {
-            const { walks, writes } = getSectionMeta(tagBodySectionId);
-            attrsObject.properties.pop();
-            attrsObject.properties.push(t16.objectProperty(t16.identifier("renderBody"), callRuntime("createRenderer", writes || t16.stringLiteral(""), walks || t16.stringLiteral(""), t16.arrowFunctionExpression(renderBodyProp.params, renderBodyProp.body))));
-          }
-          addStatement("apply", tagSectionId, void 0, t16.expressionStatement(t16.callExpression(tagIdentifier, [callRead(binding, tagSectionId)])));
-          if (attrsObject && tagAttrsIdentifier) {
-            addStatement("apply", tagSectionId, tag.node.extra.attrsReferences, t16.expressionStatement(t16.callExpression(tagAttrsIdentifier, [
-              callRead(binding, tagSectionId),
-              attrsObject
-            ])));
-          }
-          tag.remove();
-        }
+        translateDOM(tag);
       }
     }
   }
 };
+function translateHTML(tag) {
+  const tagBody = tag.get("body");
+  const { node } = tag;
+  let tagIdentifier;
+  flushInto(tag);
+  writeHTMLHydrateStatements(tagBody);
+  if (t16.isStringLiteral(node.name)) {
+    const { file } = tag.hub;
+    const tagName = node.name.value;
+    const relativePath = getTagRelativePath(tag);
+    tagIdentifier = importDefault(file, relativePath, tagName);
+  } else {
+    tagIdentifier = node.name;
+  }
+  const tagVar = node.var;
+  const attrsObject = attrsToObject(tag, true);
+  const renderBodyProp = getRenderBodyProp(attrsObject);
+  if (node.extra.tagNameNullable) {
+    let renderBodyId = void 0;
+    let renderTagExpr = callExpression(tagIdentifier, attrsToObject(tag));
+    if (renderBodyProp) {
+      renderBodyId = tag.scope.generateUidIdentifier("renderBody");
+      const [renderBodyPath] = tag.insertBefore(t16.functionDeclaration(renderBodyId, renderBodyProp.params, renderBodyProp.body));
+      renderBodyPath.skip();
+      attrsObject.properties[attrsObject.properties.length - 1] = t16.objectProperty(t16.identifier("renderBody"), renderBodyId);
+    }
+    if (tagVar) {
+      translateVar(tag, t16.unaryExpression("void", t16.numericLiteral(0)), "let");
+      renderTagExpr = t16.assignmentExpression("=", tagVar, renderTagExpr);
+    }
+    tag.replaceWith(t16.ifStatement(tagIdentifier, t16.expressionStatement(renderTagExpr), renderBodyId && callStatement(renderBodyId)))[0].skip();
+  } else if (tagVar) {
+    translateVar(tag, callExpression(tagIdentifier, attrsObject));
+    tag.remove();
+  } else {
+    tag.replaceWith(callStatement(tagIdentifier, attrsObject))[0].skip();
+  }
+}
+function translateDOM(tag) {
+  const tagSectionId = getSectionId(tag);
+  const tagBody = tag.get("body");
+  const tagBodySectionId = getSectionId(tagBody);
+  const { node } = tag;
+  const write = writeTo(tag);
+  const binding = node.extra.reserve;
+  const { file } = tag.hub;
+  const tagName = node.name.value;
+  const relativePath = getTagRelativePath(tag);
+  const childFile = loadFileForTag(tag);
+  const childProgram = childFile.ast.program;
+  const tagIdentifier = importNamed2(file, relativePath, "setup", tagName);
+  let tagAttrsIdentifier;
+  if (childProgram.extra.attrs) {
+    tagAttrsIdentifier = importNamed2(file, relativePath, "attrs", `${tagName}_attrs`);
+  }
+  write`${importNamed2(file, relativePath, "template", `${tagName}_template`)}`;
+  injectWalks(tag, binding.id, importNamed2(file, relativePath, "walks", `${tagName}_walks`));
+  let attrsObject = attrsToObject(tag);
+  if (tagBodySectionId !== tagSectionId) {
+    attrsObject ??= t16.objectExpression([]);
+    attrsObject.properties.push(t16.objectProperty(t16.identifier("renderBody"), callRuntime("bindRenderer", scopeIdentifier, getRenderer(tagBodySectionId))));
+  }
+  addStatement("apply", tagSectionId, void 0, t16.expressionStatement(t16.callExpression(tagIdentifier, [callRead(binding, tagSectionId)])));
+  if (attrsObject && tagAttrsIdentifier) {
+    getSignal(tagSectionId, tag.node.extra.attrsReferences.references).subscribers.push(tagAttrsIdentifier);
+    addStatement("apply", tagSectionId, tag.node.extra.attrsReferences, t16.expressionStatement(callRuntime("setSource", callRead(binding, tagSectionId), t16.identifier(tagAttrsIdentifier.name), attrsObject)));
+  }
+  tag.remove();
+}
+function getTagRelativePath(tag) {
+  const {
+    node,
+    hub: { file }
+  } = tag;
+  const nameIsString = t16.isStringLiteral(node.name);
+  let relativePath;
+  if (nameIsString) {
+    const tagDef = getTagDef2(tag);
+    const template = tagDef?.template;
+    relativePath = template && resolveRelativePath(file, template);
+  }
+  if (!relativePath) {
+    throw tag.get("name").buildCodeFrameError(`Unable to find entry point for custom tag <${nameIsString ? node.name.value : node.name}>.`);
+  }
+  const tags = file.metadata.marko.tags;
+  if (!tags.includes(relativePath)) {
+    tags.push(relativePath);
+  }
+  return relativePath;
+}
 function callStatement(id, ...args) {
   return t16.expressionStatement(callExpression(id, ...args));
 }
@@ -1585,39 +1746,50 @@ function toFirstExpressionOrBlock(body) {
 
 // src/visitors/tag/dynamic-tag.ts
 var dynamic_tag_default = {
+  analyze: {
+    enter(tag) {
+      reserveScope(0 /* Visit */, getOrCreateSectionId(tag), tag.node, "dynamicTagName", 5);
+      custom_tag_default.analyze.enter(tag);
+    }
+  },
   translate: {
     enter(tag) {
+      visit(tag, 37 /* Replace */);
+      enterShallow(tag);
       if (isOutputHTML()) {
         flushBefore(tag);
       }
     },
     exit(tag) {
       const { node } = tag;
-      const tagBodySectionId = getSectionId(tag.get("body"));
-      const attrsObject = attrsToObject(tag, true);
-      const renderBodyProp = getRenderBodyProp(attrsObject);
-      const args = [node.name, attrsObject || t18.nullLiteral()];
       if (isOutputHTML()) {
-        flushBefore(tag);
-      } else {
-        args.unshift(scopeIdentifier);
-      }
-      if (renderBodyProp) {
-        attrsObject.properties.pop();
-        let fnExpr = t18.arrowFunctionExpression(renderBodyProp.params, toFirstExpressionOrBlock(renderBodyProp.body));
-        if (isOutputDOM()) {
-          const { walks, writes } = getSectionMeta(tagBodySectionId);
-          fnExpr = callRuntime("createRenderer", writes || t18.stringLiteral(""), walks || t18.stringLiteral(""), fnExpr);
+        flushInto(tag);
+        const attrsObject = attrsToObject(tag, true);
+        const renderBodyProp = getRenderBodyProp(attrsObject);
+        const args = [
+          node.name,
+          attrsObject || t18.nullLiteral()
+        ];
+        if (renderBodyProp) {
+          attrsObject.properties.pop();
+          args.push(t18.arrowFunctionExpression(renderBodyProp.params, toFirstExpressionOrBlock(renderBodyProp.body)));
         }
-        args.push(fnExpr);
-      }
-      const dynamicTagExpr = callRuntime("dynamicTag", ...args);
-      if (node.var) {
-        translateVar(tag, dynamicTagExpr);
-        tag.remove();
-      } else if (isOutputHTML()) {
-        tag.replaceWith(t18.expressionStatement(dynamicTagExpr))[0].skip();
+        const dynamicTagExpr = callRuntime("dynamicTag", ...args);
+        if (node.var) {
+          translateVar(tag, dynamicTagExpr);
+          tag.remove();
+        } else {
+          tag.replaceWith(t18.expressionStatement(dynamicTagExpr))[0].skip();
+        }
       } else {
+        const sectionId = getSectionId(tag);
+        const tagNameReserve = node.extra?.reserve;
+        const references = node.extra?.nameReferences?.references;
+        const signal = getSignal(sectionId, tagNameReserve);
+        signal.build = () => {
+          return callRuntime("conditional", t18.numericLiteral(tagNameReserve.id), t18.numericLiteral(countReserves(references) || 1), getComputeFn(sectionId, node.name, references));
+        };
+        subscribe(references, signal);
         tag.remove();
       }
     }
@@ -1726,12 +1898,13 @@ var tag_default = {
   analyze: {
     enter(tag) {
       const tagDef = getTagDef3(tag);
+      const type = analyzeTagNameType(tag);
       const hook = tagDef?.analyzer?.hook;
       if (hook) {
         enter2(hook, tag);
         return;
       }
-      switch (analyzeTagNameType(tag)) {
+      switch (type) {
         case 0 /* NativeTag */:
           native_tag_default.analyze.enter(tag);
           break;
@@ -1741,6 +1914,7 @@ var tag_default = {
         case 3 /* AttributeTag */:
           break;
         case 2 /* DynamicTag */:
+          dynamic_tag_default.analyze.enter(tag);
           break;
       }
     },
@@ -1793,21 +1967,15 @@ var tag_default = {
           }
         }
       }
-      let { tagNameType } = extra;
-      if (extra.tagNameDynamic) {
-        if (extra.tagNameNullable && !tag.get("name").isIdentifier()) {
-          const tagNameId = tag.scope.generateUidIdentifier("tagName");
-          const [tagNameVarPath] = tag.insertBefore(t20.variableDeclaration("const", [
-            t20.variableDeclarator(tagNameId, tag.node.name)
-          ]));
-          tagNameVarPath.skip();
-          tag.set("name", tagNameId);
-        }
-        if (tagNameType !== 2 /* DynamicTag */ && !isOutputHTML()) {
-          tagNameType = 2 /* DynamicTag */;
-        }
+      if (extra.tagNameDynamic && extra.tagNameNullable && !tag.get("name").isIdentifier() && isOutputHTML()) {
+        const tagNameId = tag.scope.generateUidIdentifier("tagName");
+        const [tagNameVarPath] = tag.insertBefore(t20.variableDeclaration("const", [
+          t20.variableDeclarator(tagNameId, tag.node.name)
+        ]));
+        tagNameVarPath.skip();
+        tag.set("name", tagNameId);
       }
-      switch (tagNameType) {
+      switch (extra.tagNameType) {
         case 0 /* NativeTag */:
           native_tag_default.translate.enter(tag);
           break;
@@ -1828,12 +1996,7 @@ var tag_default = {
         exit2(translator.hook, tag);
         return;
       }
-      const { extra } = tag.node;
-      let { tagNameType } = extra;
-      if (extra.tagNameDynamic && tagNameType !== 2 /* DynamicTag */ && (!isOutputHTML() || tagNameType === void 0)) {
-        tagNameType = 2 /* DynamicTag */;
-      }
-      switch (tagNameType) {
+      switch (tag.node.extra.tagNameType) {
         case 0 /* NativeTag */:
           native_tag_default.translate.exit(tag);
           break;
@@ -1970,8 +2133,11 @@ var import_default = {
     tag.replaceWith(parseScript(tag.hub.file, node.rawValue, node.start).body[0]);
   },
   parseOptions: {
-    statement: true,
-    rawOpenTag: true
+    rootOnly: true,
+    rawOpenTag: true,
+    openTagOnly: true,
+    ignoreAttributes: true,
+    relaxRequireCommas: true
   },
   autocomplete: [
     {
@@ -1991,8 +2157,11 @@ var export_default = {
     tag.replaceWith(parseScript2(tag.hub.file, node.rawValue, node.start).body[0]);
   },
   parseOptions: {
-    statement: true,
-    rawOpenTag: true
+    rootOnly: true,
+    rawOpenTag: true,
+    openTagOnly: true,
+    ignoreAttributes: true,
+    relaxRequireCommas: true
   },
   autocomplete: [
     {
@@ -2008,7 +2177,7 @@ var attrs_default = {
       const varPath = tag.get("var");
       const bindings = varPath.getBindingIdentifiers();
       const sectionId = getOrCreateSectionId(tag);
-      trackReferencesForBindings(sectionId, varPath, 2 /* Attr */);
+      trackReferencesForBindings(sectionId, varPath, 1 /* Store */);
       for (const key in bindings) {
         const binding = bindings[key].extra.reserve;
         binding.exportIdentifier = getReferenceGroup(sectionId, binding, true).apply;
@@ -2020,6 +2189,12 @@ var attrs_default = {
     }
   },
   translate(tag) {
+    const bindings = currentProgramPath.node.extra?.attrs?.bindings;
+    if (bindings) {
+      for (const key in bindings) {
+        initSource(bindings[key].extra.reserve);
+      }
+    }
     tag.remove();
   },
   attributes: {},
@@ -2053,7 +2228,7 @@ function toFirstStatementOrBlock(body) {
 var if_default = {
   analyze: {
     enter(tag) {
-      reserveScope(0 /* Visit */, getOrCreateSectionId(tag), tag.node, "if", 3);
+      reserveScope(0 /* Visit */, getOrCreateSectionId(tag), tag.node, "if", 5);
       custom_tag_default.analyze.enter(tag);
     },
     exit(tag) {
@@ -2139,8 +2314,8 @@ function exitBranchTranslate(tag) {
         const { tag: tag2, sectionId: sectionId2 } = branches[i];
         const [testAttr] = tag2.node.attributes;
         const id = getRenderer(sectionId2);
-        setQueueBuilder(tag2, ({ apply, index }, closurePriority) => {
-          return callRuntime("queueInBranch", scopeIdentifier, t23.numericLiteral(extra.reserve.id), getRenderer(sectionId2), apply, t23.numericLiteral(index), closurePriority);
+        setSubscriberBuilder(tag2, (subscriber) => {
+          return callRuntime("inConditionalScope", subscriber, t23.numericLiteral(extra.reserve.id));
         });
         tag2.remove();
         if (testAttr) {
@@ -2149,7 +2324,12 @@ function exitBranchTranslate(tag) {
           expr = id;
         }
       }
-      addStatement("apply", sectionId, extra.conditionalReferences, t23.expressionStatement(callRuntime("setConditionalRenderer", scopeIdentifier, t23.numericLiteral(extra.reserve.id), expr)));
+      const references = extra.conditionalReferences.references;
+      const signal = getSignal(sectionId, extra.reserve);
+      signal.build = () => {
+        return callRuntime("conditional", t23.numericLiteral(extra.reserve.id), t23.numericLiteral(countReserves(references) || 1), getComputeFn(sectionId, expr, references));
+      };
+      subscribe(references, signal);
     } else {
       const nextTag = tag.getNextSibling();
       let statement;
@@ -2291,14 +2471,10 @@ var const_default = {
       throw tag.get("name").buildCodeFrameError("The 'const' tag only supports the 'default' attribute.");
     }
     if (isOutputDOM()) {
-      const sectionId = getSectionId(tag);
       const identifiers = Object.values(tag.get("var").getBindingIdentifiers());
-      addStatement("apply", sectionId, defaultAttr.extra?.valueReferences, identifiers.length === 1 ? t25.expressionStatement(t25.callExpression(getReferenceGroup(sectionId, identifiers[0].extra.reserve).apply, [scopeIdentifier, defaultAttr.value])) : [
-        t25.variableDeclaration("const", [
-          t25.variableDeclarator(node.var, defaultAttr.value)
-        ]),
-        ...identifiers.map((identifier) => t25.expressionStatement(t25.callExpression(getReferenceGroup(sectionId, identifier.extra.reserve).apply, [t25.identifier(identifier.name)])))
-      ]);
+      if (identifiers.length === 1) {
+        initDerivation(identifiers[0].extra.reserve, defaultAttr.extra?.valueReferences?.references, defaultAttr.value);
+      }
     } else {
       translateVar(tag, defaultAttr.value);
     }
@@ -2361,8 +2537,88 @@ var effect_default = {
   ]
 };
 
-// src/core/for.ts
+// src/core/lifecycle.ts
 import { types as t27 } from "@marko/compiler";
+import { assertNoParams as assertNoParams6 } from "@marko/babel-utils";
+var lifecycle_default = {
+  analyze: {
+    enter(tag) {
+      custom_tag_default.analyze.enter(tag);
+      const sectionId = getSectionId(tag);
+      reserveScope(1 /* Store */, sectionId, tag.node, "cleanup");
+      (currentProgramPath.node.extra ?? {}).isInteractive = true;
+    },
+    exit(tag) {
+      custom_tag_default.analyze.exit(tag);
+      const sectionId = getOrCreateSectionId(tag);
+      tag.node.extra.attrsReferences = mergeReferenceGroups(sectionId, tag.node.attributes.filter((attr) => attr.extra?.valueReferences).map((attr) => [attr.extra, "valueReferences"]));
+    }
+  },
+  translate(tag) {
+    const { node } = tag;
+    assertNoParams6(tag);
+    assertNoBodyContent(tag);
+    const sectionId = getSectionId(tag);
+    if (isOutputDOM()) {
+      const attrsObject = attrsToObject(tag);
+      const instanceIndex = tag.node.extra.reserve.id;
+      addStatement("hydrate", sectionId, node.extra.attrsReferences, t27.expressionStatement(callRuntime("lifecycle", scopeIdentifier, t27.numericLiteral(instanceIndex), attrsObject)));
+    } else {
+      addHTMLHydrateCall(sectionId, node.extra.attrsReferences);
+    }
+    tag.remove();
+  },
+  attributes: {},
+  autocomplete: [
+    {
+      description: "Use to create a side effects.",
+      descriptionMoreURL: "https://markojs.com/docs/core-tags/#effect"
+    }
+  ]
+};
+
+// src/core/id.ts
+import { types as t28 } from "@marko/compiler";
+import {
+  assertNoArgs as assertNoArgs2,
+  assertNoAttributes,
+  assertNoParams as assertNoParams7
+} from "@marko/babel-utils";
+var id_default = {
+  translate(tag) {
+    const { node } = tag;
+    const { var: tagVar } = node;
+    const id = callRuntime("nextTagId");
+    assertNoArgs2(tag);
+    assertNoAttributes(tag);
+    assertNoBodyContent(tag);
+    assertNoParams7(tag);
+    if (!node.var) {
+      throw tag.get("name").buildCodeFrameError("The 'id' tag requires a tag variable.");
+    }
+    if (!t28.isIdentifier(tagVar)) {
+      throw tag.get("var").buildCodeFrameError("The 'id' tag cannot be destructured");
+    }
+    if (isOutputHTML()) {
+      tag.replaceWith(t28.variableDeclaration("const", [t28.variableDeclarator(node.var, id)]));
+    } else {
+      initDerivation(tagVar.extra.reserve, void 0, id);
+      tag.remove();
+    }
+  },
+  attributes: {},
+  autocomplete: [
+    {
+      displayText: "id/<name>",
+      description: "Use to create a unique identifier.",
+      snippet: "id/${1:name}",
+      descriptionMoreURL: "https://markojs.com/docs/core-tags/#id"
+    }
+  ]
+};
+
+// src/core/for.ts
+import { types as t29 } from "@marko/compiler";
 import {
   assertAllowedAttributes,
   assertNoVar as assertNoVar5,
@@ -2372,7 +2628,7 @@ var for_default = {
   analyze: {
     enter(tag) {
       const isOnlyChild = checkOnlyChild(tag);
-      reserveScope(0 /* Visit */, getOrCreateSectionId(tag), isOnlyChild ? tag.parentPath.parent : tag.node, "for", 3);
+      reserveScope(0 /* Visit */, getOrCreateSectionId(tag), isOnlyChild ? tag.parentPath.parent : tag.node, "for", 6);
       custom_tag_default.analyze.enter(tag);
     },
     exit(tag) {
@@ -2399,9 +2655,9 @@ var for_default = {
     },
     exit(tag) {
       if (isOutputHTML()) {
-        translateHTML.exit(tag);
+        translateHTML2.exit(tag);
       } else {
-        translateDOM.exit(tag);
+        translateDOM2.exit(tag);
       }
     }
   },
@@ -2463,7 +2719,7 @@ var for_default = {
     }
   ]
 };
-var translateDOM = {
+var translateDOM2 = {
   exit(tag) {
     const bodySectionId = getSectionId(tag.get("body"));
     const sectionId = getSectionId(tag);
@@ -2473,27 +2729,44 @@ var translateDOM = {
       body: { params },
       extra: { isOnlyChild }
     } = node;
+    const paramsPath = tag.get("body").get("params");
     const {
       extra: { reserve }
     } = isOnlyChild ? tag.parentPath.parent : tag.node;
     const ofAttr = findName(attributes, "of");
     const byAttr = findName(attributes, "by");
-    setQueueBuilder(tag, ({ apply, index }, closurePriority) => {
-      return callRuntime("queueForEach", scopeIdentifier, t27.numericLiteral(reserve.id), apply, t27.numericLiteral(index), closurePriority);
+    setSubscriberBuilder(tag, (signal) => {
+      return callRuntime("inLoopScope", signal, t29.numericLiteral(reserve.id));
     });
     if (ofAttr) {
       const ofAttrValue = ofAttr.value;
       const [valParam] = params;
-      if (!t27.isIdentifier(valParam)) {
+      if (!t29.isIdentifier(valParam)) {
         throw tag.buildCodeFrameError(`Invalid 'for of' tag, |value| parameter must be an identifier.`);
       }
       const rendererId = getRenderer(bodySectionId);
       tag.remove();
-      addStatement("apply", sectionId, ofAttr.extra?.valueReferences, t27.expressionStatement(callRuntime("setLoopOf", scopeIdentifier, t27.numericLiteral(reserve.id), ofAttrValue, rendererId, byAttr ? byAttr.value : t27.nullLiteral(), getReferenceGroup(bodySectionId, valParam.extra.reserve).apply)));
+      const references = ofAttr.extra?.valueReferences?.references;
+      const signal = getSignal(sectionId, reserve);
+      signal.build = () => {
+        const bindings = paramsPath.reduce((paramsLookup, param) => {
+          return Object.assign(paramsLookup, param.getBindingIdentifiers());
+        }, {});
+        return callRuntime("loop", t29.numericLiteral(reserve.id), t29.numericLiteral(countReserves(references) || 1), rendererId, t29.arrayExpression(Object.values(bindings).map((binding) => getSignal(bodySectionId, binding.extra.reserve).identifier)), t29.arrowFunctionExpression([scopeIdentifier, t29.arrayPattern(params)], t29.blockStatement(Object.values(bindings).map((binding) => {
+          return t29.expressionStatement(callRuntime("setSource", scopeIdentifier, getSignal(bodySectionId, binding.extra.reserve).identifier, binding));
+        }))), getComputeFn(sectionId, t29.arrayExpression([
+          ofAttrValue,
+          byAttr ? byAttr.value : t29.nullLiteral()
+        ]), references));
+      };
+      subscribe(references, signal);
+      for (const param of params) {
+        initSource(param.extra?.reserve);
+      }
     }
   }
 };
-var translateHTML = {
+var translateHTML2 = {
   exit(tag) {
     const tagBody = tag.get("body");
     const { node } = tag;
@@ -2506,18 +2779,18 @@ var translateHTML = {
     const inAttr = findName(attributes, "in");
     const fromAttr = findName(attributes, "from");
     const toAttr = findName(attributes, "to");
-    const block = t27.blockStatement(body);
+    const block = t29.blockStatement(body);
     let forNode;
     flushInto(tag);
     writeHTMLHydrateStatements(tagBody);
     if (inAttr) {
       const [keyParam, valParam] = params;
       if (valParam) {
-        block.body.unshift(t27.variableDeclaration("const", [
-          t27.variableDeclarator(valParam, t27.memberExpression(inAttr.value, keyParam, true))
+        block.body.unshift(t29.variableDeclaration("const", [
+          t29.variableDeclarator(valParam, t29.memberExpression(inAttr.value, keyParam, true))
         ]));
       }
-      forNode = t27.forInStatement(t27.variableDeclaration("const", [t27.variableDeclarator(keyParam)]), inAttr.value, block);
+      forNode = t29.forInStatement(t29.variableDeclaration("const", [t29.variableDeclarator(keyParam)]), inAttr.value, block);
     } else if (ofAttr) {
       let ofAttrValue = ofAttr.value;
       const [valParam, keyParam, loopParam] = params;
@@ -2527,46 +2800,46 @@ var translateHTML = {
       forNode = [];
       if (keyParam) {
         const indexName = tag.scope.generateUidIdentifierBasedOnNode(keyParam, "i");
-        forNode.push(t27.variableDeclaration("let", [
-          t27.variableDeclarator(indexName, t27.numericLiteral(0))
+        forNode.push(t29.variableDeclaration("let", [
+          t29.variableDeclarator(indexName, t29.numericLiteral(0))
         ]));
-        block.body.unshift(t27.variableDeclaration("let", [
-          t27.variableDeclarator(keyParam, t27.updateExpression("++", indexName))
+        block.body.unshift(t29.variableDeclaration("let", [
+          t29.variableDeclarator(keyParam, t29.updateExpression("++", indexName))
         ]));
       }
       if (loopParam) {
-        if (t27.isIdentifier(loopParam)) {
+        if (t29.isIdentifier(loopParam)) {
           ofAttrValue = loopParam;
         }
-        forNode.push(t27.variableDeclaration("const", [
-          t27.variableDeclarator(loopParam, ofAttr.value)
+        forNode.push(t29.variableDeclaration("const", [
+          t29.variableDeclarator(loopParam, ofAttr.value)
         ]));
       }
-      forNode.push(t27.forOfStatement(t27.variableDeclaration("const", [t27.variableDeclarator(valParam)]), ofAttrValue, block));
+      forNode.push(t29.forOfStatement(t29.variableDeclaration("const", [t29.variableDeclarator(valParam)]), ofAttrValue, block));
     } else if (fromAttr && toAttr) {
       const stepAttr = findName(attributes, "step") || {
-        value: t27.numericLiteral(1)
+        value: t29.numericLiteral(1)
       };
-      const stepValue = stepAttr ? stepAttr.value : t27.numericLiteral(1);
+      const stepValue = stepAttr ? stepAttr.value : t29.numericLiteral(1);
       const [indexParam] = params;
       const stepsName = tag.scope.generateUidIdentifier("steps");
       const stepName = tag.scope.generateUidIdentifier("step");
       if (indexParam) {
-        block.body.unshift(t27.variableDeclaration("const", [
-          t27.variableDeclarator(indexParam, t27.binaryExpression("+", fromAttr.value, t27.binaryExpression("*", stepName, stepValue)))
+        block.body.unshift(t29.variableDeclaration("const", [
+          t29.variableDeclarator(indexParam, t29.binaryExpression("+", fromAttr.value, t29.binaryExpression("*", stepName, stepValue)))
         ]));
       }
-      forNode = t27.forStatement(t27.variableDeclaration("let", [
-        t27.variableDeclarator(stepsName, t27.binaryExpression("/", t27.binaryExpression("-", toAttr.value, fromAttr.value), stepValue)),
-        t27.variableDeclarator(stepName, t27.numericLiteral(0))
-      ]), t27.binaryExpression("<=", stepName, stepsName), t27.updateExpression("++", stepName), block);
+      forNode = t29.forStatement(t29.variableDeclaration("let", [
+        t29.variableDeclarator(stepsName, t29.binaryExpression("/", t29.binaryExpression("-", toAttr.value, fromAttr.value), stepValue)),
+        t29.variableDeclarator(stepName, t29.numericLiteral(0))
+      ]), t29.binaryExpression("<=", stepName, stepsName), t29.updateExpression("++", stepName), block);
     }
-    block.body.push(t27.expressionStatement(callRuntime("maybeFlush")));
+    block.body.push(t29.expressionStatement(callRuntime("maybeFlush")));
     tag.replaceWithMultiple([].concat(forNode));
   }
 };
 function findName(arr, value) {
-  return arr.find((obj) => t27.isMarkoAttribute(obj) && obj.name === value);
+  return arr.find((obj) => t29.isMarkoAttribute(obj) && obj.name === value);
 }
 function validateFor(tag) {
   const attrs = tag.node.attributes;
@@ -2590,7 +2863,7 @@ function validateFor(tag) {
 }
 function checkOnlyChild(tag) {
   tag.node.extra ??= {};
-  if (t27.isMarkoTag(tag.parentPath?.parent) && getTagDef5(tag.parentPath.parentPath)?.html) {
+  if (t29.isMarkoTag(tag.parentPath?.parent) && getTagDef5(tag.parentPath.parentPath)?.html) {
     return tag.node.extra.isOnlyChild = tag.parent.body.length === 1;
   }
   return tag.node.extra.isOnlyChild = false;
@@ -2598,15 +2871,15 @@ function checkOnlyChild(tag) {
 
 // src/core/get.ts
 import path from "path";
-import { types as t28 } from "@marko/compiler";
+import { types as t30 } from "@marko/compiler";
 import {
   resolveTagImport as resolveTagImport2,
   getTemplateId as getTemplateId2,
-  assertNoParams as assertNoParams6
+  assertNoParams as assertNoParams8
 } from "@marko/babel-utils";
 var get_default = {
   translate(tag) {
-    assertNoParams6(tag);
+    assertNoParams8(tag);
     assertNoBodyContent(tag);
     flushBefore(tag);
     const {
@@ -2621,7 +2894,7 @@ var get_default = {
     if (defaultAttr === void 0) {
       refId = "$";
     } else {
-      if (!t28.isMarkoAttribute(defaultAttr) || !defaultAttr.default || !t28.isStringLiteral(defaultAttr.value)) {
+      if (!t30.isMarkoAttribute(defaultAttr) || !defaultAttr.default || !t30.isStringLiteral(defaultAttr.value)) {
         throw tag.get("name").buildCodeFrameError(`The '<get>' tag requires default attribute that is a string that resolves to a Marko file like '<get/val="../file.marko">' or '<get/val="<tag-name>">'.`);
       }
       if (node.attributes.length > 1) {
@@ -2646,8 +2919,8 @@ var get_default = {
       }
     }
     if (isOutputHTML()) {
-      tag.replaceWith(t28.variableDeclaration("const", [
-        t28.variableDeclarator(node.var, callRuntime("getInContext", t28.stringLiteral(refId)))
+      tag.replaceWith(t30.variableDeclaration("const", [
+        t30.variableDeclarator(node.var, callRuntime("getInContext", t30.stringLiteral(refId)))
       ]));
     } else {
       tag.remove();
@@ -2666,8 +2939,8 @@ var get_default = {
 // src/core/html-comment.ts
 import {
   assertNoAttributeTags,
-  assertNoAttributes,
-  assertNoParams as assertNoParams7,
+  assertNoAttributes as assertNoAttributes2,
+  assertNoParams as assertNoParams9,
   assertNoVar as assertNoVar6
 } from "@marko/babel-utils";
 var html_comment_default = {
@@ -2680,8 +2953,8 @@ var html_comment_default = {
     },
     exit(tag) {
       assertNoVar6(tag);
-      assertNoParams7(tag);
-      assertNoAttributes(tag);
+      assertNoParams9(tag);
+      assertNoAttributes2(tag);
       assertNoAttributeTags(tag);
       exit(tag);
       writeTo(tag)`-->`;
@@ -2701,18 +2974,18 @@ var html_comment_default = {
 };
 
 // src/core/let.ts
-import { types as t30 } from "@marko/compiler";
-import { assertNoParams as assertNoParams8 } from "@marko/babel-utils";
+import { types as t32 } from "@marko/compiler";
+import { assertNoParams as assertNoParams10 } from "@marko/babel-utils";
 
 // src/util/replace-assignments.ts
-import { types as t29 } from "@marko/compiler";
+import { types as t31 } from "@marko/compiler";
 function replaceAssignments(binding, map) {
   for (const assignment of binding.constantViolations) {
     let value;
     if (assignment.isUpdateExpression()) {
-      value = t29.binaryExpression(assignment.node.operator === "++" ? "+" : "-", binding.identifier, t29.numericLiteral(1));
+      value = t31.binaryExpression(assignment.node.operator === "++" ? "+" : "-", binding.identifier, t31.numericLiteral(1));
     } else if (assignment.isAssignmentExpression()) {
-      value = assignment.node.operator === "=" ? assignment.node.right : t29.binaryExpression(assignment.node.operator.slice(0, -1), binding.identifier, assignment.node.right);
+      value = assignment.node.operator === "=" ? assignment.node.right : t31.binaryExpression(assignment.node.operator.slice(0, -1), binding.identifier, assignment.node.right);
     }
     if (value) {
       assignment.parentPath.replaceWith(map(assignment, value));
@@ -2726,29 +2999,26 @@ var let_default = {
     const { node } = tag;
     const tagVar = node.var;
     const [defaultAttr] = node.attributes;
-    assertNoParams8(tag);
+    assertNoParams10(tag);
     assertNoBodyContent(tag);
     if (!tagVar) {
       throw tag.get("name").buildCodeFrameError("The 'let' tag requires a tag variable.");
     }
-    if (!t30.isIdentifier(tagVar)) {
+    if (!t32.isIdentifier(tagVar)) {
       throw tag.get("var").buildCodeFrameError("The 'let' cannot be destructured.");
     }
     if (!defaultAttr) {
       throw tag.get("name").buildCodeFrameError("The 'let' tag requires a default attribute.");
     }
-    if (node.attributes.length > 1 || !t30.isMarkoAttribute(defaultAttr) || !defaultAttr.default && defaultAttr.name !== "default") {
+    if (node.attributes.length > 1 || !t32.isMarkoAttribute(defaultAttr) || !defaultAttr.default && defaultAttr.name !== "default") {
       throw tag.get("name").buildCodeFrameError("The 'let' tag only supports the 'default' attribute.");
     }
     if (isOutputDOM()) {
       const sectionId = getSectionId(tag);
       const binding = tagVar.extra.reserve;
-      const referenceGroup = getReferenceGroup(sectionId, binding);
-      addStatement("apply", sectionId, defaultAttr.extra?.valueReferences, t30.expressionStatement(t30.callExpression(referenceGroup.apply, [
-        scopeIdentifier,
-        defaultAttr.value
-      ])));
-      replaceAssignments(tag.scope.getBinding(binding.name), (assignment, value) => callQueue(referenceGroup, binding, value, getSectionId(assignment)));
+      const source = initSource(binding);
+      addStatement("apply", sectionId, defaultAttr.extra?.valueReferences, t32.expressionStatement(callRuntime("setSource", scopeIdentifier, source.identifier, defaultAttr.value)));
+      replaceAssignments(tag.scope.getBinding(binding.name), (assignment, value) => queueSource(source, value, getSectionId(assignment)));
     } else {
       translateVar(tag, defaultAttr.value);
     }
@@ -2764,8 +3034,8 @@ var let_default = {
 };
 
 // src/core/set.ts
-import { types as t31 } from "@marko/compiler";
-import { assertNoParams as assertNoParams9, assertNoVar as assertNoVar7 } from "@marko/babel-utils";
+import { types as t33 } from "@marko/compiler";
+import { assertNoParams as assertNoParams11, assertNoVar as assertNoVar7 } from "@marko/babel-utils";
 var set_default = {
   translate: {
     enter(tag) {
@@ -2777,7 +3047,7 @@ var set_default = {
       if (!node.body.body.length) {
         throw tag.buildCodeFrameError(`The '<set>' tag requires body content that the context is forwarded through.`);
       }
-      if (!t31.isMarkoAttribute(defaultAttr) || !defaultAttr.default) {
+      if (!t33.isMarkoAttribute(defaultAttr) || !defaultAttr.default) {
         throw tag.get("name").buildCodeFrameError(`The '<set>' tag requires default attribute like '<set=val>'.`);
       }
       if (node.attributes.length > 1) {
@@ -2790,15 +3060,15 @@ var set_default = {
           throw tag.hub.buildError({ loc: { start, end } }, msg, Error);
         }
       }
-      tag.insertBefore(t31.expressionStatement(callRuntime("pushContext", t31.stringLiteral(tag.hub.file.metadata.marko.id), defaultAttr.value)));
+      tag.insertBefore(t33.expressionStatement(callRuntime("pushContext", t33.stringLiteral(tag.hub.file.metadata.marko.id), defaultAttr.value)));
     },
     exit(tag) {
-      assertNoParams9(tag);
+      assertNoParams11(tag);
       assertNoVar7(tag);
       if (isOutputHTML()) {
         flushInto(tag);
       }
-      tag.insertAfter(t31.expressionStatement(callRuntime("popContext")));
+      tag.insertAfter(t33.expressionStatement(callRuntime("popContext")));
       tag.replaceWithMultiple(tag.node.body.body);
     }
   },
@@ -2814,30 +3084,42 @@ var set_default = {
 
 // src/core/style.ts
 import path2 from "path";
-import { assertNoParams as assertNoParams10, assertNoVar as assertNoVar8 } from "@marko/babel-utils";
-import { types as t32 } from "@marko/compiler";
+import { assertNoParams as assertNoParams12, importDefault as importDefault2 } from "@marko/babel-utils";
+import { types as t34 } from "@marko/compiler";
 var style_default = {
   translate(tag) {
     const {
       hub: { file }
     } = tag;
-    assertNoVar8(tag);
-    assertNoParams10(tag);
+    assertNoParams12(tag);
     assertNoSpreadAttrs(tag);
     let type = "text/css";
     const attrs = tag.get("attributes");
     const base = path2.basename(file.opts.sourceFileName);
     const typeAttr = attrs.find((attr) => attr.isMarkoAttribute() && attr.node.name === "type");
-    if (typeAttr) {
+    const classAttr = attrs.find((attr) => attr.isMarkoAttribute() && attr.node.name === "class");
+    if (typeAttr && classAttr) {
+      throw classAttr.buildCodeFrameError(`<style> must only use "type" or "class" and not both.`);
+    } else if (typeAttr) {
       const typeValue = typeAttr.get("value");
       if (typeValue.isStringLiteral()) {
         type = typeValue.node.value;
       } else {
         throw typeValue.buildCodeFrameError(`<style> "type" attribute can only be a string literal.`);
       }
+    } else if (classAttr) {
+      const classValue = classAttr.get("value");
+      if (classValue.isStringLiteral()) {
+        type = classValue.node.value;
+      } else {
+        throw classValue.buildCodeFrameError(`<style> "class" attribute can only be a string literal.`);
+      }
     }
     if (type === "text/css") {
       type = "css";
+    }
+    if (tag.node.var && !type.startsWith("module")) {
+      type = "module." + type;
     }
     const body = tag.get("body").get("body");
     const markoText = body[0];
@@ -2854,7 +3136,15 @@ var style_default = {
         path: `./${base}`,
         virtualPath: `./${base}.${type}`
       });
-      currentProgramPath.pushContainer("body", t32.importDeclaration([], t32.stringLiteral(importPath)));
+      if (!tag.node.var) {
+        currentProgramPath.pushContainer("body", t34.importDeclaration([], t34.stringLiteral(importPath)));
+      } else if (t34.isIdentifier(tag.node.var)) {
+        currentProgramPath.pushContainer("body", t34.importDeclaration([t34.importDefaultSpecifier(tag.node.var)], t34.stringLiteral(importPath)));
+      } else {
+        currentProgramPath.pushContainer("body", t34.variableDeclaration("const", [
+          t34.variableDeclarator(tag.node.var, importDefault2(file, importPath, "style"))
+        ]));
+      }
     }
     tag.remove();
   },
@@ -2864,7 +3154,7 @@ var style_default = {
 };
 
 // src/core/tag.ts
-import { types as t33 } from "@marko/compiler";
+import { types as t35 } from "@marko/compiler";
 var tag_default2 = {
   translate: {
     enter(tag) {
@@ -2879,8 +3169,8 @@ var tag_default2 = {
       if (isOutputHTML()) {
         flushInto(tag);
       }
-      tag.replaceWith(t33.variableDeclaration("const", [
-        t33.variableDeclarator(tag.node.var, t33.arrowFunctionExpression(tag.node.body.params, toFirstExpressionOrBlock(tag.node.body)))
+      tag.replaceWith(t35.variableDeclaration("const", [
+        t35.variableDeclarator(tag.node.var, t35.arrowFunctionExpression(tag.node.body.params, toFirstExpressionOrBlock(tag.node.body)))
       ]));
     }
   },
@@ -2896,13 +3186,13 @@ var tag_default2 = {
 };
 
 // src/core/yield.ts
-import { types as t34 } from "@marko/compiler";
-import { assertNoVar as assertNoVar9, assertNoParams as assertNoParams11 } from "@marko/babel-utils";
+import { types as t36 } from "@marko/compiler";
+import { assertNoVar as assertNoVar8, assertNoParams as assertNoParams13 } from "@marko/babel-utils";
 var RETURN_IDENTIFIERS = /* @__PURE__ */ new WeakMap();
 var yield_default = {
   translate(tag) {
-    assertNoVar9(tag);
-    assertNoParams11(tag);
+    assertNoVar8(tag);
+    assertNoParams13(tag);
     assertNoBodyContent(tag);
     assertNoSpreadAttrs(tag);
     flushBefore(tag);
@@ -2911,7 +3201,7 @@ var yield_default = {
       hub: { file }
     } = tag;
     const [defaultAttr, onNextAttr] = node.attributes;
-    if (!t34.isMarkoAttribute(defaultAttr) || !defaultAttr.default) {
+    if (!t36.isMarkoAttribute(defaultAttr) || !defaultAttr.default) {
       throw tag.get("name").buildCodeFrameError(`The '<yield>' tag requires default attribute like '<yield=VALUE>'.`);
     }
     if (onNextAttr && onNextAttr.name === "onnext") {
@@ -2933,10 +3223,10 @@ var yield_default = {
     if (!returnId) {
       const program = file.path;
       RETURN_IDENTIFIERS.set(file, returnId = program.scope.generateDeclaredUidIdentifier("return"));
-      program.pushContainer("body", t34.returnStatement(returnId))[0].skip();
+      program.pushContainer("body", t36.returnStatement(returnId))[0].skip();
     }
     if (isOutputHTML()) {
-      tag.replaceWith(t34.assignmentExpression("=", returnId, defaultAttr.value))[0].skip();
+      tag.replaceWith(t36.assignmentExpression("=", returnId, defaultAttr.value))[0].skip();
     }
   },
   autocomplete: [
@@ -2950,7 +3240,7 @@ var yield_default = {
 };
 
 // src/core/static.ts
-import { types as t35 } from "@marko/compiler";
+import { types as t37 } from "@marko/compiler";
 import { parseScript as parseScript3 } from "@marko/babel-utils";
 var static_default = {
   parse(tag) {
@@ -2962,14 +3252,16 @@ var static_default = {
     const code = rawValue.replace(/^static\s*/, "").trim();
     const start = node.name.start + (rawValue.length - code.length);
     let { body } = parseScript3(file, code, start);
-    if (body.length === 1 && t35.isBlockStatement(body[0])) {
+    if (body.length === 1 && t37.isBlockStatement(body[0])) {
       body = body[0].body;
     }
-    tag.replaceWith(t35.markoScriptlet(body, true));
+    tag.replaceWith(t37.markoScriptlet(body, true));
   },
   "parse-options": {
-    statement: true,
-    rawOpenTag: true
+    rootOnly: true,
+    rawOpenTag: true,
+    openTagOnly: true,
+    ignoreAttributes: true
   },
   autocomplete: [
     {
@@ -3008,6 +3300,8 @@ var core_default = {
   "<let>": let_default,
   "<const>": const_default,
   "<effect>": effect_default,
+  "<lifecycle>": lifecycle_default,
+  "<id>": id_default,
   "<html-comment>": html_comment_default,
   "<tag>": tag_default2,
   "<set>": set_default,
@@ -3022,7 +3316,7 @@ var core_default = {
 };
 
 // src/visitors/referenced-identifier.ts
-import { types as t36 } from "@marko/compiler";
+import { types as t38 } from "@marko/compiler";
 var outGlobalIdentifiers = /* @__PURE__ */ new WeakMap();
 var hasAttrsTag = /* @__PURE__ */ new WeakSet();
 var referenced_identifier_default = {
@@ -3034,17 +3328,17 @@ var referenced_identifier_default = {
       case "input": {
         if (!hasAttrsTag.has(currentProgramPath)) {
           hasAttrsTag.add(currentProgramPath);
-          insertAfterStatic(t36.markoTag(t36.stringLiteral("attrs"), void 0, t36.markoTagBody(), void 0, identifier.node));
+          insertAfterStatic(t38.markoTag(t38.stringLiteral("attrs"), void 0, t38.markoTagBody(), void 0, identifier.node));
         }
         break;
       }
       case "out":
-        if (t36.isMemberExpression(identifier.parent) && t36.isIdentifier(identifier.parent.property) && identifier.parent.property.name === "global") {
+        if (t38.isMemberExpression(identifier.parent) && t38.isIdentifier(identifier.parent.property) && identifier.parent.property.name === "global") {
           let globalIdentifier = outGlobalIdentifiers.get(currentProgramPath);
           if (!globalIdentifier) {
             globalIdentifier = currentProgramPath.scope.generateUidIdentifier("$global");
             outGlobalIdentifiers.set(currentProgramPath, globalIdentifier);
-            insertAfterStatic(t36.markoTag(t36.stringLiteral("get"), void 0, t36.markoTagBody(), void 0, globalIdentifier));
+            insertAfterStatic(t38.markoTag(t38.stringLiteral("get"), void 0, t38.markoTagBody(), void 0, globalIdentifier));
           }
           identifier.parentPath.replaceWith(globalIdentifier);
         } else {
