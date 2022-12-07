@@ -38,7 +38,7 @@ import ghGot from "gh-got";
             <await(ghGot('/repos/marko-js/marko/contributors?per_page=100'))>
                 <@then|{ body }|>
                     <for|contributor| of=body>
-                        <img src=`${contributor.avatar_url}&s=64` alt=contributor.login loading="lazy"/>
+                        <a href=contributor.html_url><img src=`${contributor.avatar_url}&s=64` alt=contributor.login loading="lazy"/></a>
                     </for>
                 </@then>
             </await>
