@@ -231,6 +231,9 @@ function wrapSignalWithSubscription(wrapper) {
     ___unsubscribe: wrapper("___unsubscribe")
   };
 }
+function inChild(subscriber2, childScopeAccessor) {
+  return wrapSignal((methodName) => (scope, extraArg) => subscriber2[methodName](scope[childScopeAccessor], extraArg));
+}
 function inChildMany(subscribers, childScopeAccessor) {
   return wrapSignalWithSubscription((methodName) => (scope, extraArg) => {
     const childScope = scope[childScopeAccessor];
@@ -272,6 +275,17 @@ function write(scope, localIndex, value) {
   }
   return 0;
 }
+function binder(bind2) {
+  return (scope, value) => {
+    scope.___bound ??= /* @__PURE__ */ new Map();
+    let bound = scope.___bound.get(value);
+    if (!bound) {
+      bound = bind2(scope, value);
+      scope.___bound.set(value, bound);
+    }
+    return bound;
+  };
+}
 function bind(boundScope, fn) {
   return fn.length ? function bound(...args) {
     return fn.call(this, boundScope, ...args);
@@ -279,21 +293,11 @@ function bind(boundScope, fn) {
     return fn.call(this, boundScope);
   };
 }
-function bindRenderer(ownerScope, renderer) {
-  return {
-    ...renderer,
-    ___owner: ownerScope
-  };
-}
-function bindSignal(boundScope, signal) {
-  boundScope.___boundSignals ??= /* @__PURE__ */ new Map();
-  let boundSignal = boundScope.___boundSignals.get(signal);
-  if (!boundSignal) {
-    boundSignal = wrapSignal((methodName) => (_scope, extraArg) => signal[methodName](boundScope, extraArg));
-    boundScope.___boundSignals.set(signal, boundSignal);
-  }
-  return boundSignal;
-}
+var bindRenderer = binder((ownerScope, renderer) => ({
+  ...renderer,
+  ___owner: ownerScope
+}));
+var bindSignal = binder((boundScope, signal) => wrapSignal((methodName) => (_scope, extraArg) => signal[methodName](boundScope, extraArg)));
 function destroyScope(scope) {
   scope._?.___cleanup?.delete(scope);
   const cleanup = scope.___cleanup;
@@ -1235,6 +1239,7 @@ export {
   getInContext,
   html,
   hydrateSubscription,
+  inChild,
   inChildMany,
   inConditionalScope,
   inLoopScope,

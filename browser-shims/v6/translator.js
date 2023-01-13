@@ -1920,7 +1920,15 @@ function translateDOM(tag) {
   }
   addStatement("apply", tagSectionId, void 0, t19.expressionStatement(t19.callExpression(tagIdentifier, [callRead(binding, tagSectionId)])));
   if (attrsObject && tagAttrsIdentifier) {
-    getSignal(tagSectionId, tag.node.extra.attrsReferences.references).subscribers.push(tagAttrsIdentifier);
+    let attrsSubscriber = callRuntime("inChild", tagAttrsIdentifier, t19.numericLiteral(binding.id));
+    if (!tag.node.extra.attrsReferences.references) {
+      const tagAttrsIdentifierInChild = currentProgramPath.scope.generateUidIdentifier(`${tagName}_attrs_inChild`);
+      currentProgramPath.pushContainer("body", t19.variableDeclaration("const", [
+        t19.variableDeclarator(tagAttrsIdentifierInChild, attrsSubscriber)
+      ]));
+      attrsSubscriber = tagAttrsIdentifierInChild;
+    }
+    getSignal(tagSectionId, tag.node.extra.attrsReferences.references).subscribers.push(attrsSubscriber);
     addStatement("apply", tagSectionId, tag.node.extra.attrsReferences, t19.expressionStatement(callRuntime("setSource", callRead(binding, tagSectionId), t19.identifier(tagAttrsIdentifier.name), attrsObject)));
   }
   tag.remove();
