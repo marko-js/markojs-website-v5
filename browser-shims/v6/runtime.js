@@ -18,7 +18,7 @@ function triggerMacroTask() {
 // src/dom/queue.ts
 var currentBatch = [], currentHydrate = [];
 function queueSource(scope, signal, value) {
-  schedule(), signal.d(scope), currentBatch.push(scope, signal, value);
+  return schedule(), signal.d(scope), currentBatch.push(scope, signal, value), value;
 }
 function queueHydrate(scope, fn) {
   currentHydrate.push(scope, fn);
@@ -111,24 +111,26 @@ function derivation(valueAccessor, defaultMark, subscribers, compute, action) {
     applyValue(scope, compute(scope), valueAccessor, subscribers, action);
   });
 }
-function closure(ownerLevel, providerValueAccessor, subscribers, action) {
-  let providerMarkAccessor = providerValueAccessor + "#" /* MARK */, getDefaultMark = (scope) => {
-    let ownerScope = getOwnerScope(scope, ownerLevel), providerMark = ownerScope[providerMarkAccessor];
-    return providerMark === void 0 && !ownerScope.v || providerMark === 0 ? 1 : 2;
+function closure(ownerLevel, providerAccessor, subscribers, action) {
+  let getOwner = typeof ownerLevel == "function" ? ownerLevel : (scope) => getOwnerScope(scope, ownerLevel), getProviderAccessor = typeof providerAccessor == "function" ? providerAccessor : () => providerAccessor, getDefaultMark = (scope) => {
+    let ownerScope = getOwner(scope), providerMarkAccessor = getProviderAccessor(scope) + "#" /* MARK */, providerMark = ownerScope[providerMarkAccessor];
+    return providerMark === void 0 && !ownerScope.y || providerMark === 0 ? 1 : 2;
   }, apply = (scope) => {
-    action?.(scope, getOwnerScope(scope, ownerLevel)[providerValueAccessor]), notifySubscribers(scope, !0, subscribers);
+    let ownerScope = getOwner(scope), providerValueAccessor = getProviderAccessor(scope);
+    action?.(scope, ownerScope[providerValueAccessor]), notifySubscribers(scope, !0, subscribers);
   };
   return baseSubscriber("?" /* DYNAMIC */ + accessorId++, subscribers, getDefaultMark, apply);
 }
-function dynamicClosure(ownerLevel, providerValueAccessor, subscribers, action) {
-  let providerSubscriptionsAccessor = providerValueAccessor + "*" /* SUBSCRIBERS */, signal = {
-    ...closure(ownerLevel, providerValueAccessor, subscribers, action),
-    w(scope) {
-      let ownerScope = getOwnerScope(scope, ownerLevel);
+function dynamicClosure(ownerLevel, providerAccessor, subscribers, action) {
+  let getOwner = typeof ownerLevel == "function" ? ownerLevel : (scope) => getOwnerScope(scope, ownerLevel), getProviderAccessor = typeof providerAccessor == "function" ? providerAccessor : () => providerAccessor, signal = {
+    ...closure(ownerLevel, providerAccessor, subscribers, action),
+    m(scope) {
+      let ownerScope = getOwner(scope), providerSubscriptionsAccessor = getProviderAccessor(scope) + "*" /* SUBSCRIBERS */;
       ownerScope[providerSubscriptionsAccessor] ??= /* @__PURE__ */ new Set(), ownerScope[providerSubscriptionsAccessor].add(bindSignal(scope, signal));
     },
-    x(scope) {
-      getOwnerScope(scope, ownerLevel)[providerSubscriptionsAccessor]?.delete(bindSignal(scope, signal));
+    n(scope) {
+      let ownerScope = getOwner(scope), providerSubscriptionsAccessor = getProviderAccessor(scope) + "*" /* SUBSCRIBERS */;
+      ownerScope[providerSubscriptionsAccessor]?.delete(bindSignal(scope, signal));
     }
   };
   return signal;
@@ -142,6 +144,11 @@ function dynamicSubscribers(valueAccessor) {
         subscriber2[methodName](scope, extraArg);
   });
 }
+function contextClosure(valueAccessor, contextKey, subscribers, action) {
+  return dynamicClosure((scope) => scope.f[contextKey][0], (scope) => scope.f[contextKey][1], subscribers, (scope, value) => {
+    scope[valueAccessor] = value, action?.(scope, value);
+  });
+}
 function wrapSignal(wrapper) {
   return {
     d: wrapper("___mark"),
@@ -149,9 +156,27 @@ function wrapSignal(wrapper) {
     e: wrapper("___apply")
   };
 }
+function setTagVar(scope, childIndex, tagVarSignal2) {
+  scope[childIndex]["/" /* TAG_VARIABLE */] = bindSignal(scope, tagVarSignal2);
+}
+var tagVarSignal = wrapSignal((methodName) => (scope, extraArg) => scope["/" /* TAG_VARIABLE */]?.[methodName](null, extraArg));
+function wrapSignalWithSubscription(wrapper) {
+  return {
+    ...wrapSignal(wrapper),
+    m: wrapper("___subscribe"),
+    n: wrapper("___unsubscribe")
+  };
+}
+function inChildMany(subscribers, childScopeAccessor) {
+  return wrapSignalWithSubscription((methodName) => (scope, extraArg) => {
+    let childScope = scope[childScopeAccessor];
+    for (let signal of subscribers)
+      signal[methodName]?.(childScope, extraArg);
+  });
+}
 function inRenderBody(renderBodyIndex, childScopeAccessor) {
   return wrapSignal((methodName) => (scope, extraArg) => {
-    let childScope = scope[childScopeAccessor], signals = scope[renderBodyIndex]?.j ?? [];
+    let childScope = scope[childScopeAccessor], signals = scope[renderBodyIndex]?.i ?? [];
     for (let signal of signals)
       signal[methodName](childScope, extraArg);
   });
@@ -162,46 +187,50 @@ function nextTagId() {
 }
 
 // src/dom/scope.ts
-function createScope(owner) {
+function createScope(context) {
   let scope = {};
-  return scope.v = !0, scope._ = owner, scope;
+  return scope.y = !0, scope.f = context, scope;
 }
 var emptyScope = createScope();
 function getEmptyScope(marker) {
-  return emptyScope.b = emptyScope.f = marker, emptyScope;
+  return emptyScope.c = emptyScope.h = marker, emptyScope;
 }
 function write(scope, localIndex, value) {
   return scope[localIndex] !== value ? (scope[localIndex] = value, 1) : 0;
 }
 function bind(boundScope, fn) {
-  return fn.length ? (...args) => fn(boundScope, ...args) : () => fn(boundScope);
+  return fn.length ? function(...args) {
+    return fn.call(this, boundScope, ...args);
+  } : function() {
+    return fn.call(this, boundScope);
+  };
 }
 function bindRenderer(ownerScope, renderer) {
   return {
     ...renderer,
-    l: ownerScope
+    o: ownerScope
   };
 }
 function bindSignal(boundScope, signal) {
-  boundScope.m ??= /* @__PURE__ */ new Map();
-  let boundSignal = boundScope.m.get(signal);
-  return boundSignal || (boundSignal = wrapSignal((methodName) => (_scope, extraArg) => signal[methodName](boundScope, extraArg)), boundScope.m.set(signal, boundSignal)), boundSignal;
+  boundScope.p ??= /* @__PURE__ */ new Map();
+  let boundSignal = boundScope.p.get(signal);
+  return boundSignal || (boundSignal = wrapSignal((methodName) => (_scope, extraArg) => signal[methodName](boundScope, extraArg)), boundScope.p.set(signal, boundSignal)), boundSignal;
 }
 function destroyScope(scope) {
-  scope._?.h?.delete(scope);
-  let cleanup = scope.h;
+  scope._?.j?.delete(scope);
+  let cleanup = scope.j;
   if (cleanup)
     for (let instance of cleanup)
       typeof instance == "object" ? destroyScope(instance) : queueHydrate(scope, scope[instance]);
-  let closureSignals = scope.y?.j;
+  let closureSignals = scope.z?.i;
   if (closureSignals)
     for (let signal of closureSignals)
-      signal.x?.(scope);
+      signal.n?.(scope);
   return scope;
 }
 function onDestroy(scope, localIndex) {
   let parentScope = scope._;
-  parentScope && (parentScope.h = parentScope.h || /* @__PURE__ */ new Set()).add(scope), (scope.h = scope.h || /* @__PURE__ */ new Set()).add(localIndex);
+  parentScope && (parentScope.j = parentScope.j || /* @__PURE__ */ new Set()).add(scope), (scope.j = scope.j || /* @__PURE__ */ new Set()).add(localIndex);
 }
 function getOwnerScope(scope, level) {
   let ownerScope = scope._;
@@ -230,12 +259,12 @@ function reconcile(parent, oldScopes, newScopes, afterReference, fragment) {
     if (newStart <= newEnd) {
       k = newEnd + 1, nextSibling = k < newScopes.length ? fragment.a(newScopes[k]) : afterReference;
       do
-        fragment.c(newScopes[newStart++], parent, nextSibling);
+        fragment.b(newScopes[newStart++], parent, nextSibling);
       while (newStart <= newEnd);
     }
   } else if (newStart > newEnd)
     do
-      fragment.i(destroyScope(oldScopes[oldStart++]));
+      fragment.k(destroyScope(oldScopes[oldStart++]));
     while (oldStart <= oldEnd);
   else {
     let oldLength = oldEnd - oldStart + 1, newLength = newEnd - newStart + 1, aNullable = oldScopes, sources = new Array(newLength);
@@ -248,19 +277,19 @@ function reconcile(parent, oldScopes, newScopes, afterReference, fragment) {
       oldScope = oldScopes[i], j = keyIndex.get(oldScope), j !== void 0 && (pos = pos > j ? WRONG_POS : j, ++synced, newScope = newScopes[j], sources[j - newStart] = i, aNullable[i] = null);
     if (oldLength === oldScopes.length && synced === 0) {
       for (; newStart < newLength; ++newStart)
-        fragment.c(newScopes[newStart], parent, afterReference);
+        fragment.b(newScopes[newStart], parent, afterReference);
       for (; oldStart < oldLength; ++oldStart)
-        fragment.i(destroyScope(oldScopes[oldStart]));
+        fragment.k(destroyScope(oldScopes[oldStart]));
     } else {
       for (i = oldLength - synced; i > 0; )
-        oldScope = aNullable[oldStart++], oldScope !== null && (fragment.i(destroyScope(oldScope)), i--);
+        oldScope = aNullable[oldStart++], oldScope !== null && (fragment.k(destroyScope(oldScope)), i--);
       if (pos === WRONG_POS) {
         let seq = longestIncreasingSubsequence(sources);
         for (j = seq.length - 1, k = newScopes.length, i = newLength - 1; i >= 0; --i)
-          sources[i] === -1 ? (pos = i + newStart, newScope = newScopes[pos++], nextSibling = pos < k ? fragment.a(newScopes[pos]) : afterReference, fragment.c(newScope, parent, nextSibling)) : j < 0 || i !== seq[j] ? (pos = i + newStart, newScope = newScopes[pos++], nextSibling = pos < k ? fragment.a(newScopes[pos]) : afterReference, fragment.c(newScope, parent, nextSibling)) : --j;
+          sources[i] === -1 ? (pos = i + newStart, newScope = newScopes[pos++], nextSibling = pos < k ? fragment.a(newScopes[pos]) : afterReference, fragment.b(newScope, parent, nextSibling)) : j < 0 || i !== seq[j] ? (pos = i + newStart, newScope = newScopes[pos++], nextSibling = pos < k ? fragment.a(newScopes[pos]) : afterReference, fragment.b(newScope, parent, nextSibling)) : --j;
       } else if (synced !== newLength)
         for (k = newScopes.length, i = newLength - 1; i >= 0; --i)
-          sources[i] === -1 && (pos = i + newStart, newScope = newScopes[pos++], nextSibling = pos < k ? fragment.a(newScopes[pos]) : afterReference, fragment.c(newScope, parent, nextSibling));
+          sources[i] === -1 && (pos = i + newStart, newScope = newScopes[pos++], nextSibling = pos < k ? fragment.a(newScopes[pos]) : afterReference, fragment.b(newScope, parent, nextSibling));
     }
   }
 }
@@ -306,7 +335,7 @@ function setContext(v) {
 var walker = /* @__PURE__ */ document.createTreeWalker(document);
 function trimWalkString(walkString) {
   let end = walkString.length;
-  for (; walkString.charCodeAt(--end) > 37 /* Replace */; )
+  for (; walkString.charCodeAt(--end) > 66 /* BeginChildEnd */; )
     ;
   return walkString.slice(0, end + 1);
 }
@@ -329,7 +358,7 @@ function walkInternal(walkCodes, scope, currentWalkIndex) {
       for (value = 20 /* Next */ * currentMultiplier + value - 67 /* Next */; value--; )
         walker.nextNode();
     else if (value >= 47 /* BeginChild */)
-      value = 20 /* BeginChild */ * currentMultiplier + value - 47 /* BeginChild */, currentWalkIndex = walkInternal(walkCodes, scope[value] = createScope(scope), currentWalkIndex);
+      value = 20 /* BeginChild */ * currentMultiplier + value - 47 /* BeginChild */, currentWalkIndex = walkInternal(walkCodes, scope[value] = createScope(scope.f), currentWalkIndex);
     else if (value >= 40 /* Skip */)
       currentScopeIndex += 7 /* Skip */ * currentMultiplier + value - 40 /* Skip */;
     else {
@@ -345,20 +374,79 @@ function walkInternal(walkCodes, scope, currentWalkIndex) {
   return currentWalkIndex;
 }
 
+// src/dom/fragment.ts
+var singleNodeFragment = {
+  b(scope, parent, nextSibling) {
+    parent.insertBefore(scope.c, nextSibling);
+  },
+  k(scope) {
+    scope.c.remove();
+  },
+  q(scope) {
+    return this.a(scope).parentNode;
+  },
+  l(scope) {
+    return this.r(scope).nextSibling;
+  },
+  a(scope) {
+    return scope.c;
+  },
+  r(scope) {
+    return scope.h;
+  }
+}, staticNodesFragment = {
+  ...singleNodeFragment,
+  b(scope, parent, nextSibling) {
+    let current = this.a(scope), stop = this.l(scope);
+    for (; current !== stop; ) {
+      let next = current.nextSibling;
+      parent.insertBefore(current, nextSibling), current = next;
+    }
+  },
+  k(scope) {
+    let current = this.a(scope), stop = this.l(scope);
+    for (; current !== stop; ) {
+      let next = current.nextSibling;
+      current.remove(), current = next;
+    }
+  }
+}, dynamicFragment = {
+  ...staticNodesFragment,
+  a: getFirstNode,
+  r: getLastNode
+};
+function getFirstNode(currentScope, indexOrNode = currentScope.c, last) {
+  let scopeOrScopes;
+  return typeof indexOrNode == "number" ? !(scopeOrScopes = currentScope[indexOrNode + 1 /* SCOPE */]) || scopeOrScopes === emptyMarkerArray ? currentScope[indexOrNode + 0 /* REFERENCE_NODE */] : (last ? getLastNode : getFirstNode)(Array.isArray(scopeOrScopes) ? scopeOrScopes[last ? scopeOrScopes.length - 1 : 0] : scopeOrScopes) : indexOrNode;
+}
+function getLastNode(currentScope) {
+  return getFirstNode(currentScope, currentScope.h, !0);
+}
+
 // src/dom/renderer.ts
 function createScopeWithRenderer(renderer, context, ownerScope) {
   setContext(context);
-  let newScope = createScope(renderer.l || ownerScope);
-  for (let signal of renderer.j)
-    signal.w?.(newScope);
-  return newScope.y = renderer, initRenderer(renderer, newScope), setContext(null), newScope;
+  let newScope = createScope(context);
+  newScope._ = renderer.o || ownerScope, newScope.z = renderer, initRenderer(renderer, newScope);
+  for (let signal of renderer.i)
+    signal.m?.(newScope);
+  return setContext(null), newScope;
+}
+function initContextProvider(scope, scopeAccessor, valueAccessor, contextKey, renderer, fragment = singleNodeFragment) {
+  let node = scope[scopeAccessor], newScope = createScopeWithRenderer(renderer, {
+    ...scope.f,
+    [contextKey]: [scope, valueAccessor]
+  }, scope);
+  fragment.b(newScope, node.parentNode, node.nextSibling);
+  for (let signal of renderer.i)
+    signal.g(newScope, !0);
 }
 function initRenderer(renderer, scope) {
-  let dom = renderer.z();
-  return walk(dom.nodeType === 11 /* DocumentFragment */ ? dom.firstChild : dom, renderer.n, scope), scope.b = dom.nodeType === 11 /* DocumentFragment */ ? dom.firstChild : dom, scope.f = dom.nodeType === 11 /* DocumentFragment */ ? dom.lastChild : dom, renderer.o && renderer.o(scope), renderer.p !== void 0 && (scope.b = renderer.p), renderer.q !== void 0 && (scope.f = renderer.q), dom;
+  let dom = renderer.A();
+  return walk(dom.nodeType === 11 /* DocumentFragment */ ? dom.firstChild : dom, renderer.s, scope), scope.c = dom.nodeType === 11 /* DocumentFragment */ ? dom.firstChild : dom, scope.h = dom.nodeType === 11 /* DocumentFragment */ ? dom.lastChild : dom, renderer.t && renderer.t(scope), renderer.u !== void 0 && (scope.c = renderer.u), renderer.v !== void 0 && (scope.h = renderer.v), dom;
 }
-function createRenderFn(template, walks, setup, attrs2, hasUserEffects, dynamicStartNodeOffset, dynamicEndNodeOffset) {
-  let renderer = createRenderer(template, walks, setup, [], hasUserEffects, dynamicStartNodeOffset, dynamicEndNodeOffset);
+function createRenderFn(template, walks, setup, attrs2, closureSignals, dynamicStartNodeOffset, dynamicEndNodeOffset) {
+  let renderer = createRenderer(template, walks, setup, closureSignals, 0, dynamicStartNodeOffset, dynamicEndNodeOffset);
   return Object.assign((input, element) => {
     let scope = createScope();
     queueHydrate(scope, () => {
@@ -376,24 +464,24 @@ function createRenderFn(template, walks, setup, attrs2, hasUserEffects, dynamicS
 }
 function createRenderer(template, walks, setup, closureSignals = [], hasUserEffects = 0, dynamicStartNodeOffset, dynamicEndNodeOffset) {
   return {
-    r: template,
-    n: walks && /* @__PURE__ */ trimWalkString(walks),
-    o: setup,
-    z: _clone,
-    j: closureSignals,
-    A: hasUserEffects,
-    s: void 0,
-    p: dynamicStartNodeOffset,
-    q: dynamicEndNodeOffset,
-    B: void 0,
-    l: void 0
+    w: template,
+    s: walks && /* @__PURE__ */ trimWalkString(walks),
+    t: setup,
+    A: _clone,
+    i: closureSignals,
+    B: hasUserEffects,
+    x: void 0,
+    u: dynamicStartNodeOffset,
+    v: dynamicEndNodeOffset,
+    C: void 0,
+    o: void 0
   };
 }
 function _clone() {
-  let sourceNode = this.s;
+  let sourceNode = this.x;
   if (!sourceNode) {
-    let walks = this.n, ensureFragment = walks && walks.length < 4 && walks.charCodeAt(walks.length - 1) !== 32 /* Get */;
-    this.s = sourceNode = parse(this.r, ensureFragment);
+    let walks = this.s, ensureFragment = walks && walks.length < 4 && walks.charCodeAt(walks.length - 1) !== 32 /* Get */;
+    this.x = sourceNode = parse(this.w, ensureFragment);
   }
   return sourceNode.cloneNode(!0);
 }
@@ -403,55 +491,6 @@ function parse(template, ensureFragment) {
   parser.innerHTML = template;
   let content = parser.content;
   return ensureFragment || (node = content.firstChild) !== content.lastChild || node && node.nodeType === 8 /* Comment */ ? (node = doc.createDocumentFragment(), node.appendChild(content)) : node || (node = doc.createTextNode("")), node;
-}
-
-// src/dom/fragment.ts
-var singleNodeFragment = {
-  c(scope, parent, nextSibling) {
-    parent.insertBefore(scope.b, nextSibling);
-  },
-  i(scope) {
-    scope.b.remove();
-  },
-  t(scope) {
-    return this.a(scope).parentNode;
-  },
-  k(scope) {
-    return this.u(scope).nextSibling;
-  },
-  a(scope) {
-    return scope.b;
-  },
-  u(scope) {
-    return scope.f;
-  }
-}, staticNodesFragment = {
-  ...singleNodeFragment,
-  c(scope, parent, nextSibling) {
-    let current = this.a(scope), stop = this.k(scope);
-    for (; current !== stop; ) {
-      let next = current.nextSibling;
-      parent.insertBefore(current, nextSibling), current = next;
-    }
-  },
-  i(scope) {
-    let current = this.a(scope), stop = this.k(scope);
-    for (; current !== stop; ) {
-      let next = current.nextSibling;
-      current.remove(), current = next;
-    }
-  }
-}, dynamicFragment = {
-  ...staticNodesFragment,
-  a: getFirstNode,
-  u: getLastNode
-};
-function getFirstNode(currentScope, indexOrNode = currentScope.b, last) {
-  let scopeOrScopes;
-  return typeof indexOrNode == "number" ? !(scopeOrScopes = currentScope[indexOrNode + 1 /* SCOPE */]) || scopeOrScopes === emptyMarkerArray ? currentScope[indexOrNode + 0 /* REFERENCE_NODE */] : (last ? getLastNode : getFirstNode)(Array.isArray(scopeOrScopes) ? scopeOrScopes[last ? scopeOrScopes.length - 1 : 0] : scopeOrScopes) : indexOrNode;
-}
-function getLastNode(currentScope) {
-  return getFirstNode(currentScope, currentScope.f, !0);
 }
 
 // src/dom/control-flow.ts
@@ -476,13 +515,13 @@ function inConditionalScope(subscriber2, conditionalNodeAccessor) {
 }
 function setConditionalRenderer(scope, conditionalIndex, newRenderer, fragment = singleNodeFragment) {
   let newScope, prevScope = scope[conditionalIndex + 1 /* SCOPE */];
-  newRenderer ? (newScope = scope[conditionalIndex + 1 /* SCOPE */] = createScopeWithRenderer(newRenderer, scope[conditionalIndex + 3 /* CONTEXT */], scope), prevScope = prevScope || getEmptyScope(scope[conditionalIndex + 0 /* REFERENCE_NODE */])) : (newScope = getEmptyScope(scope[conditionalIndex + 0 /* REFERENCE_NODE */]), scope[conditionalIndex + 1 /* SCOPE */] = void 0), fragment.c(newScope, fragment.t(prevScope), fragment.a(prevScope)), fragment.i(destroyScope(prevScope));
+  newRenderer ? (newScope = scope[conditionalIndex + 1 /* SCOPE */] = createScopeWithRenderer(newRenderer, scope[conditionalIndex + 3 /* CONTEXT */] ||= scope.f, scope), prevScope = prevScope || getEmptyScope(scope[conditionalIndex + 0 /* REFERENCE_NODE */])) : (newScope = getEmptyScope(scope[conditionalIndex + 0 /* REFERENCE_NODE */]), scope[conditionalIndex + 1 /* SCOPE */] = void 0), fragment.b(newScope, fragment.q(prevScope), fragment.a(prevScope)), fragment.k(destroyScope(prevScope));
 }
 function setConditionalRendererOnlyChild(scope, conditionalIndex, newRenderer, fragment = singleNodeFragment) {
   let prevScope = scope[conditionalIndex + 1 /* SCOPE */], referenceNode = scope[conditionalIndex + 0 /* REFERENCE_NODE */];
   if (referenceNode.textContent = "", newRenderer) {
-    let newScope = scope[conditionalIndex + 1 /* SCOPE */] = createScopeWithRenderer(newRenderer, scope[conditionalIndex + 3 /* CONTEXT */], scope);
-    fragment.c(newScope, referenceNode, null);
+    let newScope = scope[conditionalIndex + 1 /* SCOPE */] = createScopeWithRenderer(newRenderer, scope[conditionalIndex + 3 /* CONTEXT */] ||= scope.f, scope);
+    fragment.b(newScope, referenceNode, null);
   }
   prevScope && destroyScope(prevScope);
 }
@@ -490,7 +529,7 @@ var emptyMarkerMap = /* @__PURE__ */ (() => (/* @__PURE__ */ new Map()).set(Symb
 function loop(nodeAccessor, defaultMark, renderer, paramSubscribers, setParams, compute, fragment) {
   let params = destructureSources(paramSubscribers, setParams), valueAccessor = nodeAccessor + 3 /* VALUE */;
   return derivation(valueAccessor, defaultMark, [
-    ...renderer.j.map((signal) => inLoopScope(signal, nodeAccessor)),
+    ...renderer.i.map((signal) => inLoopScope(signal, nodeAccessor)),
     inLoopScope(params, nodeAccessor)
   ], compute, (scope, [newValues, keyFn]) => {
     setLoopOf(scope, nodeAccessor, newValues, renderer, keyFn, setParams, fragment);
@@ -510,12 +549,12 @@ function setLoopOf(scope, loopIndex, newValues, renderer, keyFn, setParams, frag
     newMap = /* @__PURE__ */ new Map(), newArray = [];
     for (let index = 0; index < len; index++) {
       let item = newValues[index], key = keyFn ? keyFn(item) : index, childScope = oldMap.get(key);
-      childScope || (childScope = createScopeWithRenderer(renderer, scope[loopIndex + 6 /* CONTEXT */], scope)), setParams && setParams(childScope, [item, index, newValues]), newMap.set(key, childScope), newArray.push(childScope);
+      childScope || (childScope = createScopeWithRenderer(renderer, scope[loopIndex + 6 /* CONTEXT */] ||= scope.f, scope)), setParams && setParams(childScope, [item, index, newValues]), newMap.set(key, childScope), newArray.push(childScope);
     }
   } else if (referenceIsMarker)
     newMap = emptyMarkerMap, newArray = emptyMarkerArray, getEmptyScope(referenceNode);
   else {
-    if (renderer.A)
+    if (renderer.B)
       for (let i = 0; i < oldArray.length; i++)
         destroyScope(oldArray[i]);
     referenceNode.textContent = "", newMap = emptyMap, newArray = emptyArray, needsReconciliation = !1;
@@ -524,7 +563,7 @@ function setLoopOf(scope, loopIndex, newValues, renderer, keyFn, setParams, frag
     if (referenceIsMarker) {
       oldMap === emptyMarkerMap && getEmptyScope(referenceNode);
       let oldLastChild = oldArray[oldArray.length - 1];
-      afterReference = fragment.k(oldLastChild), parentNode = fragment.t(oldLastChild);
+      afterReference = fragment.l(oldLastChild), parentNode = fragment.q(oldLastChild);
     } else
       afterReference = null, parentNode = referenceNode;
     reconcile(parentNode, oldArray, newArray, afterReference, fragment);
@@ -647,7 +686,7 @@ function userEffect(scope, index, fn) {
 }
 function lifecycle(scope, index, thisObj) {
   let storedThis = scope[index];
-  storedThis ? (Object.assign(storedThis, thisObj), storedThis.onUpdate?.()) : (storedThis = scope[index] = thisObj, scope["-" /* CLEANUP */ + index] = () => storedThis.onDestroy?.(), onDestroy(scope, "-" /* CLEANUP */ + index), storedThis.onMount?.());
+  storedThis ? (Object.assign(storedThis, thisObj), storedThis.onUpdate?.call(storedThis)) : (storedThis = scope[index] = thisObj, scope["-" /* CLEANUP */ + index] = () => storedThis.onDestroy?.call(storedThis), onDestroy(scope, "-" /* CLEANUP */ + index), storedThis.onMount?.call(storedThis));
 }
 
 // src/dom/event.ts
@@ -680,7 +719,7 @@ function register(id, obj) {
 function init(runtimeId = "M") {
   let runtimeLength = runtimeId.length, hydrateVar = runtimeId + "$h" /* VAR_HYDRATE */, initialHydration = window[hydrateVar], walker2 = doc3.createTreeWalker(doc3, 128), currentScopeId, currentNode, scopeLookup = {}, getScope = (id) => scopeLookup[id] ?? (scopeLookup[id] = {}), stack = [], fakeArray = { push: hydrate }, bind2 = (registryId, scope) => {
     let obj = registeredObjects.get(registryId);
-    return scope ? obj.r ? bindRenderer(scope, obj) : obj.d ? bindSignal(scope, obj) : bind(scope, obj) : obj;
+    return scope ? obj.w ? bindRenderer(scope, obj) : obj.d ? bindSignal(scope, obj) : bind(scope, obj) : obj;
   };
   if (Object.defineProperty(window, hydrateVar, {
     get() {
@@ -703,9 +742,9 @@ function init(runtimeId = "M") {
         if (token === "#" /* NODE */)
           scope[data2] = currentNode.nextSibling;
         else if (token === "^" /* SECTION_START */)
-          stack.push(currentScopeId), currentScopeId = scopeId, scope.b = currentNode;
+          stack.push(currentScopeId), currentScopeId = scopeId, scope.c = currentNode;
         else if (token === "/" /* SECTION_END */)
-          scope[data2] = currentNode, scopeId < currentScopeId && (scopeLookup[currentScopeId].f = currentNode.previousSibling, currentScopeId = stack.pop());
+          scope[data2] = currentNode, scopeId < currentScopeId && (scopeLookup[currentScopeId].h = currentNode.previousSibling, currentScopeId = stack.pop());
         else if (token === "|" /* SECTION_SINGLE_NODES_END */) {
           scope[parseInt(data2)] = currentNode;
           let childScopeIds = JSON.parse("[" + data2.slice(data2.indexOf(" ") + 1) + "]");
@@ -713,7 +752,7 @@ function init(runtimeId = "M") {
             let childScope = getScope(childScopeIds[i]);
             for (; (currentNode = currentNode.previousSibling).nodeType === 8; )
               ;
-            childScope.b = childScope.f = currentNode;
+            childScope.c = childScope.h = currentNode;
           }
         }
       }
@@ -740,6 +779,7 @@ export {
   computeLoopIn,
   conditional,
   conditionalOnlyChild,
+  contextClosure,
   createRenderFn,
   createRenderer,
   data,
@@ -751,9 +791,11 @@ export {
   getInContext,
   html,
   hydrateSubscription,
+  inChildMany,
   inConditionalScope,
   inLoopScope,
   init,
+  initContextProvider,
   innerHTML,
   lifecycle,
   loop,
@@ -768,10 +810,12 @@ export {
   register,
   run,
   setSource,
+  setTagVar,
   source,
   staticNodesFragment,
   styleAttr,
   subscriber,
+  tagVarSignal,
   userEffect,
   write
 };
