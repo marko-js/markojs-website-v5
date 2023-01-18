@@ -32,6 +32,6 @@ import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from
     window.location.hash = compressToEncodedURIComponent(JSON.stringify(value));
   }
   onDestroy() {
-    window.removevEventListener("hashchange", this.handler);
+    window.removeEventListener("hashchange", this.handler);
   }/>
 <return:=value/>
