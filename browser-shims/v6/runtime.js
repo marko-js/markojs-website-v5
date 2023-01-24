@@ -86,7 +86,7 @@ function notifySignal(scope, signal) {
 }
 function source(valueAccessor, subscribers, action) {
   const markAccessor = valueAccessor + "#" /* MARK */;
-  return {
+  const signal = {
     ___mark(scope) {
       scope[markAccessor] = 1;
       markSubscribers(scope, subscribers);
@@ -102,9 +102,18 @@ function source(valueAccessor, subscribers, action) {
       scope[markAccessor] = 0;
     }
   };
+  if (true) {
+    setDebugInfo(signal, "source", {
+      valueAccessor,
+      markAccessor,
+      subscribers,
+      action
+    });
+  }
+  return signal;
 }
 function destructureSources(subscribers, action) {
-  return {
+  const signal = {
     ___mark(scope) {
       markSubscribers(scope, subscribers);
     },
@@ -115,11 +124,15 @@ function destructureSources(subscribers, action) {
     },
     ___apply: action
   };
+  if (true) {
+    setDebugInfo(signal, "destructureSources", { subscribers, action });
+  }
+  return signal;
 }
 function baseSubscriber(accessorId2, subscribers, defaultMark, apply) {
   const markAccessor = accessorId2 + "#" /* MARK */;
   const staleAccessor = accessorId2 + "&" /* STALE */;
-  return {
+  const signal = {
     ___mark(scope) {
       const mark = scope[markAccessor] = (scope[markAccessor] || 0) + 1;
       if (mark === 1) {
@@ -150,14 +163,39 @@ function baseSubscriber(accessorId2, subscribers, defaultMark, apply) {
       }
     }
   };
+  if (true) {
+    setDebugInfo(signal, "baseSubscriber", {
+      accessorId: accessorId2,
+      markAccessor,
+      staleAccessor,
+      subscribers,
+      defaultMark,
+      apply
+    });
+  }
+  return signal;
 }
 function subscriber(subscribers, defaultMark, apply) {
-  return baseSubscriber("?" /* DYNAMIC */ + accessorId++, subscribers, defaultMark, apply);
+  const signal = baseSubscriber("?" /* DYNAMIC */ + accessorId++, subscribers, defaultMark, apply);
+  if (true) {
+    setDebugInfo(signal, "subscriber", { subscribers, defaultMark, apply });
+  }
+  return signal;
 }
 function derivation(valueAccessor, defaultMark, subscribers, compute, action) {
-  return baseSubscriber(valueAccessor, subscribers, defaultMark, (scope) => {
+  const signal = baseSubscriber(valueAccessor, subscribers, defaultMark, (scope) => {
     applyValue(scope, compute(scope), valueAccessor, subscribers, action);
   });
+  if (true) {
+    setDebugInfo(signal, "derivation", {
+      valueAccessor,
+      defaultMark,
+      subscribers,
+      compute,
+      action
+    });
+  }
+  return signal;
 }
 function closure(ownerLevel, providerAccessor, subscribers, action) {
   const getOwner = typeof ownerLevel === "function" ? ownerLevel : (scope) => getOwnerScope(scope, ownerLevel);
@@ -175,7 +213,16 @@ function closure(ownerLevel, providerAccessor, subscribers, action) {
     action?.(scope, ownerScope[providerValueAccessor]);
     notifySubscribers(scope, true, subscribers);
   };
-  return baseSubscriber("?" /* DYNAMIC */ + accessorId++, subscribers, getDefaultMark, apply);
+  const signal = baseSubscriber("?" /* DYNAMIC */ + accessorId++, subscribers, getDefaultMark, apply);
+  if (true) {
+    setDebugInfo(signal, "closure", {
+      ownerLevel,
+      providerAccessor,
+      subscribers,
+      action
+    });
+  }
+  return signal;
 }
 function dynamicClosure(ownerLevel, providerAccessor, subscribers, action) {
   const getOwner = typeof ownerLevel === "function" ? ownerLevel : (scope) => getOwnerScope(scope, ownerLevel);
@@ -194,11 +241,19 @@ function dynamicClosure(ownerLevel, providerAccessor, subscribers, action) {
       ownerScope[providerSubscriptionsAccessor]?.delete(bindSignal(scope, signal));
     }
   };
+  if (true) {
+    setDebugInfo(signal, "derivation", {
+      ownerLevel,
+      providerAccessor,
+      subscribers,
+      action
+    });
+  }
   return signal;
 }
 function dynamicSubscribers(valueAccessor) {
   const subscriptionsAccessor = valueAccessor + "*" /* SUBSCRIBERS */;
-  return wrapSignal((methodName) => (scope, extraArg) => {
+  const signal = wrapSignal((methodName) => (scope, extraArg) => {
     const subscribers = scope[subscriptionsAccessor];
     if (subscribers) {
       for (const subscriber2 of subscribers) {
@@ -206,54 +261,117 @@ function dynamicSubscribers(valueAccessor) {
       }
     }
   });
+  if (true) {
+    setDebugInfo(signal, "dynamicSubscribers", {
+      valueAccessor,
+      subscriptionsAccessor
+    });
+  }
+  return signal;
 }
 function contextClosure(valueAccessor, contextKey, subscribers, action) {
-  return dynamicClosure((scope) => scope.___context[contextKey][0], (scope) => scope.___context[contextKey][1], subscribers, (scope, value) => {
+  const signal = dynamicClosure((scope) => scope.___context[contextKey][0], (scope) => scope.___context[contextKey][1], subscribers, (scope, value) => {
     scope[valueAccessor] = value;
     action?.(scope, value);
   });
+  if (true) {
+    setDebugInfo(signal, "contextClosure", {
+      valueAccessor,
+      contextKey,
+      subscribers,
+      action
+    });
+  }
+  return signal;
 }
 function wrapSignal(wrapper) {
-  return {
+  const signal = {
     ___mark: wrapper("___mark"),
     ___notify: wrapper("___notify"),
     ___apply: wrapper("___apply")
   };
+  if (true) {
+    setDebugInfo(signal, "wrapSignal", { wrapper });
+  }
+  return signal;
 }
-function setTagVar(scope, childIndex, tagVarSignal2) {
-  scope[childIndex]["/" /* TAG_VARIABLE */] = bindSignal(scope, tagVarSignal2);
+function setTagVar(scope, childAccessor, tagVarSignal2) {
+  scope[childAccessor]["/" /* TAG_VARIABLE */] = bindSignal(scope, tagVarSignal2);
 }
 var tagVarSignal = wrapSignal((methodName) => (scope, extraArg) => scope["/" /* TAG_VARIABLE */]?.[methodName](null, extraArg));
+if (true) {
+  setDebugInfo(tagVarSignal, "tagVar", {});
+}
 function wrapSignalWithSubscription(wrapper) {
-  return {
+  const signal = {
     ...wrapSignal(wrapper),
     ___subscribe: wrapper("___subscribe"),
     ___unsubscribe: wrapper("___unsubscribe")
   };
+  if (true) {
+    setDebugInfo(signal, "wrapSignalWithSubscription", { wrapper });
+  }
+  return signal;
 }
 function inChild(subscriber2, childScopeAccessor) {
-  return wrapSignal((methodName) => (scope, extraArg) => subscriber2[methodName](scope[childScopeAccessor], extraArg));
+  const signal = wrapSignal((methodName) => (scope, extraArg) => subscriber2[methodName](scope[childScopeAccessor], extraArg));
+  if (true) {
+    setDebugInfo(signal, "inChild", { subscriber: subscriber2, childScopeAccessor });
+  }
+  return signal;
 }
 function inChildMany(subscribers, childScopeAccessor) {
-  return wrapSignalWithSubscription((methodName) => (scope, extraArg) => {
+  const signal = wrapSignalWithSubscription((methodName) => (scope, extraArg) => {
     const childScope = scope[childScopeAccessor];
-    for (const signal of subscribers) {
-      signal[methodName]?.(childScope, extraArg);
+    for (const signal2 of subscribers) {
+      signal2[methodName]?.(childScope, extraArg);
     }
   });
+  if (true) {
+    setDebugInfo(signal, "inChildMany", { subscribers, childScopeAccessor });
+  }
+  return signal;
 }
 function inRenderBody(renderBodyIndex, childScopeAccessor) {
-  return wrapSignal((methodName) => (scope, extraArg) => {
+  const signal = wrapSignal((methodName) => (scope, extraArg) => {
     const childScope = scope[childScopeAccessor];
     const signals = scope[renderBodyIndex]?.___closureSignals ?? [];
-    for (const signal of signals) {
-      signal[methodName](childScope, extraArg);
+    for (const signal2 of signals) {
+      signal2[methodName](childScope, extraArg);
     }
   });
+  if (true) {
+    setDebugInfo(signal, "inRenderBody", {
+      renderBodyIndex,
+      childScopeAccessor
+    });
+  }
+  return signal;
+}
+function dynamicAttrsProxy(nodeAccessor) {
+  const signal = wrapSignal((methodName) => (scope, extraArg) => {
+    const renderer = scope[nodeAccessor + "(" /* COND_RENDERER */];
+    const childScope = scope[nodeAccessor + "!" /* COND_SCOPE */];
+    renderer?.___attrs?.[methodName](childScope, extraArg);
+  });
+  if (true) {
+    setDebugInfo(signal, "dynamicAttrsProxy", {
+      nodeAccessor
+    });
+  }
+  return signal;
 }
 var tagId = 0;
 function nextTagId() {
   return "c" + tagId++;
+}
+function setDebugInfo(signal, type, data2) {
+  const signalCopy = { ...signal };
+  for (const key in signal) {
+    delete signal[key];
+  }
+  Object.setPrototypeOf(signal, new Function(`return new (class ${type} {})()`)());
+  Object.assign(signal, data2, signalCopy, data2);
 }
 
 // src/dom/scope.ts
@@ -519,392 +637,6 @@ function setContext(v) {
   usesContext && (Context = v);
 }
 
-// src/dom/walker.ts
-var walker = /* @__PURE__ */ document.createTreeWalker(document);
-function trimWalkString(walkString) {
-  let end = walkString.length;
-  while (walkString.charCodeAt(--end) > 66 /* BeginChildEnd */)
-    ;
-  return walkString.slice(0, end + 1);
-}
-function walk(startNode, walkCodes, scope) {
-  walker.currentNode = startNode;
-  walkInternal(walkCodes, scope, 0);
-  walker.currentNode = document.documentElement;
-}
-function walkInternal(walkCodes, scope, currentWalkIndex) {
-  let value;
-  let storedMultiplier = 0;
-  let currentMultiplier = 0;
-  let currentScopeIndex = 0;
-  while (value = walkCodes.charCodeAt(currentWalkIndex++)) {
-    currentMultiplier = storedMultiplier;
-    storedMultiplier = 0;
-    if (value >= 117 /* Multiplier */) {
-      storedMultiplier = currentMultiplier * 10 /* Multiplier */ + value - 117 /* Multiplier */;
-    } else if (value >= 107 /* Out */) {
-      value = 10 /* Out */ * currentMultiplier + value - 107 /* Out */;
-      while (value--) {
-        walker.parentNode();
-      }
-      walker.nextSibling();
-    } else if (value >= 97 /* Over */) {
-      value = 10 /* Over */ * currentMultiplier + value - 97 /* Over */;
-      while (value--) {
-        !walker.nextSibling() && !walker.nextNode();
-      }
-    } else if (value >= 67 /* Next */) {
-      value = 20 /* Next */ * currentMultiplier + value - 67 /* Next */;
-      while (value--) {
-        walker.nextNode();
-      }
-    } else if (value >= 47 /* BeginChild */) {
-      value = 20 /* BeginChild */ * currentMultiplier + value - 47 /* BeginChild */;
-      currentWalkIndex = walkInternal(walkCodes, scope[value] = createScope(scope.___context), currentWalkIndex);
-    } else if (value >= 40 /* Skip */) {
-      currentScopeIndex += 7 /* Skip */ * currentMultiplier + value - 40 /* Skip */;
-    } else if (value === 38 /* EndChild */) {
-      return currentWalkIndex;
-    } else if (value === 32 /* Get */) {
-      scope[currentScopeIndex++] = walker.currentNode;
-    } else {
-      const newNode = scope[currentScopeIndex++] = document.createTextNode("");
-      const current = walker.currentNode;
-      const parentNode = current.parentNode;
-      if (value === 33 /* Before */) {
-        parentNode.insertBefore(newNode, current);
-      } else {
-        if (value === 35 /* After */) {
-          parentNode.insertBefore(newNode, current.nextSibling);
-        } else {
-          if (value !== 37 /* Replace */) {
-            throw new Error(`Unknown walk code: ${value}`);
-          }
-          parentNode.replaceChild(newNode, current);
-        }
-        walker.currentNode = newNode;
-      }
-    }
-  }
-  return currentWalkIndex;
-}
-
-// src/dom/fragment.ts
-var singleNodeFragment = {
-  ___insertBefore(scope, parent, nextSibling) {
-    parent.insertBefore(scope.___startNode, nextSibling);
-  },
-  ___remove(scope) {
-    scope.___startNode.remove();
-  },
-  ___getParentNode(scope) {
-    return this.___getFirstNode(scope).parentNode;
-  },
-  ___getAfterNode(scope) {
-    return this.___getLastNode(scope).nextSibling;
-  },
-  ___getFirstNode(scope) {
-    return scope.___startNode;
-  },
-  ___getLastNode(scope) {
-    return scope.___endNode;
-  }
-};
-var staticNodesFragment = {
-  ...singleNodeFragment,
-  ___insertBefore(scope, parent, nextSibling) {
-    let current = this.___getFirstNode(scope);
-    const stop = this.___getAfterNode(scope);
-    while (current !== stop) {
-      const next = current.nextSibling;
-      parent.insertBefore(current, nextSibling);
-      current = next;
-    }
-  },
-  ___remove(scope) {
-    let current = this.___getFirstNode(scope);
-    const stop = this.___getAfterNode(scope);
-    while (current !== stop) {
-      const next = current.nextSibling;
-      current.remove();
-      current = next;
-    }
-  }
-};
-var dynamicFragment = {
-  ...staticNodesFragment,
-  ___getFirstNode: getFirstNode,
-  ___getLastNode: getLastNode
-};
-function getFirstNode(currentScope, indexOrNode = currentScope.___startNode, last) {
-  let scopeOrScopes;
-  if (true) {
-    if (1 /* SCOPE */ !== 1 /* SCOPE_ARRAY */ || 0 /* REFERENCE_NODE */ !== 0 /* REFERENCE_NODE */) {
-      throw new Error("Offset mismatch between conditionals and loops");
-    }
-  }
-  return typeof indexOrNode === "number" ? !(scopeOrScopes = currentScope[indexOrNode + 1 /* SCOPE */]) || scopeOrScopes === emptyMarkerArray ? currentScope[indexOrNode + 0 /* REFERENCE_NODE */] : (last ? getLastNode : getFirstNode)(Array.isArray(scopeOrScopes) ? scopeOrScopes[last ? scopeOrScopes.length - 1 : 0] : scopeOrScopes) : indexOrNode;
-}
-function getLastNode(currentScope) {
-  return getFirstNode(currentScope, currentScope.___endNode, true);
-}
-
-// src/dom/renderer.ts
-function createScopeWithRenderer(renderer, context, ownerScope) {
-  setContext(context);
-  const newScope = createScope(context);
-  newScope._ = renderer.___owner || ownerScope;
-  newScope.___renderer = renderer;
-  initRenderer(renderer, newScope);
-  for (const signal of renderer.___closureSignals) {
-    signal.___subscribe?.(newScope);
-  }
-  setContext(null);
-  return newScope;
-}
-function initContextProvider(scope, scopeAccessor, valueAccessor, contextKey, renderer, fragment = singleNodeFragment) {
-  const node = scope[scopeAccessor];
-  const newScope = createScopeWithRenderer(renderer, {
-    ...scope.___context,
-    [contextKey]: [scope, valueAccessor]
-  }, scope);
-  fragment.___insertBefore(newScope, node.parentNode, node.nextSibling);
-  for (const signal of renderer.___closureSignals) {
-    signal.___notify(newScope, true);
-  }
-}
-function initRenderer(renderer, scope) {
-  const dom = renderer.___clone();
-  walk(dom.nodeType === 11 /* DocumentFragment */ ? dom.firstChild : dom, renderer.___walks, scope);
-  scope.___startNode = dom.nodeType === 11 /* DocumentFragment */ ? dom.firstChild : dom;
-  scope.___endNode = dom.nodeType === 11 /* DocumentFragment */ ? dom.lastChild : dom;
-  if (renderer.___setup) {
-    renderer.___setup(scope);
-  }
-  if (renderer.___dynamicStartNodeOffset !== void 0) {
-    scope.___startNode = renderer.___dynamicStartNodeOffset;
-  }
-  if (renderer.___dynamicEndNodeOffset !== void 0) {
-    scope.___endNode = renderer.___dynamicEndNodeOffset;
-  }
-  return dom;
-}
-function createRenderFn(template, walks, setup, attrs2, closureSignals, dynamicStartNodeOffset, dynamicEndNodeOffset) {
-  const renderer = createRenderer(template, walks, setup, closureSignals, 0, dynamicStartNodeOffset, dynamicEndNodeOffset);
-  return Object.assign((input, element) => {
-    const scope = createScope();
-    queueHydrate(scope, () => {
-      element.replaceChildren(dom);
-    });
-    const dom = initRenderer(renderer, scope);
-    if (attrs2) {
-      attrs2.___apply(scope, input);
-    }
-    runHydrate();
-    return {
-      update: (newInput) => {
-        if (attrs2) {
-          attrs2.___mark(scope);
-          attrs2.___apply(scope, newInput);
-          runHydrate();
-        }
-      },
-      destroy: () => {
-      }
-    };
-  }, renderer);
-}
-function createRenderer(template, walks, setup, closureSignals = [], hasUserEffects = 0, dynamicStartNodeOffset, dynamicEndNodeOffset) {
-  return {
-    ___template: template,
-    ___walks: walks && /* @__PURE__ */ trimWalkString(walks),
-    ___setup: setup,
-    ___clone: _clone,
-    ___closureSignals: closureSignals,
-    ___hasUserEffects: hasUserEffects,
-    ___sourceNode: void 0,
-    ___dynamicStartNodeOffset: dynamicStartNodeOffset,
-    ___dynamicEndNodeOffset: dynamicEndNodeOffset,
-    ___attrs: void 0,
-    ___owner: void 0
-  };
-}
-function _clone() {
-  let sourceNode = this.___sourceNode;
-  if (!sourceNode) {
-    if (this.___template === void 0) {
-      throw new Error("The renderer does not have a template to clone: " + JSON.stringify(this));
-    }
-    const walks = this.___walks;
-    const ensureFragment = walks && walks.length < 4 && walks.charCodeAt(walks.length - 1) !== 32 /* Get */;
-    this.___sourceNode = sourceNode = parse(this.___template, ensureFragment);
-  }
-  return sourceNode.cloneNode(true);
-}
-var doc = document;
-var parser = /* @__PURE__ */ doc.createElement("template");
-function parse(template, ensureFragment) {
-  let node;
-  parser.innerHTML = template;
-  const content = parser.content;
-  if (ensureFragment || (node = content.firstChild) !== content.lastChild || node && node.nodeType === 8 /* Comment */) {
-    node = doc.createDocumentFragment();
-    node.appendChild(content);
-  } else if (!node) {
-    node = doc.createTextNode("");
-  }
-  return node;
-}
-
-// src/dom/control-flow.ts
-function conditional(nodeAccessor, defaultMark, computeRenderer, fragment) {
-  const childScopeAccessor = nodeAccessor + 1 /* SCOPE */;
-  const rendererAccessor = nodeAccessor + 2 /* RENDERER */;
-  return derivation(rendererAccessor, defaultMark, [inRenderBody(rendererAccessor, childScopeAccessor)], computeRenderer, (scope, renderer) => {
-    setConditionalRenderer(scope, nodeAccessor, renderer, fragment);
-  });
-}
-function conditionalOnlyChild(nodeAccessor, defaultMark, computeRenderer, fragment) {
-  const childScopeAccessor = nodeAccessor + 1 /* SCOPE */;
-  const rendererAccessor = nodeAccessor + 2 /* RENDERER */;
-  return derivation(rendererAccessor, defaultMark, [inRenderBody(rendererAccessor, childScopeAccessor)], computeRenderer, (scope, renderer) => {
-    setConditionalRendererOnlyChild(scope, nodeAccessor, renderer, fragment);
-  });
-}
-function inConditionalScope(subscriber2, conditionalNodeAccessor) {
-  const scopeAccessor = conditionalNodeAccessor + 1 /* SCOPE */;
-  return wrapSignal((methodName) => (scope, extraArg) => {
-    const conditionalScope = scope[scopeAccessor];
-    if (conditionalScope) {
-      subscriber2[methodName](conditionalScope, extraArg);
-    }
-  });
-}
-function setConditionalRenderer(scope, conditionalIndex, newRenderer, fragment = singleNodeFragment) {
-  let newScope;
-  let prevScope = scope[conditionalIndex + 1 /* SCOPE */];
-  if (newRenderer) {
-    newScope = scope[conditionalIndex + 1 /* SCOPE */] = createScopeWithRenderer(newRenderer, scope[conditionalIndex + 3 /* CONTEXT */] ||= scope.___context, scope);
-    prevScope = prevScope || getEmptyScope(scope[conditionalIndex + 0 /* REFERENCE_NODE */]);
-  } else {
-    newScope = getEmptyScope(scope[conditionalIndex + 0 /* REFERENCE_NODE */]);
-    scope[conditionalIndex + 1 /* SCOPE */] = void 0;
-  }
-  fragment.___insertBefore(newScope, fragment.___getParentNode(prevScope), fragment.___getFirstNode(prevScope));
-  fragment.___remove(destroyScope(prevScope));
-}
-function setConditionalRendererOnlyChild(scope, conditionalIndex, newRenderer, fragment = singleNodeFragment) {
-  const prevScope = scope[conditionalIndex + 1 /* SCOPE */];
-  const referenceNode = scope[conditionalIndex + 0 /* REFERENCE_NODE */];
-  referenceNode.textContent = "";
-  if (newRenderer) {
-    const newScope = scope[conditionalIndex + 1 /* SCOPE */] = createScopeWithRenderer(newRenderer, scope[conditionalIndex + 3 /* CONTEXT */] ||= scope.___context, scope);
-    fragment.___insertBefore(newScope, referenceNode, null);
-  }
-  prevScope && destroyScope(prevScope);
-}
-var emptyMarkerMap = /* @__PURE__ */ (() => (/* @__PURE__ */ new Map()).set(Symbol("empty"), getEmptyScope()))();
-var emptyMarkerArray = [/* @__PURE__ */ getEmptyScope()];
-var emptyMap = /* @__PURE__ */ new Map();
-var emptyArray = [];
-function loop(nodeAccessor, defaultMark, renderer, paramSubscribers, setParams, compute, fragment) {
-  const params = destructureSources(paramSubscribers, setParams);
-  const valueAccessor = nodeAccessor + 3 /* VALUE */;
-  return derivation(valueAccessor, defaultMark, [
-    ...renderer.___closureSignals.map((signal) => inLoopScope(signal, nodeAccessor)),
-    inLoopScope(params, nodeAccessor)
-  ], compute, (scope, [newValues, keyFn]) => {
-    setLoopOf(scope, nodeAccessor, newValues, renderer, keyFn, setParams, fragment);
-  });
-}
-function inLoopScope(subscriber2, loopNodeAccessor) {
-  const loopScopeAccessor = loopNodeAccessor + 1 /* SCOPE_ARRAY */;
-  return wrapSignal((methodName) => (scope, extraArg) => {
-    const loopScopes = scope[loopScopeAccessor] ?? [];
-    for (const loopScope of loopScopes) {
-      subscriber2[methodName](loopScope, extraArg);
-    }
-  });
-}
-function setLoopOf(scope, loopIndex, newValues, renderer, keyFn, setParams, fragment = singleNodeFragment) {
-  let newMap;
-  let newArray;
-  const len = newValues.length;
-  const referenceNode = scope[loopIndex + 0 /* REFERENCE_NODE */];
-  const referenceIsMarker = referenceNode.nodeType === 8 || referenceNode.nodeType === 3;
-  const oldMap = scope[loopIndex + 2 /* SCOPE_MAP */] || (referenceIsMarker ? emptyMarkerMap : emptyMap);
-  const oldArray = scope[loopIndex + 1 /* SCOPE_ARRAY */] || (referenceIsMarker ? emptyMarkerArray : emptyArray);
-  let afterReference;
-  let parentNode;
-  let needsReconciliation = true;
-  if (len > 0) {
-    newMap = /* @__PURE__ */ new Map();
-    newArray = [];
-    for (let index = 0; index < len; index++) {
-      const item = newValues[index];
-      const key = keyFn ? keyFn(item) : index;
-      let childScope = oldMap.get(key);
-      if (!childScope) {
-        childScope = createScopeWithRenderer(renderer, scope[loopIndex + 6 /* CONTEXT */] ||= scope.___context, scope);
-      } else {
-      }
-      if (setParams) {
-        setParams(childScope, [item, index, newValues]);
-      }
-      newMap.set(key, childScope);
-      newArray.push(childScope);
-    }
-  } else {
-    if (referenceIsMarker) {
-      newMap = emptyMarkerMap;
-      newArray = emptyMarkerArray;
-      getEmptyScope(referenceNode);
-    } else {
-      if (renderer.___hasUserEffects) {
-        for (let i = 0; i < oldArray.length; i++) {
-          destroyScope(oldArray[i]);
-        }
-      }
-      referenceNode.textContent = "";
-      newMap = emptyMap;
-      newArray = emptyArray;
-      needsReconciliation = false;
-    }
-  }
-  if (needsReconciliation) {
-    if (referenceIsMarker) {
-      if (oldMap === emptyMarkerMap) {
-        getEmptyScope(referenceNode);
-      }
-      const oldLastChild = oldArray[oldArray.length - 1];
-      afterReference = fragment.___getAfterNode(oldLastChild);
-      parentNode = fragment.___getParentNode(oldLastChild);
-    } else {
-      afterReference = null;
-      parentNode = referenceNode;
-    }
-    reconcile(parentNode, oldArray, newArray, afterReference, fragment);
-  }
-  scope[loopIndex + 2 /* SCOPE_MAP */] = newMap;
-  scope[loopIndex + 1 /* SCOPE_ARRAY */] = newArray;
-}
-function computeLoopFromTo(from, to, step) {
-  const range = [];
-  for (let i = from; i <= to; i += step) {
-    range.push(i);
-  }
-  return [range, keyFromTo];
-}
-function keyFromTo(item) {
-  return item;
-}
-function computeLoopIn(object) {
-  return [Object.entries(object), keyIn];
-}
-function keyIn(item) {
-  return item[0];
-}
-
 // src/common/helpers.ts
 function classValue(value) {
   return toDelimitedString(value, " ", stringifyClassObject);
@@ -984,10 +716,9 @@ function data(node, value) {
     node.data = normalizedValue;
   }
 }
-function attrs(scope, elementIndex, index) {
-  const nextAttrs = scope[index];
-  const prevAttrs = scope[index + "-"];
-  const element = scope[elementIndex];
+function attrs(scope, elementAccessor, nextAttrs) {
+  const prevAttrs = scope[elementAccessor + "~" /* PREVIOUS_ATTRIBUTES */];
+  const element = scope[elementAccessor];
   if (prevAttrs) {
     for (const name in prevAttrs) {
       if (!(nextAttrs && name in nextAttrs)) {
@@ -1006,17 +737,17 @@ function attrs(scope, elementIndex, index) {
       }
     }
   }
-  scope[index + "-"] = nextAttrs;
+  scope[elementAccessor + "~" /* PREVIOUS_ATTRIBUTES */] = nextAttrs;
 }
-var doc2 = document;
-var parser2 = /* @__PURE__ */ doc2.createElement("template");
+var doc = document;
+var parser = /* @__PURE__ */ doc.createElement("template");
 function html(scope, value, index) {
   const firstChild = scope[index];
   const lastChild = scope[index + "-"] || firstChild;
   const parentNode = firstChild.parentNode;
   const afterReference = lastChild.nextSibling;
-  parser2.innerHTML = value || " ";
-  const newContent = parser2.content;
+  parser.innerHTML = value || " ";
+  const newContent = parser.content;
   write(scope, index, newContent.firstChild);
   write(scope, index + "-", newContent.lastChild);
   parentNode.insertBefore(newContent, firstChild);
@@ -1075,11 +806,426 @@ function lifecycle(scope, index, thisObj) {
   }
 }
 
+// src/dom/walker.ts
+var walker = /* @__PURE__ */ document.createTreeWalker(document);
+function trimWalkString(walkString) {
+  let end = walkString.length;
+  while (walkString.charCodeAt(--end) > 47 /* BeginChild */)
+    ;
+  return walkString.slice(0, end + 1);
+}
+function walk(startNode, walkCodes, scope) {
+  walker.currentNode = startNode;
+  walkInternal(walkCodes, scope, 0);
+  walker.currentNode = document.documentElement;
+}
+function walkInternal(walkCodes, scope, currentWalkIndex) {
+  let value;
+  let storedMultiplier = 0;
+  let currentMultiplier = 0;
+  let currentScopeIndex = 0;
+  while (value = walkCodes.charCodeAt(currentWalkIndex++)) {
+    currentMultiplier = storedMultiplier;
+    storedMultiplier = 0;
+    if (value >= 117 /* Multiplier */) {
+      storedMultiplier = currentMultiplier * 10 /* Multiplier */ + value - 117 /* Multiplier */;
+    } else if (value >= 107 /* Out */) {
+      value = 10 /* Out */ * currentMultiplier + value - 107 /* Out */;
+      while (value--) {
+        walker.parentNode();
+      }
+      walker.nextSibling();
+    } else if (value >= 97 /* Over */) {
+      value = 10 /* Over */ * currentMultiplier + value - 97 /* Over */;
+      while (value--) {
+        !walker.nextSibling() && !walker.nextNode();
+      }
+    } else if (value >= 67 /* Next */) {
+      value = 20 /* Next */ * currentMultiplier + value - 67 /* Next */;
+      while (value--) {
+        walker.nextNode();
+      }
+    } else if (value === 47 /* BeginChild */) {
+      currentWalkIndex = walkInternal(walkCodes, scope[true ? getDebugKey(currentScopeIndex++, "#childScope") : currentScopeIndex++] = createScope(scope.___context), currentWalkIndex);
+    } else if (value === 38 /* EndChild */) {
+      return currentWalkIndex;
+    } else if (value === 32 /* Get */) {
+      scope[true ? getDebugKey(currentScopeIndex++, walker.currentNode) : currentScopeIndex++] = walker.currentNode;
+    } else {
+      const newNode = scope[true ? getDebugKey(currentScopeIndex++, "#text") : currentScopeIndex++] = document.createTextNode("");
+      const current = walker.currentNode;
+      const parentNode = current.parentNode;
+      if (value === 33 /* Before */) {
+        parentNode.insertBefore(newNode, current);
+      } else {
+        if (value === 35 /* After */) {
+          parentNode.insertBefore(newNode, current.nextSibling);
+        } else {
+          if (value !== 37 /* Replace */) {
+            throw new Error(`Unknown walk code: ${value}`);
+          }
+          parentNode.replaceChild(newNode, current);
+        }
+        walker.currentNode = newNode;
+      }
+    }
+  }
+  return currentWalkIndex;
+}
+function getDebugKey(index, node) {
+  if (typeof node === "string") {
+    return `${node}/${index}`;
+  } else if (node.nodeType === 3 /* Text */) {
+    return `#text/${index}`;
+  } else if (node.nodeType === 8 /* Comment */) {
+    return `#comment/${index}`;
+  } else if (node.nodeType === 1 /* Element */) {
+    return `#${node.tagName.toLowerCase()}/${index}`;
+  }
+  return index;
+}
+
+// src/dom/fragment.ts
+var singleNodeFragment = {
+  ___insertBefore(scope, parent, nextSibling) {
+    parent.insertBefore(scope.___startNode, nextSibling);
+  },
+  ___remove(scope) {
+    scope.___startNode.remove();
+  },
+  ___getParentNode(scope) {
+    return this.___getFirstNode(scope).parentNode;
+  },
+  ___getAfterNode(scope) {
+    return this.___getLastNode(scope).nextSibling;
+  },
+  ___getFirstNode(scope) {
+    return scope.___startNode;
+  },
+  ___getLastNode(scope) {
+    return scope.___endNode;
+  }
+};
+var staticNodesFragment = {
+  ...singleNodeFragment,
+  ___insertBefore(scope, parent, nextSibling) {
+    let current = this.___getFirstNode(scope);
+    const stop = this.___getAfterNode(scope);
+    while (current !== stop) {
+      const next = current.nextSibling;
+      parent.insertBefore(current, nextSibling);
+      current = next;
+    }
+  },
+  ___remove(scope) {
+    let current = this.___getFirstNode(scope);
+    const stop = this.___getAfterNode(scope);
+    while (current !== stop) {
+      const next = current.nextSibling;
+      current.remove();
+      current = next;
+    }
+  }
+};
+var dynamicFragment = {
+  ...staticNodesFragment,
+  ___getFirstNode: getFirstNode,
+  ___getLastNode: getLastNode
+};
+function getFirstNode(currentScope, nodeOrAccessor = currentScope.___startNode, last) {
+  let scopeOrScopes;
+  if (true) {
+    if ("!" /* COND_SCOPE */ !== "!" /* LOOP_SCOPE_ARRAY */) {
+      throw new Error("Offset mismatch between conditionals and loops");
+    }
+  }
+  return typeof nodeOrAccessor === "object" ? nodeOrAccessor : !(scopeOrScopes = currentScope[nodeOrAccessor + "!" /* COND_SCOPE */]) || scopeOrScopes === emptyMarkerArray ? currentScope[nodeOrAccessor] : (last ? getLastNode : getFirstNode)(Array.isArray(scopeOrScopes) ? scopeOrScopes[last ? scopeOrScopes.length - 1 : 0] : scopeOrScopes);
+}
+function getLastNode(currentScope) {
+  return getFirstNode(currentScope, currentScope.___endNode, true);
+}
+
+// src/dom/renderer.ts
+function createScopeWithRenderer(renderer, context, ownerScope) {
+  setContext(context);
+  const newScope = createScope(context);
+  newScope._ = renderer.___owner || ownerScope;
+  newScope.___renderer = renderer;
+  initRenderer(renderer, newScope);
+  if (renderer.___closureSignals) {
+    for (const signal of renderer.___closureSignals) {
+      signal.___subscribe?.(newScope);
+    }
+  }
+  setContext(null);
+  return newScope;
+}
+function initContextProvider(scope, scopeAccessor, valueAccessor, contextKey, renderer, fragment = singleNodeFragment) {
+  const node = scope[scopeAccessor];
+  const newScope = createScopeWithRenderer(renderer, {
+    ...scope.___context,
+    [contextKey]: [scope, valueAccessor]
+  }, scope);
+  fragment.___insertBefore(newScope, node.parentNode, node.nextSibling);
+  for (const signal of renderer.___closureSignals) {
+    signal.___notify(newScope, true);
+  }
+}
+function initRenderer(renderer, scope) {
+  const dom = typeof renderer === "string" ? document.createElement(renderer) : renderer.___clone();
+  walk(dom.nodeType === 11 /* DocumentFragment */ ? dom.firstChild : dom, renderer.___walks ?? " ", scope);
+  scope.___startNode = dom.nodeType === 11 /* DocumentFragment */ ? dom.firstChild : dom;
+  scope.___endNode = dom.nodeType === 11 /* DocumentFragment */ ? dom.lastChild : dom;
+  if (renderer.___setup) {
+    renderer.___setup(scope);
+  }
+  if (renderer.___dynamicStartNodeOffset !== void 0) {
+    scope.___startNode = renderer.___dynamicStartNodeOffset;
+  }
+  if (renderer.___dynamicEndNodeOffset !== void 0) {
+    scope.___endNode = renderer.___dynamicEndNodeOffset;
+  }
+  return dom;
+}
+function dynamicTagAttrs(scope, nodeAccessor, getAttrs, renderBody) {
+  const renderer = scope[nodeAccessor + "(" /* COND_RENDERER */];
+  if (!renderer || renderer === renderBody) {
+    return;
+  }
+  const childScope = scope[nodeAccessor + "!" /* COND_SCOPE */];
+  const attributes = getAttrs();
+  if (typeof renderer === "string") {
+    const elementAccessor = true ? `#${renderer}/0` : 0;
+    attrs(childScope, elementAccessor, attributes);
+    setConditionalRendererOnlyChild(childScope, elementAccessor, renderBody);
+  } else if (renderer.___attrs) {
+    setSource(childScope, renderer.___attrs, {
+      ...attributes,
+      renderBody: renderBody ?? attributes.renderBody
+    });
+  }
+}
+function createRenderFn(template, walks, setup, attrs2, closureSignals, dynamicStartNodeOffset, dynamicEndNodeOffset) {
+  const renderer = createRenderer(template, walks, setup, closureSignals, 0, dynamicStartNodeOffset, dynamicEndNodeOffset, attrs2);
+  return Object.assign((input, element) => {
+    const scope = createScope();
+    queueHydrate(scope, () => {
+      element.replaceChildren(dom);
+    });
+    const dom = initRenderer(renderer, scope);
+    if (attrs2) {
+      attrs2.___apply(scope, input);
+    }
+    runHydrate();
+    return {
+      update: (newInput) => {
+        if (attrs2) {
+          attrs2.___mark(scope);
+          attrs2.___apply(scope, newInput);
+          runHydrate();
+        }
+      },
+      destroy: () => {
+      }
+    };
+  }, renderer);
+}
+function createRenderer(template, walks, setup, closureSignals = [], hasUserEffects = 0, dynamicStartNodeOffset, dynamicEndNodeOffset, attrs2) {
+  return {
+    ___template: template,
+    ___walks: walks && /* @__PURE__ */ trimWalkString(walks),
+    ___setup: setup,
+    ___clone: _clone,
+    ___closureSignals: closureSignals,
+    ___hasUserEffects: hasUserEffects,
+    ___sourceNode: void 0,
+    ___dynamicStartNodeOffset: dynamicStartNodeOffset,
+    ___dynamicEndNodeOffset: dynamicEndNodeOffset,
+    ___attrs: attrs2,
+    ___owner: void 0
+  };
+}
+function _clone() {
+  let sourceNode = this.___sourceNode;
+  if (!sourceNode) {
+    if (this.___template === void 0) {
+      throw new Error("The renderer does not have a template to clone: " + JSON.stringify(this));
+    }
+    const walks = this.___walks;
+    const ensureFragment = walks && walks.length < 4 && walks.charCodeAt(walks.length - 1) !== 32 /* Get */;
+    this.___sourceNode = sourceNode = parse(this.___template, ensureFragment);
+  }
+  return sourceNode.cloneNode(true);
+}
+var doc2 = document;
+var parser2 = /* @__PURE__ */ doc2.createElement("template");
+function parse(template, ensureFragment) {
+  let node;
+  parser2.innerHTML = template;
+  const content = parser2.content;
+  if (ensureFragment || (node = content.firstChild) !== content.lastChild || node && node.nodeType === 8 /* Comment */) {
+    node = doc2.createDocumentFragment();
+    node.appendChild(content);
+  } else if (!node) {
+    node = doc2.createTextNode("");
+  }
+  return node;
+}
+
+// src/dom/control-flow.ts
+function conditional(nodeAccessor, defaultMark, computeRenderer, subscriber2, action) {
+  const childScopeAccessor = nodeAccessor + "!" /* COND_SCOPE */;
+  const rendererAccessor = nodeAccessor + "(" /* COND_RENDERER */;
+  return derivation(rendererAccessor, defaultMark, [inRenderBody(rendererAccessor, childScopeAccessor)].concat(subscriber2 ?? []), computeRenderer, (scope, renderer) => {
+    setConditionalRenderer(scope, nodeAccessor, renderer);
+    action?.(scope, renderer);
+  });
+}
+function conditionalOnlyChild(nodeAccessor, defaultMark, computeRenderer, fragment) {
+  const childScopeAccessor = nodeAccessor + "!" /* COND_SCOPE */;
+  const rendererAccessor = nodeAccessor + "(" /* COND_RENDERER */;
+  return derivation(rendererAccessor, defaultMark, [inRenderBody(rendererAccessor, childScopeAccessor)], computeRenderer, (scope, renderer) => {
+    setConditionalRendererOnlyChild(scope, nodeAccessor, renderer, fragment);
+  });
+}
+function inConditionalScope(subscriber2, nodeAccessor) {
+  const scopeAccessor = nodeAccessor + "!" /* COND_SCOPE */;
+  return wrapSignal((methodName) => (scope, extraArg) => {
+    const conditionalScope = scope[scopeAccessor];
+    if (conditionalScope) {
+      subscriber2[methodName](conditionalScope, extraArg);
+    }
+  });
+}
+function setConditionalRenderer(scope, nodeAccessor, newRenderer, fragment = staticNodesFragment) {
+  let newScope;
+  let prevScope = scope[nodeAccessor + "!" /* COND_SCOPE */];
+  if (newRenderer) {
+    newScope = scope[nodeAccessor + "!" /* COND_SCOPE */] = createScopeWithRenderer(newRenderer, scope[nodeAccessor + "^" /* COND_CONTEXT */] ||= scope.___context, scope);
+    prevScope = prevScope || getEmptyScope(scope[nodeAccessor]);
+  } else {
+    newScope = getEmptyScope(scope[nodeAccessor]);
+    scope[nodeAccessor + "!" /* COND_SCOPE */] = void 0;
+  }
+  fragment.___insertBefore(newScope, fragment.___getParentNode(prevScope), fragment.___getFirstNode(prevScope));
+  fragment.___remove(destroyScope(prevScope));
+}
+function setConditionalRendererOnlyChild(scope, nodeAccessor, newRenderer, fragment = singleNodeFragment) {
+  const prevScope = scope[nodeAccessor + "!" /* COND_SCOPE */];
+  const referenceNode = scope[nodeAccessor];
+  referenceNode.textContent = "";
+  if (newRenderer) {
+    const newScope = scope[nodeAccessor + "!" /* COND_SCOPE */] = createScopeWithRenderer(newRenderer, scope[nodeAccessor + "^" /* COND_CONTEXT */] ||= scope.___context, scope);
+    fragment.___insertBefore(newScope, referenceNode, null);
+  }
+  prevScope && destroyScope(prevScope);
+}
+var emptyMarkerMap = /* @__PURE__ */ (() => (/* @__PURE__ */ new Map()).set(Symbol("empty"), getEmptyScope()))();
+var emptyMarkerArray = [/* @__PURE__ */ getEmptyScope()];
+var emptyMap = /* @__PURE__ */ new Map();
+var emptyArray = [];
+function loop(nodeAccessor, defaultMark, renderer, paramSubscribers, setParams, compute, fragment) {
+  const params = destructureSources(paramSubscribers, setParams);
+  const valueAccessor = nodeAccessor + ")" /* LOOP_VALUE */;
+  return derivation(valueAccessor, defaultMark, [
+    ...renderer.___closureSignals.map((signal) => inLoopScope(signal, nodeAccessor)),
+    inLoopScope(params, nodeAccessor)
+  ], compute, (scope, [newValues, keyFn]) => {
+    setLoopOf(scope, nodeAccessor, newValues, renderer, keyFn, setParams, fragment);
+  });
+}
+function inLoopScope(subscriber2, loopNodeAccessor) {
+  const loopScopeAccessor = loopNodeAccessor + "!" /* LOOP_SCOPE_ARRAY */;
+  return wrapSignal((methodName) => (scope, extraArg) => {
+    const loopScopes = scope[loopScopeAccessor] ?? [];
+    for (const loopScope of loopScopes) {
+      subscriber2[methodName](loopScope, extraArg);
+    }
+  });
+}
+function setLoopOf(scope, nodeAccessor, newValues, renderer, keyFn, setParams, fragment = singleNodeFragment) {
+  let newMap;
+  let newArray;
+  const len = newValues.length;
+  const referenceNode = scope[nodeAccessor];
+  const referenceIsMarker = referenceNode.nodeType === 8 || referenceNode.nodeType === 3;
+  const oldMap = scope[nodeAccessor + "(" /* LOOP_SCOPE_MAP */] || (referenceIsMarker ? emptyMarkerMap : emptyMap);
+  const oldArray = scope[nodeAccessor + "!" /* LOOP_SCOPE_ARRAY */] || (referenceIsMarker ? emptyMarkerArray : emptyArray);
+  let afterReference;
+  let parentNode;
+  let needsReconciliation = true;
+  if (len > 0) {
+    newMap = /* @__PURE__ */ new Map();
+    newArray = [];
+    for (let index = 0; index < len; index++) {
+      const item = newValues[index];
+      const key = keyFn ? keyFn(item) : index;
+      let childScope = oldMap.get(key);
+      if (!childScope) {
+        childScope = createScopeWithRenderer(renderer, scope[nodeAccessor + "^" /* LOOP_CONTEXT */] ||= scope.___context, scope);
+      } else {
+      }
+      if (setParams) {
+        setParams(childScope, [item, index, newValues]);
+      }
+      newMap.set(key, childScope);
+      newArray.push(childScope);
+    }
+  } else {
+    if (referenceIsMarker) {
+      newMap = emptyMarkerMap;
+      newArray = emptyMarkerArray;
+      getEmptyScope(referenceNode);
+    } else {
+      if (renderer.___hasUserEffects) {
+        for (let i = 0; i < oldArray.length; i++) {
+          destroyScope(oldArray[i]);
+        }
+      }
+      referenceNode.textContent = "";
+      newMap = emptyMap;
+      newArray = emptyArray;
+      needsReconciliation = false;
+    }
+  }
+  if (needsReconciliation) {
+    if (referenceIsMarker) {
+      if (oldMap === emptyMarkerMap) {
+        getEmptyScope(referenceNode);
+      }
+      const oldLastChild = oldArray[oldArray.length - 1];
+      afterReference = fragment.___getAfterNode(oldLastChild);
+      parentNode = fragment.___getParentNode(oldLastChild);
+    } else {
+      afterReference = null;
+      parentNode = referenceNode;
+    }
+    reconcile(parentNode, oldArray, newArray, afterReference, fragment);
+  }
+  scope[nodeAccessor + "(" /* LOOP_SCOPE_MAP */] = newMap;
+  scope[nodeAccessor + "!" /* LOOP_SCOPE_ARRAY */] = newArray;
+}
+function computeLoopFromTo(from, to, step) {
+  const range = [];
+  for (let i = from; i <= to; i += step) {
+    range.push(i);
+  }
+  return [range, keyFromTo];
+}
+function keyFromTo(item) {
+  return item;
+}
+function computeLoopIn(object) {
+  return [Object.entries(object), keyIn];
+}
+function keyIn(item) {
+  return item[0];
+}
+
 // src/dom/event.ts
 var delegationRoots = /* @__PURE__ */ new WeakMap();
 var eventOpts = {
-  capture: true,
-  passive: true
+  capture: true
 };
 function on(element, type, handler) {
   const delegationRoot = element.getRootNode();
@@ -1173,7 +1319,7 @@ function init(runtimeId = "M") {
         const scope = getScope(scopeId);
         const data2 = nodeValue.slice(nodeValue.indexOf(" ") + 1);
         if (token === "#" /* NODE */) {
-          scope[data2] = currentNode.nextSibling;
+          scope[data2] = currentNode.previousSibling;
         } else if (token === "^" /* SECTION_START */) {
           stack.push(currentScopeId);
           currentScopeId = scopeId;
@@ -1185,7 +1331,7 @@ function init(runtimeId = "M") {
             currentScopeId = stack.pop();
           }
         } else if (token === "|" /* SECTION_SINGLE_NODES_END */) {
-          scope[parseInt(data2)] = currentNode;
+          scope[true ? data2.slice(0, data2.indexOf(" ")) : parseInt(data2)] = currentNode;
           const childScopeIds = JSON.parse("[" + data2.slice(data2.indexOf(" ") + 1) + "]");
           for (let i = childScopeIds.length - 1; i >= 0; i--) {
             const childScope = getScope(childScopeIds[i]);
@@ -1233,9 +1379,11 @@ export {
   data,
   derivation,
   destructureSources,
+  dynamicAttrsProxy,
   dynamicClosure,
   dynamicFragment,
   dynamicSubscribers,
+  dynamicTagAttrs,
   getInContext,
   html,
   hydrateSubscription,
