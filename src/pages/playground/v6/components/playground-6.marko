@@ -1,8 +1,19 @@
-import * as fluurtTranslator from "../../../../../browser-shims/v6/translator"
+import * as fluurtTranslator from "../../../../../browser-shims/v6/translator";
 
-<hash-value/files = [{ 
-  name:"index.marko", 
-  path:"/components/index.marko", 
-  content:"<let/count=0/>\n<button onClick() { count++ }>\n  ${count}\n</button>"
-}]/>
-<repl getTranslator() { return fluurtTranslator } files:=files/>
+<hash-value/files=[
+  {
+    name: "index.marko",
+    path: "/components/index.marko",
+    content:
+      "<let/count=0/>\n<button onClick() { count++ }>\n  ${count}\n</button>",
+  },
+]/>
+<repl
+  getCompilerOptions() {
+    return {
+      translator: fluurtTranslator,
+      optimize: false,
+    };
+  }
+  files:=files
+/>

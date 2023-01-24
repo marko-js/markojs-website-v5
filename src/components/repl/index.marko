@@ -1,4 +1,4 @@
-<attrs/{ getTranslator, files }/>
+<attrs/{ getCompilerOptions, files }/>
 <let/selectedIndex = 0/>
 <let/previewType = "preview"/>
 <let/debounce = false/>
@@ -68,7 +68,7 @@
           type=previewType
           files=files
           selectedFile=selectedFile
-          getTranslator=getTranslator
+          getCompilerOptions=getCompilerOptions
           debounce=debounce/>
         <lifecycle onMount = (async () => { 
           preview = await import("./components/preview");

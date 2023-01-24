@@ -6,7 +6,7 @@ import highlight from "../../../utils/highlight"
 import { bundle, compile } from "../../../utils/compiler"
 import fs, { vol } from "memfs"
 
-<attrs/{ type, files, selectedFile, getTranslator, debounce, onSelectError, onSyntaxError }/>
+<attrs/{ type, files, selectedFile, getCompilerOptions, debounce, onSelectError, onSyntaxError }/>
 <id/examplePath/>
 <const/selectedPath = path.join("/", examplePath, selectedFile.path)/>
 <const/defaultPath = path.join("/", examplePath, files[0].path)/>
@@ -143,7 +143,7 @@ import fs, { vol } from "memfs"
           entry: defaultPath,
           markoOptions: { 
             output: "vdom",
-            translator: getTranslator && getTranslator()
+            ...(getCompilerOptions ? getCompilerOptions() : {})
           }
         });
 
@@ -155,7 +155,7 @@ import fs, { vol } from "memfs"
           style.innerHTML = bundleResult.css;
           contentDocument.head.appendChild(style);
 
-          if (getTranslator) {
+          if (getCompilerOptions?.().translator) {
             // new api
             template.default({}, contentDocument.body);
           } else {
@@ -177,11 +177,12 @@ import fs, { vol } from "memfs"
         // }
       } else {
         const output = type.startsWith("compiled-html") ? "html" : "vdom";
+        debugger;
         const code = await compile({
           entry: selectedPath,
           markoOptions: { 
             output,
-            translator: getTranslator && getTranslator()
+            ...(getCompilerOptions ? getCompilerOptions() : {})
           }
         });
         result = highlight(
