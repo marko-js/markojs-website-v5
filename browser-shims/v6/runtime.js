@@ -1350,7 +1350,8 @@ function init(runtimeId = "M") {
       }
     }
     for (let i = 0; i < calls.length; i += 2) {
-      registeredObjects.get(calls[i + 1])(scopeLookup[calls[i]]);
+      const hydrateFn = registeredObjects.get(calls[i + 1]);
+      hydrateFn(scopeLookup[calls[i]]);
     }
   }
 }
