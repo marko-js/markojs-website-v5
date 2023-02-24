@@ -6,6 +6,7 @@ module.exports = function markodown(source) {
   const markdown = source
     .replace(/\&(?!\S+;)/g, "&amp;")
     .replace(/https?:\/\/markojs\.com\//g, "/")
+    .replace(/(\#\w+)\./g, "$1") // TODO: fix marko-magic to not process jump links
     .replace(/(?<=\]\()\.*([\w\d\-\/]+)\.md/g, match => {
       // Markdown documents from external sources do not have a file path
       if (filePath) {
@@ -71,7 +72,7 @@ module.exports = function markodown(source) {
       lang = lang.slice(0, index);
     }
 
-    return `<code-block lang="${lang}" lines="${lines}">${code.replace(/<(\/(?:code-block)?>)/g, "&lt;$1")}</code-block>\n`;
+    return `<code-block lang="${lang}" lines="${lines}">${code.replace(/\/\*/g, "&#x2f;*").replace(/<(\/(?:code-block)?>)/g, "&lt;$1")}</code-block>\n`;
   };
 
   markedRenderer.image = function(href, title, text) {
