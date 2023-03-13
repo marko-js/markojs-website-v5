@@ -19,18 +19,20 @@
       </@actions>
       <@body>
         <let/activeEditor = null/>
-        <activeEditor
-          value=selectedFile.content 
-          filename=selectedFile.path 
-          valueChange(content) {
-            const modifiedFile = { ...selectedFile, content };
-            files = [
-              ...files.slice(0, selectedIndex), 
-              modifiedFile,
-              ...files.slice(selectedIndex+1)
-            ];
-            debounce = true;
-          }/>
+        <if=activeEditor>
+          <activeEditor
+            value=selectedFile.content 
+            filename=selectedFile.path 
+            valueChange(content) {
+              const modifiedFile = { ...selectedFile, content };
+              files = [
+                ...files.slice(0, selectedIndex), 
+                modifiedFile,
+                ...files.slice(selectedIndex+1)
+              ];
+              debounce = true;
+            }/>
+        </if>
         <lifecycle onMount = (async () => { 
           const e = await import("./components/editor");
           await e.loading;
