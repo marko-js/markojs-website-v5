@@ -147,7 +147,7 @@ import fs, { vol } from "memfs"
           }
         });
 
-        if (type === "preview") {
+        if (outputEl) {
           const { contentWindow, contentDocument } = outputEl.next();
           contentWindow.__INTERNAL_MODULES__ = window.__INTERNAL_MODULES__;
           const template = (0, contentWindow.eval)(bundleResult.js);
@@ -177,7 +177,6 @@ import fs, { vol } from "memfs"
         // }
       } else {
         const output = type.startsWith("compiled-html") ? "html" : "vdom";
-        debugger;
         const code = await compile({
           entry: selectedPath,
           markoOptions: { 
