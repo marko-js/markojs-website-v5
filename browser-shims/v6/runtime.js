@@ -86,11 +86,11 @@ function triggerMacroTask() {
 // src/dom/queue.ts
 var currentBatch = [];
 var currentHydrate = [];
-function queueSource(scope, signal, value) {
+function queueSource(scope, signal, value2) {
   schedule();
-  signal.___mark(scope);
-  currentBatch.push(scope, signal, value);
-  return value;
+  signal(scope, null, null);
+  currentBatch.push(scope, signal, value2);
+  return value2;
 }
 function queueHydrate(scope, fn) {
   currentHydrate.push(scope, fn);
@@ -100,8 +100,8 @@ function run() {
     for (let i = 0; i < currentBatch.length; i += 3 /* TOTAL */) {
       const scope = currentBatch[i + 0 /* SCOPE */];
       const signal = currentBatch[i + 1 /* SIGNAL */];
-      const value = currentBatch[i + 2 /* VALUE */];
-      signal.___apply(scope, value);
+      const value2 = currentBatch[i + 2 /* VALUE */];
+      signal(scope, value2, true);
     }
   } finally {
     currentBatch = [];
@@ -120,321 +120,6 @@ function runHydrate() {
   }
 }
 
-// src/dom/signals.ts
-var accessorId = 0;
-function markSubscribers(scope, subscribers) {
-  for (const subscriber2 of subscribers) {
-    subscriber2.___mark(scope);
-  }
-}
-function notifySubscribers(scope, stale, subscribers) {
-  for (const subscriber2 of subscribers) {
-    subscriber2.___notify(scope, stale);
-  }
-}
-function applyValue(scope, value, valueAccessor, subscribers, action) {
-  const stale = write(scope, valueAccessor, value);
-  if (stale) {
-    action?.(scope, value);
-  }
-  notifySubscribers(scope, stale, subscribers);
-}
-function setSource(scope, signal, value) {
-  signal.___apply(scope, value);
-}
-function notifySignal(scope, signal) {
-  signal.___notify(scope, true);
-}
-function source(valueAccessor, subscribers, action) {
-  const markAccessor = valueAccessor + "#" /* MARK */;
-  const signal = {
-    ___mark(scope) {
-      scope[markAccessor] = 1;
-      markSubscribers(scope, subscribers);
-    },
-    ___notify(scope, stale) {
-      if (!stale) {
-        notifySubscribers(scope, stale, subscribers);
-      }
-    },
-    ___apply(scope, data2) {
-      scope[markAccessor] = 1;
-      applyValue(scope, data2, valueAccessor, subscribers, action);
-      scope[markAccessor] = 0;
-    }
-  };
-  if (true) {
-    setDebugInfo(signal, "source", {
-      valueAccessor,
-      markAccessor,
-      subscribers,
-      action
-    });
-  }
-  return signal;
-}
-function destructureSources(subscribers, action) {
-  const signal = {
-    ___mark(scope) {
-      markSubscribers(scope, subscribers);
-    },
-    ___notify(scope, stale) {
-      if (!stale) {
-        notifySubscribers(scope, stale, subscribers);
-      }
-    },
-    ___apply: action
-  };
-  if (true) {
-    setDebugInfo(signal, "destructureSources", { subscribers, action });
-  }
-  return signal;
-}
-function baseSubscriber(accessorId2, subscribers, defaultMark, apply) {
-  const markAccessor = accessorId2 + "#" /* MARK */;
-  const staleAccessor = accessorId2 + "&" /* STALE */;
-  const signal = {
-    ___mark(scope) {
-      const mark = scope[markAccessor] = (scope[markAccessor] || 0) + 1;
-      if (mark === 1) {
-        markSubscribers(scope, subscribers);
-      }
-    },
-    ___notify(scope, stale) {
-      if (stale) {
-        scope[staleAccessor] = true;
-      }
-      if (scope[markAccessor] === void 0) {
-        scope[markAccessor] = typeof defaultMark === "number" ? defaultMark : defaultMark(scope);
-        scope[staleAccessor] = true;
-      }
-      if (scope[markAccessor] === 1) {
-        if (scope[staleAccessor]) {
-          scope[staleAccessor] = false;
-          apply(scope);
-        } else {
-          notifySubscribers(scope, false, subscribers);
-        }
-      }
-      scope[markAccessor]--;
-    },
-    ___apply() {
-      if (true) {
-        throw new Error("Derivations should not be directly applied");
-      }
-    }
-  };
-  if (true) {
-    setDebugInfo(signal, "baseSubscriber", {
-      accessorId: accessorId2,
-      markAccessor,
-      staleAccessor,
-      subscribers,
-      defaultMark,
-      apply
-    });
-  }
-  return signal;
-}
-function subscriber(subscribers, defaultMark, apply) {
-  const signal = baseSubscriber("?" /* DYNAMIC */ + accessorId++, subscribers, defaultMark, apply);
-  if (true) {
-    setDebugInfo(signal, "subscriber", { subscribers, defaultMark, apply });
-  }
-  return signal;
-}
-function derivation(valueAccessor, defaultMark, subscribers, compute, action) {
-  const signal = baseSubscriber(valueAccessor, subscribers, defaultMark, (scope) => {
-    applyValue(scope, compute(scope), valueAccessor, subscribers, action);
-  });
-  if (true) {
-    setDebugInfo(signal, "derivation", {
-      valueAccessor,
-      defaultMark,
-      subscribers,
-      compute,
-      action
-    });
-  }
-  return signal;
-}
-function closure(ownerLevel, providerAccessor, subscribers, action) {
-  const getOwner = typeof ownerLevel === "function" ? ownerLevel : (scope) => getOwnerScope(scope, ownerLevel);
-  const getProviderAccessor = typeof providerAccessor === "function" ? providerAccessor : () => providerAccessor;
-  const getDefaultMark = (scope) => {
-    const ownerScope = getOwner(scope);
-    const providerMarkAccessor = getProviderAccessor(scope) + "#" /* MARK */;
-    const providerMark = ownerScope[providerMarkAccessor];
-    const providerHasRun = providerMark === void 0 && !ownerScope.___client || providerMark === 0;
-    return providerHasRun ? 1 : 2;
-  };
-  const apply = (scope) => {
-    const ownerScope = getOwner(scope);
-    const providerValueAccessor = getProviderAccessor(scope);
-    action?.(scope, ownerScope[providerValueAccessor]);
-    notifySubscribers(scope, true, subscribers);
-  };
-  const signal = baseSubscriber("?" /* DYNAMIC */ + accessorId++, subscribers, getDefaultMark, apply);
-  if (true) {
-    setDebugInfo(signal, "closure", {
-      ownerLevel,
-      providerAccessor,
-      subscribers,
-      action
-    });
-  }
-  return signal;
-}
-function dynamicClosure(ownerLevel, providerAccessor, subscribers, action) {
-  const getOwner = typeof ownerLevel === "function" ? ownerLevel : (scope) => getOwnerScope(scope, ownerLevel);
-  const getProviderAccessor = typeof providerAccessor === "function" ? providerAccessor : () => providerAccessor;
-  const signal = {
-    ...closure(ownerLevel, providerAccessor, subscribers, action),
-    ___subscribe(scope) {
-      const ownerScope = getOwner(scope);
-      const providerSubscriptionsAccessor = getProviderAccessor(scope) + "*" /* SUBSCRIBERS */;
-      ownerScope[providerSubscriptionsAccessor] ??= /* @__PURE__ */ new Set();
-      ownerScope[providerSubscriptionsAccessor].add(bindSignal(scope, signal));
-    },
-    ___unsubscribe(scope) {
-      const ownerScope = getOwner(scope);
-      const providerSubscriptionsAccessor = getProviderAccessor(scope) + "*" /* SUBSCRIBERS */;
-      ownerScope[providerSubscriptionsAccessor]?.delete(bindSignal(scope, signal));
-    }
-  };
-  if (true) {
-    setDebugInfo(signal, "derivation", {
-      ownerLevel,
-      providerAccessor,
-      subscribers,
-      action
-    });
-  }
-  return signal;
-}
-function dynamicSubscribers(valueAccessor) {
-  const subscriptionsAccessor = valueAccessor + "*" /* SUBSCRIBERS */;
-  const signal = wrapSignal((methodName) => (scope, extraArg) => {
-    const subscribers = scope[subscriptionsAccessor];
-    if (subscribers) {
-      for (const subscriber2 of subscribers) {
-        subscriber2[methodName](scope, extraArg);
-      }
-    }
-  });
-  if (true) {
-    setDebugInfo(signal, "dynamicSubscribers", {
-      valueAccessor,
-      subscriptionsAccessor
-    });
-  }
-  return signal;
-}
-function contextClosure(valueAccessor, contextKey, subscribers, action) {
-  const signal = dynamicClosure((scope) => scope.___context[contextKey][0], (scope) => scope.___context[contextKey][1], subscribers, (scope, value) => {
-    scope[valueAccessor] = value;
-    action?.(scope, value);
-  });
-  if (true) {
-    setDebugInfo(signal, "contextClosure", {
-      valueAccessor,
-      contextKey,
-      subscribers,
-      action
-    });
-  }
-  return signal;
-}
-function wrapSignal(wrapper) {
-  const signal = {
-    ___mark: wrapper("___mark"),
-    ___notify: wrapper("___notify"),
-    ___apply: wrapper("___apply")
-  };
-  if (true) {
-    setDebugInfo(signal, "wrapSignal", { wrapper });
-  }
-  return signal;
-}
-function setTagVar(scope, childAccessor, tagVarSignal2) {
-  scope[childAccessor]["/" /* TAG_VARIABLE */] = bindSignal(scope, tagVarSignal2);
-}
-var tagVarSignal = wrapSignal((methodName) => (scope, extraArg) => scope["/" /* TAG_VARIABLE */]?.[methodName](null, extraArg));
-if (true) {
-  setDebugInfo(tagVarSignal, "tagVar", {});
-}
-function wrapSignalWithSubscription(wrapper) {
-  const signal = {
-    ...wrapSignal(wrapper),
-    ___subscribe: wrapper("___subscribe"),
-    ___unsubscribe: wrapper("___unsubscribe")
-  };
-  if (true) {
-    setDebugInfo(signal, "wrapSignalWithSubscription", { wrapper });
-  }
-  return signal;
-}
-function inChild(subscriber2, childScopeAccessor) {
-  const signal = wrapSignal((methodName) => (scope, extraArg) => subscriber2[methodName](scope[childScopeAccessor], extraArg));
-  if (true) {
-    setDebugInfo(signal, "inChild", { subscriber: subscriber2, childScopeAccessor });
-  }
-  return signal;
-}
-function inChildMany(subscribers, childScopeAccessor) {
-  const signal = wrapSignalWithSubscription((methodName) => (scope, extraArg) => {
-    const childScope = scope[childScopeAccessor];
-    for (const signal2 of subscribers) {
-      signal2[methodName]?.(childScope, extraArg);
-    }
-  });
-  if (true) {
-    setDebugInfo(signal, "inChildMany", { subscribers, childScopeAccessor });
-  }
-  return signal;
-}
-function inRenderBody(renderBodyIndex, childScopeAccessor) {
-  const signal = wrapSignal((methodName) => (scope, extraArg) => {
-    const childScope = scope[childScopeAccessor];
-    const signals = scope[renderBodyIndex]?.___closureSignals ?? [];
-    for (const signal2 of signals) {
-      signal2[methodName](childScope, extraArg);
-    }
-  });
-  if (true) {
-    setDebugInfo(signal, "inRenderBody", {
-      renderBodyIndex,
-      childScopeAccessor
-    });
-  }
-  return signal;
-}
-function dynamicAttrsProxy(nodeAccessor) {
-  const signal = wrapSignal((methodName) => (scope, extraArg) => {
-    const renderer = scope[nodeAccessor + "(" /* COND_RENDERER */];
-    const childScope = scope[nodeAccessor + "!" /* COND_SCOPE */];
-    renderer?.___attrs?.[methodName](childScope, extraArg);
-  });
-  if (true) {
-    setDebugInfo(signal, "dynamicAttrsProxy", {
-      nodeAccessor
-    });
-  }
-  return signal;
-}
-var tagId = 0;
-function nextTagId() {
-  return "c" + tagId++;
-}
-function setDebugInfo(signal, type, data2) {
-  const signalCopy = { ...signal };
-  for (const key in signal) {
-    delete signal[key];
-  }
-  Object.setPrototypeOf(signal, new Function(`return new (class ${type} {})()`)());
-  Object.assign(signal, data2, signalCopy, data2);
-}
-
 // src/dom/scope.ts
 function createScope(context) {
   const scope = {};
@@ -447,36 +132,33 @@ function getEmptyScope(marker) {
   emptyScope.___startNode = emptyScope.___endNode = marker;
   return emptyScope;
 }
-function write(scope, localIndex, value) {
-  if (scope[localIndex] !== value) {
-    scope[localIndex] = value;
+function write(scope, localIndex, value2) {
+  if (scope[localIndex] !== value2) {
+    scope[localIndex] = value2;
     return 1;
   }
   return 0;
 }
-function binder(bind2) {
-  return (scope, value) => {
+function binder(bind) {
+  return (scope, value2) => {
     scope.___bound ??= /* @__PURE__ */ new Map();
-    let bound = scope.___bound.get(value);
+    let bound = scope.___bound.get(value2);
     if (!bound) {
-      bound = bind2(scope, value);
-      scope.___bound.set(value, bound);
+      bound = bind(scope, value2);
+      scope.___bound.set(value2, bound);
     }
     return bound;
-  };
-}
-function bind(boundScope, fn) {
-  return fn.length ? function bound(...args) {
-    return fn.call(this, boundScope, ...args);
-  } : function bound() {
-    return fn.call(this, boundScope);
   };
 }
 var bindRenderer = binder((ownerScope, renderer) => ({
   ...renderer,
   ___owner: ownerScope
 }));
-var bindSignal = binder((boundScope, signal) => wrapSignal((methodName) => (_scope, extraArg) => signal[methodName](boundScope, extraArg)));
+var bindFunction = binder((boundScope, fn) => fn.length ? function bound(...args) {
+  return fn.call(this, boundScope, ...args);
+} : function bound() {
+  return fn.call(this, boundScope);
+});
 function destroyScope(scope) {
   scope._?.___cleanup?.delete(scope);
   const cleanup = scope.___cleanup;
@@ -503,12 +185,6 @@ function onDestroy(scope, localIndex) {
     (parentScope.___cleanup = parentScope.___cleanup || /* @__PURE__ */ new Set()).add(scope);
   }
   (scope.___cleanup = scope.___cleanup || /* @__PURE__ */ new Set()).add(localIndex);
-}
-function getOwnerScope(scope, level) {
-  let ownerScope = scope._;
-  for (let i = 1; i++ < level; )
-    ownerScope = ownerScope._;
-  return ownerScope;
 }
 
 // src/dom/reconcile-longest-increasing-subsequence.ts
@@ -681,9 +357,9 @@ function longestIncreasingSubsequence(a) {
 // src/common/context.ts
 var Context = null;
 var usesContext = false;
-function pushContext(key, value) {
+function pushContext(key, value2) {
   usesContext = true;
-  (Context = Object.create(Context))[key] = value;
+  (Context = Object.create(Context))[key] = value2;
 }
 function popContext() {
   Context = Object.getPrototypeOf(Context);
@@ -699,27 +375,27 @@ function setContext(v) {
 }
 
 // src/common/helpers.ts
-function classValue(value) {
-  return toDelimitedString(value, " ", stringifyClassObject);
+function classValue(value2) {
+  return toDelimitedString(value2, " ", stringifyClassObject);
 }
-function stringifyClassObject(name, value) {
-  if (isVoid(value)) {
+function stringifyClassObject(name, value2) {
+  if (isVoid(value2)) {
     return "";
   }
   return name;
 }
-function styleValue(value) {
-  return toDelimitedString(value, ";", stringifyStyleObject);
+function styleValue(value2) {
+  return toDelimitedString(value2, ";", stringifyStyleObject);
 }
 var NON_DIMENSIONAL = /^(--|ta|or|li|z)|n-c|i(do|nk|m|t)|w$|we/;
-function stringifyStyleObject(name, value) {
-  if (isVoid(value)) {
+function stringifyStyleObject(name, value2) {
+  if (isVoid(value2)) {
     return "";
   }
-  if (typeof value === "number" && value && !NON_DIMENSIONAL.test(name)) {
-    value += "px";
+  if (typeof value2 === "number" && value2 && !NON_DIMENSIONAL.test(name)) {
+    value2 += "px";
   }
-  return `${name}:${value}`;
+  return `${name}:${value2}`;
 }
 function toDelimitedString(val, delimiter, stringify) {
   switch (typeof val) {
@@ -752,27 +428,27 @@ function toDelimitedString(val, delimiter, stringify) {
   }
   return "";
 }
-function isVoid(value) {
-  return value == null || value === false;
+function isVoid(value2) {
+  return value2 == null || value2 === false;
 }
 
 // src/dom/dom.ts
-function attr(element, name, value) {
-  const normalizedValue = normalizeAttrValue(value);
+function attr(element, name, value2) {
+  const normalizedValue = normalizeAttrValue(value2);
   if (normalizedValue === void 0) {
     element.removeAttribute(name);
   } else {
     element.setAttribute(name, normalizedValue);
   }
 }
-function classAttr(element, value) {
-  attr(element, "class", classValue(value) || false);
+function classAttr(element, value2) {
+  attr(element, "class", classValue(value2) || false);
 }
-function styleAttr(element, value) {
-  attr(element, "style", styleValue(value) || false);
+function styleAttr(element, value2) {
+  attr(element, "style", styleValue(value2) || false);
 }
-function data(node, value) {
-  const normalizedValue = normalizeString(value);
+function data(node, value2) {
+  const normalizedValue = normalizeString(value2);
   if (node.data !== normalizedValue) {
     node.data = normalizedValue;
   }
@@ -802,12 +478,12 @@ function attrs(scope, elementAccessor, nextAttrs) {
 }
 var doc = document;
 var parser = /* @__PURE__ */ doc.createElement("template");
-function html(scope, value, index) {
+function html(scope, value2, index) {
   const firstChild = scope[index];
   const lastChild = scope[index + "-"] || firstChild;
   const parentNode = firstChild.parentNode;
   const afterReference = lastChild.nextSibling;
-  parser.innerHTML = value || " ";
+  parser.innerHTML = value2 || value2 === 0 ? `${value2}` : "<!>";
   const newContent = parser.content;
   write(scope, index, newContent.firstChild);
   write(scope, index + "-", newContent.lastChild);
@@ -835,14 +511,13 @@ function props(scope, nodeIndex, index) {
   }
   scope[index + "-"] = nextProps;
 }
-function innerHTML(element, value) {
-  element.innerHTML = normalizeString(value);
+function normalizeAttrValue(value2) {
+  if (value2 || value2 === 0) {
+    return value2 === true ? "" : value2 + "";
+  }
 }
-function normalizeAttrValue(value) {
-  return value == null || value === false ? void 0 : value + "";
-}
-function normalizeString(value) {
-  return value == null ? "" : value + "";
+function normalizeString(value2) {
+  return value2 || value2 === 0 ? value2 + "" : "\u200D";
 }
 function userEffect(scope, index, fn) {
   const cleanup = scope[index];
@@ -881,49 +556,49 @@ function walk(startNode, walkCodes, scope) {
   walker.currentNode = document.documentElement;
 }
 function walkInternal(walkCodes, scope, currentWalkIndex) {
-  let value;
+  let value2;
   let storedMultiplier = 0;
   let currentMultiplier = 0;
   let currentScopeIndex = 0;
-  while (value = walkCodes.charCodeAt(currentWalkIndex++)) {
+  while (value2 = walkCodes.charCodeAt(currentWalkIndex++)) {
     currentMultiplier = storedMultiplier;
     storedMultiplier = 0;
-    if (value >= 117 /* Multiplier */) {
-      storedMultiplier = currentMultiplier * 10 /* Multiplier */ + value - 117 /* Multiplier */;
-    } else if (value >= 107 /* Out */) {
-      value = 10 /* Out */ * currentMultiplier + value - 107 /* Out */;
-      while (value--) {
+    if (value2 >= 117 /* Multiplier */) {
+      storedMultiplier = currentMultiplier * 10 /* Multiplier */ + value2 - 117 /* Multiplier */;
+    } else if (value2 >= 107 /* Out */) {
+      value2 = 10 /* Out */ * currentMultiplier + value2 - 107 /* Out */;
+      while (value2--) {
         walker.parentNode();
       }
       walker.nextSibling();
-    } else if (value >= 97 /* Over */) {
-      value = 10 /* Over */ * currentMultiplier + value - 97 /* Over */;
-      while (value--) {
+    } else if (value2 >= 97 /* Over */) {
+      value2 = 10 /* Over */ * currentMultiplier + value2 - 97 /* Over */;
+      while (value2--) {
         !walker.nextSibling() && !walker.nextNode();
       }
-    } else if (value >= 67 /* Next */) {
-      value = 20 /* Next */ * currentMultiplier + value - 67 /* Next */;
-      while (value--) {
+    } else if (value2 >= 67 /* Next */) {
+      value2 = 20 /* Next */ * currentMultiplier + value2 - 67 /* Next */;
+      while (value2--) {
         walker.nextNode();
       }
-    } else if (value === 47 /* BeginChild */) {
+    } else if (value2 === 47 /* BeginChild */) {
       currentWalkIndex = walkInternal(walkCodes, scope[true ? getDebugKey(currentScopeIndex++, "#childScope") : currentScopeIndex++] = createScope(scope.___context), currentWalkIndex);
-    } else if (value === 38 /* EndChild */) {
+    } else if (value2 === 38 /* EndChild */) {
       return currentWalkIndex;
-    } else if (value === 32 /* Get */) {
+    } else if (value2 === 32 /* Get */) {
       scope[true ? getDebugKey(currentScopeIndex++, walker.currentNode) : currentScopeIndex++] = walker.currentNode;
     } else {
       const newNode = scope[true ? getDebugKey(currentScopeIndex++, "#text") : currentScopeIndex++] = document.createTextNode("");
       const current = walker.currentNode;
       const parentNode = current.parentNode;
-      if (value === 33 /* Before */) {
+      if (value2 === 33 /* Before */) {
         parentNode.insertBefore(newNode, current);
       } else {
-        if (value === 35 /* After */) {
+        if (value2 === 35 /* After */) {
           parentNode.insertBefore(newNode, current.nextSibling);
         } else {
-          if (value !== 37 /* Replace */) {
-            throw new Error(`Unknown walk code: ${value}`);
+          if (value2 !== 37 /* Replace */) {
+            throw new Error(`Unknown walk code: ${value2}`);
           }
           parentNode.replaceChild(newNode, current);
         }
@@ -944,6 +619,116 @@ function getDebugKey(index, node) {
     return `#${node.tagName.toLowerCase()}/${index}`;
   }
   return index;
+}
+
+// src/dom/hydrate.ts
+var registeredObjects = /* @__PURE__ */ new Map();
+var doc2 = document;
+function register(id, obj) {
+  registeredObjects.set(id, obj);
+  return obj;
+}
+function init(runtimeId = "M") {
+  const runtimeLength = runtimeId.length;
+  const hydrateVar = runtimeId + "$h" /* VAR_HYDRATE */;
+  const initialHydration = window[hydrateVar];
+  const walker2 = doc2.createTreeWalker(doc2, 128);
+  let currentScopeId;
+  let currentNode;
+  const scopeLookup = {};
+  const getScope = (id) => scopeLookup[id] ?? (scopeLookup[id] = {});
+  const stack = [];
+  const fakeArray = { push: hydrate };
+  const bind = (registryId, scope) => {
+    const obj = registeredObjects.get(registryId);
+    if (!scope) {
+      return obj;
+    } else if (obj.___template) {
+      return bindRenderer(scope, obj);
+    } else {
+      return bindFunction(scope, obj);
+    }
+  };
+  Object.defineProperty(window, hydrateVar, {
+    get() {
+      return fakeArray;
+    }
+  });
+  if (initialHydration) {
+    for (let i = 0; i < initialHydration.length; i += 2) {
+      hydrate(initialHydration[i], initialHydration[i + 1]);
+    }
+  }
+  function hydrate(scopesFn, calls) {
+    if (doc2.readyState !== "loading") {
+      walker2.currentNode = doc2;
+    }
+    const scopes = scopesFn?.(bind, scopeLookup);
+    for (const scopeIdAsString in scopes) {
+      const scopeId = parseInt(scopeIdAsString);
+      const scope = scopes[scopeId];
+      const storedScope = scopeLookup[scopeId];
+      if (storedScope !== scope) {
+        scopeLookup[scopeId] = Object.assign(scope, storedScope);
+      }
+    }
+    while (currentNode = walker2.nextNode()) {
+      const nodeValue = currentNode.nodeValue;
+      if (nodeValue?.startsWith(`${runtimeId}`)) {
+        const token = nodeValue[runtimeLength];
+        const scopeId = parseInt(nodeValue.slice(runtimeLength + 1));
+        const scope = getScope(scopeId);
+        const data2 = nodeValue.slice(nodeValue.indexOf(" ") + 1);
+        if (token === "#" /* NODE */) {
+          scope[data2] = currentNode.previousSibling;
+        } else if (token === "^" /* SECTION_START */) {
+          stack.push(currentScopeId);
+          currentScopeId = scopeId;
+          scope.___startNode = currentNode;
+        } else if (token === "/" /* SECTION_END */) {
+          scope[data2] = currentNode;
+          if (scopeId < currentScopeId) {
+            const currScope = scopeLookup[currentScopeId];
+            const currParent = currentNode.parentNode;
+            const startNode = currScope.___startNode;
+            if (currParent !== startNode.parentNode) {
+              currParent.prepend(startNode);
+            }
+            currScope.___endNode = currentNode.previousSibling;
+            currentScopeId = stack.pop();
+          }
+        } else if (token === "|" /* SECTION_SINGLE_NODES_END */) {
+          scope[true ? data2.slice(0, data2.indexOf(" ")) : parseInt(data2)] = currentNode;
+          const childScopeIds = JSON.parse("[" + data2.slice(data2.indexOf(" ") + 1) + "]");
+          for (let i = childScopeIds.length - 1; i >= 0; i--) {
+            const childScope = getScope(childScopeIds[i]);
+            while ((currentNode = currentNode.previousSibling).nodeType === 8)
+              ;
+            childScope.___startNode = childScope.___endNode = currentNode;
+          }
+        } else if (true) {
+          throw new Error("MALFORMED MARKER: " + nodeValue);
+        }
+      }
+    }
+    for (let i = 0; i < calls.length; i += 2) {
+      const hydrateFn = registeredObjects.get(calls[i + 1]);
+      hydrateFn(scopeLookup[calls[i]]);
+    }
+  }
+}
+function hydrateSubscription(signal, ownerValueAccessor, getOwnerScope = (scope) => scope._) {
+  const ownerMarkAccessor = ownerValueAccessor + "#" /* MARK */;
+  const ownerSubscribersAccessor = ownerValueAccessor + "*" /* SUBSCRIBERS */;
+  return (subscriberScope) => {
+    const ownerScope = getOwnerScope(subscriberScope);
+    const boundSignal = bindFunction(subscriberScope, signal);
+    const ownerMark = ownerScope[ownerMarkAccessor];
+    (ownerScope[ownerSubscribersAccessor] ??= /* @__PURE__ */ new Set()).add(boundSignal);
+    if (ownerMark === 0) {
+    } else if (ownerMark >= 1) {
+    }
+  };
 }
 
 // src/dom/renderer.ts
@@ -969,7 +754,7 @@ function initContextProvider(scope, scopeAccessor, valueAccessor, contextKey, re
   }, scope);
   (renderer.___fragment ?? defaultFragment).___insertBefore(newScope, node.parentNode, node.nextSibling);
   for (const signal of renderer.___closureSignals) {
-    signal.___notify(newScope, true);
+    signal(newScope, true);
   }
 }
 function initRenderer(renderer, scope) {
@@ -988,48 +773,52 @@ function initRenderer(renderer, scope) {
   }
   return dom;
 }
-function dynamicTagAttrs(scope, nodeAccessor, getAttrs, renderBody) {
+function dynamicTagAttrs(scope, nodeAccessor, getAttrs, renderBody, dirty) {
   const renderer = scope[nodeAccessor + "(" /* COND_RENDERER */];
-  if (!renderer || renderer === renderBody) {
+  if (!renderer || renderer === renderBody || !dirty && !renderer.___attrs) {
     return;
   }
   const childScope = scope[nodeAccessor + "!" /* COND_SCOPE */];
-  const attributes = getAttrs();
   if (typeof renderer === "string") {
     const elementAccessor = true ? `#${renderer}/0` : 0;
-    attrs(childScope, elementAccessor, attributes);
+    attrs(childScope, elementAccessor, getAttrs());
     setConditionalRendererOnlyChild(childScope, elementAccessor, renderBody);
   } else if (renderer.___attrs) {
-    setSource(childScope, renderer.___attrs, {
-      ...attributes,
-      renderBody: renderBody ?? attributes.renderBody
-    });
+    if (dirty) {
+      const attributes = getAttrs();
+      renderer.___attrs(childScope, {
+        ...attributes,
+        renderBody: renderBody ?? attributes.renderBody
+      }, dirty);
+    } else {
+      renderer.___attrs(childScope, null, dirty);
+    }
   }
 }
-function createRenderFn(template, walks, setup, attrs2, closureSignals, dynamicStartNodeOffset, dynamicEndNodeOffset) {
+function createRenderFn(template, walks, setup, attrs2, closureSignals, templateId, dynamicStartNodeOffset, dynamicEndNodeOffset) {
   const renderer = createRenderer(template, walks, setup, closureSignals, 0, void 0, dynamicStartNodeOffset, dynamicEndNodeOffset, attrs2);
-  return Object.assign((input, element) => {
+  return register(templateId, Object.assign((input, element) => {
     const scope = createScope();
     queueHydrate(scope, () => {
       element.replaceChildren(dom);
     });
     const dom = initRenderer(renderer, scope);
     if (attrs2) {
-      attrs2.___apply(scope, input);
+      attrs2(scope, input, true);
     }
     runHydrate();
     return {
       update: (newInput) => {
         if (attrs2) {
-          attrs2.___mark(scope);
-          attrs2.___apply(scope, newInput);
+          attrs2(scope, newInput, null);
+          attrs2(scope, newInput, true);
           runHydrate();
         }
       },
       destroy: () => {
       }
     };
-  }, renderer);
+  }, renderer));
 }
 function createRenderer(template, walks, setup, closureSignals = [], hasUserEffects = 0, fragment, dynamicStartNodeOffset, dynamicEndNodeOffset, attrs2) {
   return {
@@ -1059,45 +848,189 @@ function _clone() {
   }
   return sourceNode.cloneNode(true);
 }
-var doc2 = document;
-var parser2 = /* @__PURE__ */ doc2.createElement("template");
+var doc3 = document;
+var parser2 = /* @__PURE__ */ doc3.createElement("template");
 function parse(template, ensureFragment) {
   let node;
   parser2.innerHTML = template;
   const content = parser2.content;
   if (ensureFragment || (node = content.firstChild) !== content.lastChild || node && node.nodeType === 8 /* Comment */) {
-    node = doc2.createDocumentFragment();
+    node = doc3.createDocumentFragment();
     node.appendChild(content);
   } else if (!node) {
-    node = doc2.createTextNode("");
+    node = doc3.createTextNode("");
   }
   return node;
 }
 
-// src/dom/control-flow.ts
-function conditional(nodeAccessor, defaultMark, computeRenderer, subscriber2, action) {
-  const childScopeAccessor = nodeAccessor + "!" /* COND_SCOPE */;
-  const rendererAccessor = nodeAccessor + "(" /* COND_RENDERER */;
-  return derivation(rendererAccessor, defaultMark, [inRenderBody(rendererAccessor, childScopeAccessor)].concat(subscriber2 ?? []), computeRenderer, (scope, renderer) => {
-    setConditionalRenderer(scope, nodeAccessor, renderer);
-    action?.(scope, renderer);
-  });
+// src/dom/signals.ts
+function value(valueAccessor, fn) {
+  const markAccessor = valueAccessor + "#" /* MARK */;
+  const alwaysCall = fn.length === 3;
+  return (scope, nextValue, dirty = true) => {
+    let creation, currentMark;
+    if (dirty === null) {
+      currentMark = scope[markAccessor] = (scope[markAccessor] ?? 0) + 1;
+    } else {
+      creation = scope[markAccessor] === void 0;
+      currentMark = scope[markAccessor] ||= 1;
+    }
+    if (currentMark === 1) {
+      if (creation || alwaysCall || (dirty &&= scope[valueAccessor] !== nextValue)) {
+        scope[valueAccessor] = nextValue;
+        fn(scope, nextValue, dirty);
+      }
+    }
+    if (dirty !== null) {
+      scope[markAccessor]--;
+    }
+  };
 }
-function conditionalOnlyChild(nodeAccessor, defaultMark, computeRenderer) {
-  const childScopeAccessor = nodeAccessor + "!" /* COND_SCOPE */;
-  const rendererAccessor = nodeAccessor + "(" /* COND_RENDERER */;
-  return derivation(rendererAccessor, defaultMark, [inRenderBody(rendererAccessor, childScopeAccessor)], computeRenderer, (scope, renderer) => {
-    setConditionalRendererOnlyChild(scope, nodeAccessor, renderer);
-  });
+var accessorId = 0;
+function intersection(count, fn) {
+  const dirtyAccessor = "?" /* DYNAMIC */ + accessorId++;
+  const markAccessor = dirtyAccessor + "#" /* MARK */;
+  const alwaysCall = fn.length === 2;
+  return (scope, dirty = true) => {
+    let currentMark;
+    if (dirty === null) {
+      currentMark = scope[markAccessor] = (scope[markAccessor] ?? 0) + 1;
+    } else {
+      if (scope[markAccessor] === void 0) {
+        scope[markAccessor] = count - 1;
+        scope[dirtyAccessor] = true;
+      } else {
+        currentMark = scope[markAccessor]--;
+        dirty = scope[dirtyAccessor] ||= dirty;
+      }
+    }
+    if (currentMark === 1) {
+      if (dirty || alwaysCall) {
+        scope[dirtyAccessor] = false;
+        fn(scope, dirty);
+      }
+    }
+  };
 }
-function inConditionalScope(subscriber2, nodeAccessor) {
-  const scopeAccessor = nodeAccessor + "!" /* COND_SCOPE */;
-  return wrapSignal((methodName) => (scope, extraArg) => {
-    const conditionalScope = scope[scopeAccessor];
-    if (conditionalScope) {
-      subscriber2[methodName](conditionalScope, extraArg);
+function closure(ownerValueAccessor, fn, getOwnerScope = (scope) => scope._) {
+  const dirtyAccessor = "?" /* DYNAMIC */ + accessorId++;
+  const markAccessor = dirtyAccessor + 1;
+  const alwaysCall = fn.length === 3;
+  const getOwnerValueAccessor = typeof ownerValueAccessor === "function" ? ownerValueAccessor : () => ownerValueAccessor;
+  return (scope, dirty = true) => {
+    let ownerScope, ownerValueAccessor2, currentMark;
+    if (dirty === null) {
+      currentMark = scope[markAccessor] = (scope[markAccessor] ?? 0) + 1;
+    } else {
+      if (scope[markAccessor] === void 0) {
+        ownerScope = getOwnerScope(scope);
+        ownerValueAccessor2 = getOwnerValueAccessor(scope);
+        const ownerMark = ownerScope[ownerValueAccessor2 + "#" /* MARK */];
+        const ownerHasRun = ownerMark === void 0 ? !ownerScope.___client : ownerMark === 0;
+        scope[markAccessor] = (currentMark = ownerHasRun ? 1 : 2) - 1;
+        scope[dirtyAccessor] = true;
+      } else {
+        currentMark = scope[markAccessor]--;
+        dirty = scope[dirtyAccessor] ||= dirty;
+      }
+    }
+    if (currentMark === 1) {
+      if (dirty || alwaysCall) {
+        scope[dirtyAccessor] = false;
+        ownerScope ??= getOwnerScope(scope);
+        ownerValueAccessor2 ??= getOwnerValueAccessor(scope);
+        fn(scope, dirty && ownerScope[ownerValueAccessor2], dirty);
+      }
+    }
+  };
+}
+function dynamicClosure(ownerValueAccessor, fn, getOwnerScope = (scope) => scope._) {
+  const getOwnerValueAccessor = typeof ownerValueAccessor === "function" ? ownerValueAccessor : () => ownerValueAccessor;
+  const signalFn = closure(getOwnerValueAccessor, fn, getOwnerScope);
+  return Object.assign(signalFn, {
+    ___subscribe(scope) {
+      const ownerScope = getOwnerScope(scope);
+      const providerSubscriptionsAccessor = getOwnerValueAccessor(scope) + "*" /* SUBSCRIBERS */;
+      ownerScope[providerSubscriptionsAccessor] ??= /* @__PURE__ */ new Set();
+      ownerScope[providerSubscriptionsAccessor].add(bindFunction(scope, signalFn));
+    },
+    ___unsubscribe(scope) {
+      const ownerScope = getOwnerScope(scope);
+      const providerSubscriptionsAccessor = getOwnerValueAccessor(scope) + "*" /* SUBSCRIBERS */;
+      ownerScope[providerSubscriptionsAccessor]?.delete(bindFunction(scope, signalFn));
     }
   });
+}
+function contextClosure(valueAccessor, contextKey, fn) {
+  return dynamicClosure((scope) => scope.___context[contextKey][1], value(valueAccessor, fn), (scope) => scope.___context[contextKey][0]);
+}
+function childClosures(closureSignals, childAccessor) {
+  const signal = (scope, dirty = true) => {
+    const childScope = scope[childAccessor];
+    for (const closureSignal of closureSignals) {
+      closureSignal(childScope, dirty);
+    }
+  };
+  return Object.assign(signal, {
+    ___subscribe(scope) {
+      const childScope = scope[childAccessor];
+      for (const closureSignal of closureSignals) {
+        closureSignal.___subscribe?.(childScope);
+      }
+    },
+    ___unsubscribe(scope) {
+      const childScope = scope[childAccessor];
+      for (const closureSignal of closureSignals) {
+        closureSignal.___unsubscribe?.(childScope);
+      }
+    }
+  });
+}
+function dynamicSubscribers(subscribers, dirty = true) {
+  if (subscribers) {
+    for (const subscriber of subscribers) {
+      subscriber(dirty);
+    }
+  }
+}
+function setTagVar(scope, childAccessor, tagVarSignal2) {
+  scope[childAccessor]["/" /* TAG_VARIABLE */] = bindFunction(scope, tagVarSignal2);
+}
+var tagVarSignal = (scope, value2, dirty = true) => scope["/" /* TAG_VARIABLE */]?.(value2, dirty);
+var renderBodyClosures = (renderBody, childScope, dirty = true) => {
+  const signals = renderBody?.___closureSignals;
+  if (signals) {
+    for (const signal of signals) {
+      signal(childScope, dirty);
+    }
+  }
+};
+var tagId = 0;
+function nextTagId() {
+  return "c" + tagId++;
+}
+
+// src/dom/control-flow.ts
+function conditional(nodeAccessor, dynamicTagAttrs2) {
+  const rendererAccessor = nodeAccessor + "(" /* COND_RENDERER */;
+  const childScopeAccessor = nodeAccessor + "!" /* COND_SCOPE */;
+  return (scope, newRenderer, dirty = true) => {
+    newRenderer ||= void 0;
+    let currentRenderer = scope[rendererAccessor];
+    if (dirty &&= currentRenderer !== newRenderer) {
+      currentRenderer = scope[rendererAccessor] = newRenderer;
+      setConditionalRenderer(scope, nodeAccessor, newRenderer);
+    }
+    renderBodyClosures(currentRenderer, scope[childScopeAccessor], dirty);
+    dynamicTagAttrs2?.(scope, dirty);
+  };
+}
+function inConditionalScope(scope, dirty, signal, nodeAccessor) {
+  const scopeAccessor = nodeAccessor + "!" /* COND_SCOPE */;
+  const conditionalScope = scope[scopeAccessor];
+  if (conditionalScope) {
+    signal(conditionalScope, dirty);
+  }
 }
 function setConditionalRenderer(scope, nodeAccessor, newRenderer) {
   let newScope;
@@ -1114,6 +1047,19 @@ function setConditionalRenderer(scope, nodeAccessor, newRenderer) {
   newFragment.___insertBefore(newScope, prevFragment.___getParentNode(prevScope), prevFragment.___getFirstNode(prevScope));
   prevFragment.___remove(destroyScope(prevScope));
 }
+function conditionalOnlyChild(nodeAccessor, action) {
+  const rendererAccessor = nodeAccessor + "(" /* COND_RENDERER */;
+  const childScopeAccessor = nodeAccessor + "!" /* COND_SCOPE */;
+  return (scope, newRenderer, dirty = true) => {
+    let currentRenderer = scope[rendererAccessor];
+    if (dirty && currentRenderer !== newRenderer) {
+      currentRenderer = scope[rendererAccessor] = newRenderer;
+      setConditionalRendererOnlyChild(scope, nodeAccessor, newRenderer);
+    }
+    renderBodyClosures(currentRenderer, scope[childScopeAccessor], dirty);
+    action?.(scope, currentRenderer, dirty);
+  };
+}
 function setConditionalRendererOnlyChild(scope, nodeAccessor, newRenderer) {
   const prevScope = scope[nodeAccessor + "!" /* COND_SCOPE */];
   const referenceNode = scope[nodeAccessor];
@@ -1128,33 +1074,37 @@ var emptyMarkerMap = /* @__PURE__ */ (() => (/* @__PURE__ */ new Map()).set(Symb
 var emptyMarkerArray = [/* @__PURE__ */ getEmptyScope()];
 var emptyMap = /* @__PURE__ */ new Map();
 var emptyArray = [];
-function loop(nodeAccessor, defaultMark, renderer, paramSubscribers, setParams, compute) {
-  const params = destructureSources(paramSubscribers, setParams);
-  const valueAccessor = nodeAccessor + ")" /* LOOP_VALUE */;
-  return derivation(valueAccessor, defaultMark, [
-    ...renderer.___closureSignals.map((signal) => inLoopScope(signal, nodeAccessor)),
-    inLoopScope(params, nodeAccessor)
-  ], compute, (scope, [newValues, keyFn]) => {
-    setLoopOf(scope, nodeAccessor, newValues, renderer, keyFn, setParams);
-  });
-}
-function inLoopScope(subscriber2, loopNodeAccessor) {
-  const loopScopeAccessor = loopNodeAccessor + "!" /* LOOP_SCOPE_ARRAY */;
-  return wrapSignal((methodName) => (scope, extraArg) => {
-    const loopScopes = scope[loopScopeAccessor] ?? [];
-    for (const loopScope of loopScopes) {
-      subscriber2[methodName](loopScope, extraArg);
+function loop(nodeAccessor, renderer, params) {
+  const loopScopeAccessor = nodeAccessor + "!" /* LOOP_SCOPE_ARRAY */;
+  const closureSignals = renderer.___closureSignals;
+  return (scope, value2, dirty = true) => {
+    if (dirty) {
+      setLoopOf(scope, nodeAccessor, value2[0], renderer, value2[1], params, closureSignals);
+    } else {
+      params?.(scope, null, dirty);
+      for (const signal of closureSignals) {
+        for (const childScope of scope[loopScopeAccessor]) {
+          signal(childScope, dirty);
+        }
+      }
     }
-  });
+  };
 }
-function setLoopOf(scope, nodeAccessor, newValues, renderer, keyFn, setParams) {
+function inLoopScope(scope, dirty, signal, loopNodeAccessor) {
+  const loopScopeAccessor = loopNodeAccessor + "!" /* LOOP_SCOPE_ARRAY */;
+  const loopScopes = scope[loopScopeAccessor] ?? [];
+  for (const scope2 of loopScopes) {
+    signal(scope2, dirty);
+  }
+}
+function setLoopOf(scope, nodeAccessor, newValues, renderer, keyFn, params, closureSignals) {
   let newMap;
   let newArray;
   const len = newValues.length;
   const referenceNode = scope[nodeAccessor];
   const referenceIsMarker = referenceNode.nodeType === 8 || referenceNode.nodeType === 3;
   const oldMap = scope[nodeAccessor + "(" /* LOOP_SCOPE_MAP */] || (referenceIsMarker ? emptyMarkerMap : emptyMap);
-  const oldArray = scope[nodeAccessor + "!" /* LOOP_SCOPE_ARRAY */] || (referenceIsMarker ? emptyMarkerArray : emptyArray);
+  const oldArray = scope[nodeAccessor + "!" /* LOOP_SCOPE_ARRAY */] || Array.from(oldMap.values());
   let afterReference;
   let parentNode;
   let needsReconciliation = true;
@@ -1165,12 +1115,18 @@ function setLoopOf(scope, nodeAccessor, newValues, renderer, keyFn, setParams) {
       const item = newValues[index];
       const key = keyFn ? keyFn(item) : index;
       let childScope = oldMap.get(key);
+      const isNew = !childScope;
       if (!childScope) {
         childScope = createScopeWithRenderer(renderer, scope[nodeAccessor + "^" /* LOOP_CONTEXT */] ||= scope.___context, scope);
       } else {
       }
-      if (setParams) {
-        setParams(childScope, [item, index, newValues]);
+      if (params) {
+        params(childScope, [item, index, newValues], true);
+      }
+      if (closureSignals) {
+        for (const signal of closureSignals) {
+          signal(childScope, isNew);
+        }
       }
       newMap.set(key, childScope);
       newArray.push(childScope);
@@ -1210,10 +1166,10 @@ function setLoopOf(scope, nodeAccessor, newValues, renderer, keyFn, setParams) {
   scope[nodeAccessor + "(" /* LOOP_SCOPE_MAP */] = newMap;
   scope[nodeAccessor + "!" /* LOOP_SCOPE_ARRAY */] = newArray;
 }
-function computeLoopFromTo(from, to, step) {
+function computeLoopToFrom(to, from = 0, step = 1) {
   const range = [];
-  for (let i = from; i <= to; i += step) {
-    range.push(i);
+  for (let _steps = (to - from) / step, i = 0; i <= _steps; i++) {
+    range.push(from + i * step);
   }
   return [range, keyFromTo];
 }
@@ -1262,130 +1218,22 @@ function handleDelegated(ev) {
     }
   }
 }
-
-// src/dom/hydrate.ts
-var registeredObjects = /* @__PURE__ */ new Map();
-var doc3 = document;
-function register(id, obj) {
-  registeredObjects.set(id, obj);
-  return obj;
-}
-function init(runtimeId = "M") {
-  const runtimeLength = runtimeId.length;
-  const hydrateVar = runtimeId + "$h" /* VAR_HYDRATE */;
-  const initialHydration = window[hydrateVar];
-  const walker2 = doc3.createTreeWalker(doc3, 128);
-  let currentScopeId;
-  let currentNode;
-  const scopeLookup = {};
-  const getScope = (id) => scopeLookup[id] ?? (scopeLookup[id] = {});
-  const stack = [];
-  const fakeArray = { push: hydrate };
-  const bind2 = (registryId, scope) => {
-    const obj = registeredObjects.get(registryId);
-    if (!scope) {
-      return obj;
-    } else if (obj.___template) {
-      return bindRenderer(scope, obj);
-    } else if (obj.___mark) {
-      return bindSignal(scope, obj);
-    } else {
-      return bind(scope, obj);
-    }
-  };
-  Object.defineProperty(window, hydrateVar, {
-    get() {
-      return fakeArray;
-    }
-  });
-  if (initialHydration) {
-    for (let i = 0; i < initialHydration.length; i += 2) {
-      hydrate(initialHydration[i], initialHydration[i + 1]);
-    }
-  }
-  function hydrate(scopesFn, calls) {
-    if (doc3.readyState !== "loading") {
-      walker2.currentNode = doc3;
-    }
-    const scopes = scopesFn?.(bind2, scopeLookup);
-    for (const scopeIdAsString in scopes) {
-      const scopeId = parseInt(scopeIdAsString);
-      const scope = scopes[scopeId];
-      const storedScope = scopeLookup[scopeId];
-      if (storedScope !== scope) {
-        scopeLookup[scopeId] = Object.assign(scope, storedScope);
-      }
-    }
-    while (currentNode = walker2.nextNode()) {
-      const nodeValue = currentNode.nodeValue;
-      if (nodeValue?.startsWith(`${runtimeId}`)) {
-        const token = nodeValue[runtimeLength];
-        const scopeId = parseInt(nodeValue.slice(runtimeLength + 1));
-        const scope = getScope(scopeId);
-        const data2 = nodeValue.slice(nodeValue.indexOf(" ") + 1);
-        if (token === "#" /* NODE */) {
-          scope[data2] = currentNode.previousSibling;
-        } else if (token === "^" /* SECTION_START */) {
-          stack.push(currentScopeId);
-          currentScopeId = scopeId;
-          scope.___startNode = currentNode;
-        } else if (token === "/" /* SECTION_END */) {
-          scope[data2] = currentNode;
-          if (scopeId < currentScopeId) {
-            scopeLookup[currentScopeId].___endNode = currentNode.previousSibling;
-            currentScopeId = stack.pop();
-          }
-        } else if (token === "|" /* SECTION_SINGLE_NODES_END */) {
-          scope[true ? data2.slice(0, data2.indexOf(" ")) : parseInt(data2)] = currentNode;
-          const childScopeIds = JSON.parse("[" + data2.slice(data2.indexOf(" ") + 1) + "]");
-          for (let i = childScopeIds.length - 1; i >= 0; i--) {
-            const childScope = getScope(childScopeIds[i]);
-            while ((currentNode = currentNode.previousSibling).nodeType === 8)
-              ;
-            childScope.___startNode = childScope.___endNode = currentNode;
-          }
-        } else if (true) {
-          throw new Error("MALFORMED MARKER: " + nodeValue);
-        }
-      }
-    }
-    for (let i = 0; i < calls.length; i += 2) {
-      const hydrateFn = registeredObjects.get(calls[i + 1]);
-      hydrateFn(scopeLookup[calls[i]]);
-    }
-  }
-}
-function hydrateSubscription(signal, ownerLevel, ownerValueAccessor) {
-  const ownerMarkAccessor = ownerValueAccessor + "#" /* MARK */;
-  const ownerSubscribersAccessor = ownerValueAccessor + "*" /* SUBSCRIBERS */;
-  return (subscriberScope) => {
-    const ownerScope = getOwnerScope(subscriberScope, ownerLevel);
-    const boundSignal = bindSignal(subscriberScope, signal);
-    const ownerMark = ownerScope[ownerMarkAccessor];
-    (ownerScope[ownerSubscribersAccessor] ??= /* @__PURE__ */ new Set()).add(boundSignal);
-    if (ownerMark === 0) {
-    } else if (ownerMark >= 1) {
-    }
-  };
-}
 export {
   attr,
   attrs,
-  bind,
+  bindFunction,
   bindRenderer,
+  childClosures,
   classAttr,
   closure,
-  computeLoopFromTo,
   computeLoopIn,
+  computeLoopToFrom,
   conditional,
   conditionalOnlyChild,
   contextClosure,
   createRenderFn,
   createRenderer,
   data,
-  derivation,
-  destructureSources,
-  dynamicAttrsProxy,
   dynamicClosure,
   dynamicFragment,
   dynamicSubscribers,
@@ -1393,17 +1241,14 @@ export {
   getInContext,
   html,
   hydrateSubscription,
-  inChild,
-  inChildMany,
   inConditionalScope,
   inLoopScope,
   init,
   initContextProvider,
-  innerHTML,
+  intersection,
   lifecycle,
   loop,
   nextTagId,
-  notifySignal,
   on,
   popContext,
   props,
@@ -1412,14 +1257,12 @@ export {
   queueSource,
   register,
   run,
-  setSource,
   setTagVar,
-  source,
   staticNodesFragment,
   styleAttr,
-  subscriber,
   tagVarSignal,
   userEffect,
+  value,
   write
 };
 //# sourceMappingURL=index.esm.js.map
