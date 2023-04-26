@@ -85,15 +85,15 @@ function triggerMacroTask() {
 
 // src/dom/queue.ts
 var currentBatch = [];
-var currentHydrate = [];
+var currentEffects = [];
 function queueSource(scope, signal, value2) {
   schedule();
   signal(scope, null, null);
   currentBatch.push(scope, signal, value2);
   return value2;
 }
-function queueHydrate(scope, fn) {
-  currentHydrate.push(scope, fn);
+function queueEffect(scope, fn) {
+  currentEffects.push(scope, fn);
 }
 function run() {
   try {
@@ -106,17 +106,17 @@ function run() {
   } finally {
     currentBatch = [];
   }
-  runHydrate();
+  runEffects();
 }
-function runHydrate() {
+function runEffects() {
   try {
-    for (let i = 0; i < currentHydrate.length; i += 2 /* TOTAL */) {
-      const scope = currentHydrate[i];
-      const fn = currentHydrate[i + 1];
+    for (let i = 0; i < currentEffects.length; i += 2 /* TOTAL */) {
+      const scope = currentEffects[i];
+      const fn = currentEffects[i + 1];
       fn(scope);
     }
   } finally {
-    currentHydrate = [];
+    currentEffects = [];
   }
 }
 
@@ -167,7 +167,7 @@ function destroyScope(scope) {
       if (typeof instance === "object") {
         destroyScope(instance);
       } else {
-        queueHydrate(scope, scope[instance]);
+        queueEffect(scope, scope[instance]);
       }
     }
   }
@@ -621,7 +621,7 @@ function getDebugKey(index, node) {
   return index;
 }
 
-// src/dom/hydrate.ts
+// src/dom/resume.ts
 var registeredObjects = /* @__PURE__ */ new Map();
 var doc2 = document;
 function register(id, obj) {
@@ -630,15 +630,15 @@ function register(id, obj) {
 }
 function init(runtimeId = "M") {
   const runtimeLength = runtimeId.length;
-  const hydrateVar = runtimeId + "$h" /* VAR_HYDRATE */;
-  const initialHydration = window[hydrateVar];
+  const resumeVar = runtimeId + "$h" /* VAR_RESUME */;
+  const initialHydration = window[resumeVar];
   const walker2 = doc2.createTreeWalker(doc2, 128);
   let currentScopeId;
   let currentNode;
   const scopeLookup = {};
   const getScope = (id) => scopeLookup[id] ?? (scopeLookup[id] = {});
   const stack = [];
-  const fakeArray = { push: hydrate };
+  const fakeArray = { push: resume };
   const bind = (registryId, scope) => {
     const obj = registeredObjects.get(registryId);
     if (!scope) {
@@ -649,17 +649,17 @@ function init(runtimeId = "M") {
       return bindFunction(scope, obj);
     }
   };
-  Object.defineProperty(window, hydrateVar, {
+  Object.defineProperty(window, resumeVar, {
     get() {
       return fakeArray;
     }
   });
   if (initialHydration) {
     for (let i = 0; i < initialHydration.length; i += 2) {
-      hydrate(initialHydration[i], initialHydration[i + 1]);
+      resume(initialHydration[i], initialHydration[i + 1]);
     }
   }
-  function hydrate(scopesFn, calls) {
+  function resume(scopesFn, calls) {
     if (doc2.readyState !== "loading") {
       walker2.currentNode = doc2;
     }
@@ -712,12 +712,11 @@ function init(runtimeId = "M") {
       }
     }
     for (let i = 0; i < calls.length; i += 2) {
-      const hydrateFn = registeredObjects.get(calls[i + 1]);
-      hydrateFn(scopeLookup[calls[i]]);
+      registeredObjects.get(calls[i + 1])(scopeLookup[calls[i]]);
     }
   }
 }
-function hydrateSubscription(signal, ownerValueAccessor, getOwnerScope = (scope) => scope._) {
+function resumeSubscription(signal, ownerValueAccessor, getOwnerScope = (scope) => scope._) {
   const ownerMarkAccessor = ownerValueAccessor + "#" /* MARK */;
   const ownerSubscribersAccessor = ownerValueAccessor + "*" /* SUBSCRIBERS */;
   return (subscriberScope) => {
@@ -799,20 +798,20 @@ function createRenderFn(template, walks, setup, attrs2, closureSignals, template
   const renderer = createRenderer(template, walks, setup, closureSignals, 0, void 0, dynamicStartNodeOffset, dynamicEndNodeOffset, attrs2);
   return register(templateId, Object.assign((input, element) => {
     const scope = createScope();
-    queueHydrate(scope, () => {
+    queueEffect(scope, () => {
       element.replaceChildren(dom);
     });
     const dom = initRenderer(renderer, scope);
     if (attrs2) {
       attrs2(scope, input, true);
     }
-    runHydrate();
+    runEffects();
     return {
       update: (newInput) => {
         if (attrs2) {
           attrs2(scope, newInput, null);
           attrs2(scope, newInput, true);
-          runHydrate();
+          runEffects();
         }
       },
       destroy: () => {
@@ -1240,7 +1239,6 @@ export {
   dynamicTagAttrs,
   getInContext,
   html,
-  hydrateSubscription,
   inConditionalScope,
   inLoopScope,
   init,
@@ -1253,9 +1251,10 @@ export {
   popContext,
   props,
   pushContext,
-  queueHydrate,
+  queueEffect,
   queueSource,
   register,
+  resumeSubscription,
   run,
   setTagVar,
   staticNodesFragment,
