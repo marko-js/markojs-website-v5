@@ -88,7 +88,7 @@ var currentBatch = [];
 var currentEffects = [];
 function queueSource(scope, signal, value2) {
   schedule();
-  signal(scope, null, null);
+  signal(scope, 0, 1);
   currentBatch.push(scope, signal, value2);
   return value2;
 }
@@ -160,17 +160,8 @@ var bindFunction = binder((boundScope, fn) => fn.length ? function bound(...args
   return fn.call(this, boundScope);
 });
 function destroyScope(scope) {
+  _destroyScope(scope);
   scope._?.___cleanup?.delete(scope);
-  const cleanup = scope.___cleanup;
-  if (cleanup) {
-    for (const instance of cleanup) {
-      if (typeof instance === "object") {
-        destroyScope(instance);
-      } else {
-        queueEffect(scope, scope[instance]);
-      }
-    }
-  }
   const closureSignals = scope.___renderer?.___closureSignals;
   if (closureSignals) {
     for (const signal of closureSignals) {
@@ -179,12 +170,26 @@ function destroyScope(scope) {
   }
   return scope;
 }
-function onDestroy(scope, localIndex) {
-  const parentScope = scope._;
-  if (parentScope) {
-    (parentScope.___cleanup = parentScope.___cleanup || /* @__PURE__ */ new Set()).add(scope);
+function _destroyScope(scope) {
+  const cleanup = scope.___cleanup;
+  if (cleanup) {
+    for (const instance of cleanup) {
+      if (typeof instance === "object") {
+        _destroyScope(instance);
+      } else {
+        queueEffect(scope, scope[instance]);
+      }
+    }
   }
+}
+function onDestroy(scope, localIndex) {
   (scope.___cleanup = scope.___cleanup || /* @__PURE__ */ new Set()).add(localIndex);
+  let parentScope = scope._;
+  while (parentScope && !parentScope.___cleanup?.has(scope)) {
+    (parentScope.___cleanup = parentScope.___cleanup || /* @__PURE__ */ new Set()).add(scope);
+    scope = parentScope;
+    parentScope = scope._;
+  }
 }
 
 // src/dom/reconcile-longest-increasing-subsequence.ts
@@ -772,27 +777,29 @@ function initRenderer(renderer, scope) {
   }
   return dom;
 }
-function dynamicTagAttrs(scope, nodeAccessor, getAttrs, renderBody, dirty) {
-  const renderer = scope[nodeAccessor + "(" /* COND_RENDERER */];
-  if (!renderer || renderer === renderBody || !dirty && !renderer.___attrs) {
-    return;
-  }
-  const childScope = scope[nodeAccessor + "!" /* COND_SCOPE */];
-  if (typeof renderer === "string") {
-    const elementAccessor = true ? `#${renderer}/0` : 0;
-    attrs(childScope, elementAccessor, getAttrs());
-    setConditionalRendererOnlyChild(childScope, elementAccessor, renderBody);
-  } else if (renderer.___attrs) {
-    if (dirty) {
-      const attributes = getAttrs();
-      renderer.___attrs(childScope, {
-        ...attributes,
-        renderBody: renderBody ?? attributes.renderBody
-      }, dirty);
-    } else {
-      renderer.___attrs(childScope, null, dirty);
+function dynamicTagAttrs(nodeAccessor, renderBody) {
+  return (scope, getAttrs, clean) => {
+    const renderer = scope[nodeAccessor + "(" /* COND_RENDERER */];
+    if (!renderer || renderer === renderBody || clean && !renderer.___attrs) {
+      return;
     }
-  }
+    const childScope = scope[nodeAccessor + "!" /* COND_SCOPE */];
+    if (typeof renderer === "string") {
+      const elementAccessor = true ? `#${renderer}/0` : 0;
+      attrs(childScope, elementAccessor, getAttrs());
+      setConditionalRendererOnlyChild(childScope, elementAccessor, renderBody);
+    } else if (renderer.___attrs) {
+      if (clean) {
+        renderer.___attrs(childScope, null, clean);
+      } else {
+        const attributes = getAttrs();
+        renderer.___attrs(childScope, {
+          ...attributes,
+          renderBody: renderBody ?? attributes.renderBody
+        }, clean);
+      }
+    }
+  };
 }
 function createRenderFn(template, walks, setup, attrs2, closureSignals, templateId, dynamicStartNodeOffset, dynamicEndNodeOffset) {
   const renderer = createRenderer(template, walks, setup, closureSignals, 0, void 0, dynamicStartNodeOffset, dynamicEndNodeOffset, attrs2);
@@ -803,14 +810,14 @@ function createRenderFn(template, walks, setup, attrs2, closureSignals, template
     });
     const dom = initRenderer(renderer, scope);
     if (attrs2) {
-      attrs2(scope, input, true);
+      attrs2(scope, input);
     }
     runEffects();
     return {
       update: (newInput) => {
         if (attrs2) {
-          attrs2(scope, newInput, null);
-          attrs2(scope, newInput, true);
+          attrs2(scope, newInput, 1);
+          attrs2(scope, newInput);
           runEffects();
         }
       },
@@ -863,62 +870,68 @@ function parse(template, ensureFragment) {
 }
 
 // src/dom/signals.ts
-function value(valueAccessor, fn) {
+function value(valueAccessor, render, intersection2, valueWithIntersection) {
   const markAccessor = valueAccessor + "#" /* MARK */;
-  const alwaysCall = fn.length === 3;
-  return (scope, nextValue, dirty = true) => {
-    let creation, currentMark;
-    if (dirty === null) {
+  return (scope, nextValue, clean) => {
+    let creation;
+    let currentMark;
+    if (clean === 1) {
       currentMark = scope[markAccessor] = (scope[markAccessor] ?? 0) + 1;
     } else {
       creation = scope[markAccessor] === void 0;
       currentMark = scope[markAccessor] ||= 1;
     }
     if (currentMark === 1) {
-      if (creation || alwaysCall || (dirty &&= scope[valueAccessor] !== nextValue)) {
+      if (clean !== 1 && (creation || !(clean &&= scope[valueAccessor] === nextValue))) {
         scope[valueAccessor] = nextValue;
-        fn(scope, nextValue, dirty);
+        render?.(scope, nextValue);
+      } else {
+        valueWithIntersection?.(scope, 0, clean);
       }
+      intersection2?.(scope, clean);
     }
-    if (dirty !== null) {
+    if (clean !== 1) {
       scope[markAccessor]--;
     }
   };
 }
 var accessorId = 0;
-function intersection(count, fn) {
-  const dirtyAccessor = "?" /* DYNAMIC */ + accessorId++;
-  const markAccessor = dirtyAccessor + "#" /* MARK */;
-  const alwaysCall = fn.length === 2;
-  return (scope, dirty = true) => {
+function intersection(count, fn, intersection2, valueWithIntersection) {
+  const cleanAccessor = "?" /* DYNAMIC */ + accessorId++;
+  const markAccessor = cleanAccessor + "#" /* MARK */;
+  return (scope, clean) => {
     let currentMark;
-    if (dirty === null) {
+    if (clean === 1) {
       currentMark = scope[markAccessor] = (scope[markAccessor] ?? 0) + 1;
     } else {
       if (scope[markAccessor] === void 0) {
         scope[markAccessor] = count - 1;
-        scope[dirtyAccessor] = true;
+        clean = void 0;
       } else {
         currentMark = scope[markAccessor]--;
-        dirty = scope[dirtyAccessor] ||= dirty;
+        clean = scope[cleanAccessor] &&= clean;
       }
     }
     if (currentMark === 1) {
-      if (dirty || alwaysCall) {
-        scope[dirtyAccessor] = false;
-        fn(scope, dirty);
+      if (clean) {
+        valueWithIntersection?.(scope, 0, clean);
+      } else {
+        scope[cleanAccessor] = true;
+        fn(scope, clean);
       }
+      intersection2?.(scope, clean);
     }
   };
 }
-function closure(ownerValueAccessor, fn, getOwnerScope = (scope) => scope._) {
-  const dirtyAccessor = "?" /* DYNAMIC */ + accessorId++;
-  const markAccessor = dirtyAccessor + 1;
-  const alwaysCall = fn.length === 3;
+var defaultGetOwnerScope = (scope) => scope._;
+function closure(ownerValueAccessor, fn, _getOwnerScope, intersection2, valueWithIntersection) {
+  const cleanAccessor = "?" /* DYNAMIC */ + accessorId++;
+  const markAccessor = cleanAccessor + 1;
+  const getOwnerScope = _getOwnerScope || defaultGetOwnerScope;
   const getOwnerValueAccessor = typeof ownerValueAccessor === "function" ? ownerValueAccessor : () => ownerValueAccessor;
-  return (scope, dirty = true) => {
+  return (scope, clean) => {
     let ownerScope, ownerValueAccessor2, currentMark;
-    if (dirty === null) {
+    if (clean === 1) {
       currentMark = scope[markAccessor] = (scope[markAccessor] ?? 0) + 1;
     } else {
       if (scope[markAccessor] === void 0) {
@@ -927,25 +940,29 @@ function closure(ownerValueAccessor, fn, getOwnerScope = (scope) => scope._) {
         const ownerMark = ownerScope[ownerValueAccessor2 + "#" /* MARK */];
         const ownerHasRun = ownerMark === void 0 ? !ownerScope.___client : ownerMark === 0;
         scope[markAccessor] = (currentMark = ownerHasRun ? 1 : 2) - 1;
-        scope[dirtyAccessor] = true;
+        clean = void 0;
       } else {
         currentMark = scope[markAccessor]--;
-        dirty = scope[dirtyAccessor] ||= dirty;
+        clean = scope[cleanAccessor] &&= clean;
       }
     }
     if (currentMark === 1) {
-      if (dirty || alwaysCall) {
-        scope[dirtyAccessor] = false;
+      if (clean) {
+        valueWithIntersection?.(scope, 0, clean);
+      } else {
+        scope[cleanAccessor] = false;
         ownerScope ??= getOwnerScope(scope);
         ownerValueAccessor2 ??= getOwnerValueAccessor(scope);
-        fn(scope, dirty && ownerScope[ownerValueAccessor2], dirty);
+        fn?.(scope, ownerScope[ownerValueAccessor2]);
       }
+      intersection2?.(scope, clean);
     }
   };
 }
-function dynamicClosure(ownerValueAccessor, fn, getOwnerScope = (scope) => scope._) {
+function dynamicClosure(ownerValueAccessor, fn, _getOwnerScope, intersection2, valueWithIntersection) {
+  const getOwnerScope = _getOwnerScope || defaultGetOwnerScope;
   const getOwnerValueAccessor = typeof ownerValueAccessor === "function" ? ownerValueAccessor : () => ownerValueAccessor;
-  const signalFn = closure(getOwnerValueAccessor, fn, getOwnerScope);
+  const signalFn = closure(getOwnerValueAccessor, fn, getOwnerScope, intersection2, valueWithIntersection);
   return Object.assign(signalFn, {
     ___subscribe(scope) {
       const ownerScope = getOwnerScope(scope);
@@ -960,14 +977,14 @@ function dynamicClosure(ownerValueAccessor, fn, getOwnerScope = (scope) => scope
     }
   });
 }
-function contextClosure(valueAccessor, contextKey, fn) {
-  return dynamicClosure((scope) => scope.___context[contextKey][1], value(valueAccessor, fn), (scope) => scope.___context[contextKey][0]);
+function contextClosure(valueAccessor, contextKey, fn, intersection2, valueWithIntersection) {
+  return dynamicClosure((scope) => scope.___context[contextKey][1], value(valueAccessor, fn), (scope) => scope.___context[contextKey][0], intersection2, valueWithIntersection);
 }
 function childClosures(closureSignals, childAccessor) {
-  const signal = (scope, dirty = true) => {
+  const signal = (scope, clean) => {
     const childScope = scope[childAccessor];
     for (const closureSignal of closureSignals) {
-      closureSignal(childScope, dirty);
+      closureSignal(childScope, clean);
     }
   };
   return Object.assign(signal, {
@@ -985,22 +1002,26 @@ function childClosures(closureSignals, childAccessor) {
     }
   });
 }
-function dynamicSubscribers(subscribers, dirty = true) {
-  if (subscribers) {
-    for (const subscriber of subscribers) {
-      subscriber(dirty);
+function dynamicSubscribers(valueAccessor) {
+  const subscribersAccessor = valueAccessor + "*" /* SUBSCRIBERS */;
+  return (scope, clean) => {
+    const subscribers = scope[subscribersAccessor];
+    if (subscribers) {
+      for (const subscriber of subscribers) {
+        subscriber(clean);
+      }
     }
-  }
+  };
 }
 function setTagVar(scope, childAccessor, tagVarSignal2) {
   scope[childAccessor]["/" /* TAG_VARIABLE */] = bindFunction(scope, tagVarSignal2);
 }
-var tagVarSignal = (scope, value2, dirty = true) => scope["/" /* TAG_VARIABLE */]?.(value2, dirty);
-var renderBodyClosures = (renderBody, childScope, dirty = true) => {
+var tagVarSignal = (scope, value2, clean) => scope["/" /* TAG_VARIABLE */]?.(value2, clean);
+var renderBodyClosures = (renderBody, childScope, clean) => {
   const signals = renderBody?.___closureSignals;
   if (signals) {
     for (const signal of signals) {
-      signal(childScope, dirty);
+      signal(childScope, clean);
     }
   }
 };
@@ -1008,28 +1029,52 @@ var tagId = 0;
 function nextTagId() {
   return "c" + tagId++;
 }
-
-// src/dom/control-flow.ts
-function conditional(nodeAccessor, dynamicTagAttrs2) {
-  const rendererAccessor = nodeAccessor + "(" /* COND_RENDERER */;
-  const childScopeAccessor = nodeAccessor + "!" /* COND_SCOPE */;
-  return (scope, newRenderer, dirty = true) => {
-    newRenderer ||= void 0;
-    let currentRenderer = scope[rendererAccessor];
-    if (dirty &&= currentRenderer !== newRenderer) {
-      currentRenderer = scope[rendererAccessor] = newRenderer;
-      setConditionalRenderer(scope, nodeAccessor, newRenderer);
-    }
-    renderBodyClosures(currentRenderer, scope[childScopeAccessor], dirty);
-    dynamicTagAttrs2?.(scope, dirty);
+function inChild(childAccessor, signal) {
+  return (scope, _, clean) => {
+    signal(scope[childAccessor], _, clean);
   };
 }
-function inConditionalScope(scope, dirty, signal, nodeAccessor) {
+function intersections(signals) {
+  return (scope, clean) => {
+    for (const signal of signals) {
+      signal(scope, clean);
+    }
+  };
+}
+function values(signals) {
+  return (scope, _, clean) => {
+    for (const signal of signals) {
+      signal(scope, _, clean);
+    }
+  };
+}
+
+// src/dom/control-flow.ts
+function conditional(nodeAccessor, dynamicTagAttrs2, intersection2, valueWithIntersection) {
+  const rendererAccessor = nodeAccessor + "(" /* COND_RENDERER */;
+  const childScopeAccessor = nodeAccessor + "!" /* COND_SCOPE */;
+  return (scope, newRenderer, clean) => {
+    newRenderer ||= void 0;
+    let currentRenderer = scope[rendererAccessor];
+    if (!clean && !(clean = currentRenderer === newRenderer)) {
+      currentRenderer = scope[rendererAccessor] = newRenderer;
+      setConditionalRenderer(scope, nodeAccessor, newRenderer);
+      dynamicTagAttrs2?.(scope);
+    } else {
+      valueWithIntersection?.(scope, 0, clean);
+    }
+    intersection2?.(scope, clean);
+    renderBodyClosures(currentRenderer, scope[childScopeAccessor], clean);
+  };
+}
+function inConditionalScope(signal, nodeAccessor) {
   const scopeAccessor = nodeAccessor + "!" /* COND_SCOPE */;
-  const conditionalScope = scope[scopeAccessor];
-  if (conditionalScope) {
-    signal(conditionalScope, dirty);
-  }
+  return (scope, clean) => {
+    const conditionalScope = scope[scopeAccessor];
+    if (conditionalScope) {
+      signal(conditionalScope, clean);
+    }
+  };
 }
 function setConditionalRenderer(scope, nodeAccessor, newRenderer) {
   let newScope;
@@ -1049,14 +1094,14 @@ function setConditionalRenderer(scope, nodeAccessor, newRenderer) {
 function conditionalOnlyChild(nodeAccessor, action) {
   const rendererAccessor = nodeAccessor + "(" /* COND_RENDERER */;
   const childScopeAccessor = nodeAccessor + "!" /* COND_SCOPE */;
-  return (scope, newRenderer, dirty = true) => {
+  return (scope, newRenderer, clean) => {
     let currentRenderer = scope[rendererAccessor];
-    if (dirty && currentRenderer !== newRenderer) {
+    if (!clean && currentRenderer !== newRenderer) {
       currentRenderer = scope[rendererAccessor] = newRenderer;
       setConditionalRendererOnlyChild(scope, nodeAccessor, newRenderer);
     }
-    renderBodyClosures(currentRenderer, scope[childScopeAccessor], dirty);
-    action?.(scope, currentRenderer, dirty);
+    renderBodyClosures(currentRenderer, scope[childScopeAccessor], clean);
+    action?.(scope, currentRenderer, clean);
   };
 }
 function setConditionalRendererOnlyChild(scope, nodeAccessor, newRenderer) {
@@ -1076,25 +1121,27 @@ var emptyArray = [];
 function loop(nodeAccessor, renderer, params) {
   const loopScopeAccessor = nodeAccessor + "!" /* LOOP_SCOPE_ARRAY */;
   const closureSignals = renderer.___closureSignals;
-  return (scope, value2, dirty = true) => {
-    if (dirty) {
-      setLoopOf(scope, nodeAccessor, value2[0], renderer, value2[1], params, closureSignals);
-    } else {
-      params?.(scope, null, dirty);
-      for (const signal of closureSignals) {
-        for (const childScope of scope[loopScopeAccessor]) {
-          signal(childScope, dirty);
+  return (scope, value2, clean) => {
+    if (clean) {
+      for (const childScope of scope[loopScopeAccessor]) {
+        params?.(childScope, null, clean);
+        for (const signal of closureSignals) {
+          signal(childScope, clean);
         }
       }
+    } else {
+      setLoopOf(scope, nodeAccessor, value2[0], renderer, value2[1], params, closureSignals);
     }
   };
 }
-function inLoopScope(scope, dirty, signal, loopNodeAccessor) {
+function inLoopScope(signal, loopNodeAccessor) {
   const loopScopeAccessor = loopNodeAccessor + "!" /* LOOP_SCOPE_ARRAY */;
-  const loopScopes = scope[loopScopeAccessor] ?? [];
-  for (const scope2 of loopScopes) {
-    signal(scope2, dirty);
-  }
+  return (scope, clean) => {
+    const loopScopes = scope[loopScopeAccessor] ?? [];
+    for (const scope2 of loopScopes) {
+      signal(scope2, clean);
+    }
+  };
 }
 function setLoopOf(scope, nodeAccessor, newValues, renderer, keyFn, params, closureSignals) {
   let newMap;
@@ -1120,7 +1167,7 @@ function setLoopOf(scope, nodeAccessor, newValues, renderer, keyFn, params, clos
       } else {
       }
       if (params) {
-        params(childScope, [item, index, newValues], true);
+        params(childScope, [item, index, newValues]);
       }
       if (closureSignals) {
         for (const signal of closureSignals) {
@@ -1239,11 +1286,13 @@ export {
   dynamicTagAttrs,
   getInContext,
   html,
+  inChild,
   inConditionalScope,
   inLoopScope,
   init,
   initContextProvider,
   intersection,
+  intersections,
   lifecycle,
   loop,
   nextTagId,
@@ -1262,6 +1311,7 @@ export {
   tagVarSignal,
   userEffect,
   value,
+  values,
   write
 };
 //# sourceMappingURL=index.esm.js.map
