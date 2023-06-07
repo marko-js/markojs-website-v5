@@ -51,43 +51,20 @@
     margin-bottom:-2em;
 }
 
-table.markdown-table {
-    border-collapse: separate;
-    border-spacing: 0;
-    font-size:0.85em;
+.markdown-table {
+  border-collapse: collapse;
+  font-size: 0.85em;
 }
-
-table.markdown-table th,
-table.markdown-table td {
-    padding:0.5em 1em;
+.markdown-table th,
+.markdown-table td {
+  padding: 0.5em 1em;
+  border: 1px solid #dbdddf;
 }
-
-/*
-table.markdown-table tbody tr:nth-child(even) {
-  background: #f6f8fa;
-}
-
-table.markdown-table tbody tr:nth-child(even) code {
-  background: #ebedef;
-}
-*/
-
-table.markdown-table thead {
+.markdown-table th {
   background: #09c;
+  border-color: #09c;
   color: #fff;
-}
-
-table.markdown-table th {
   font-weight: 600;
-}
-
-table.markdown-table td {
-  border-bottom: 1px solid #dbdddf;
-  border-right: 1px solid #dbdddf;
-}
-
-table.markdown-table td:first-child {
-  border-left: 1px solid #dbdddf;
 }
 
 blockquote.protip {
