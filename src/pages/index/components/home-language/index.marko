@@ -5,7 +5,7 @@
     </@content>
     <@visual.home-language__examples>
         <figure>
-            <code-block lang="marko" no-switch>
+            <code-block lang="marko" no-switch code=`
                 <!doctype html>
                 <html>
                 <head>
@@ -15,15 +15,15 @@
                     <h1>My favorite colors</h1>
                     <ul>
                         <for|color| of=["red", "green", "blue"]>
-                            <li style=`color:${color}`>
-                                ${color.toUpperCase()}
+                            <li style=\`color:\${color}\`>
+                                \${color.toUpperCase()}
                             </li>
                         </for>
                     </ul>
                     <shared-footer/>
                 </body>
                 </html>
-            </code-block>
+            `/>
             <figcaption>HTML Templates, Custom Tags, & Javascript Expressions</figcaption>
         </figure>
         <figure>

@@ -6,7 +6,7 @@
   <@visual>
       <div.home-performance-example role="img" aria-label="Marko templates are compiled to generate HTML Strings on the server and VDOM Nodes in the browser">
           <div.home-performance-input>
-            <code-block lang="marko" no-switch>
+            <code-block lang="marko" no-switch code=`
                 <div>
                   <h2>Images</h2>
                   <div>
@@ -17,26 +17,26 @@
                     </for>
                   </div>
                 </div>
-            </code-block>
+            `/>
           </div>
           <div.home-performance-arrow>
             <img src="./arrow.svg" alt=""/>
           </div>
           <div.home-performance-outputs>
             <div.home-performance-html>
-              <code-block lang="javascript" no-switch>
+              <code-block lang="javascript" no-switch code=`
                   out.write("<div><h2>Images</h2><div>");
                   for (const item of input.items) {
-                    out.write(`<div><img${_marko_attr("src", item.img)}></div>`);
+                    out.write(\`<div><img\${_marko_attr("src", item.img)}></div>\`);
                   }
                   out.write("</div></div>");
-              </code-block>
+              `/>
               <div.home-performance-output-overlay>
                 HTML Strings <small>on the server</small>
               </div>
             </div>
             <div.home-performance-vdom>
-              <code-block lang="javascript" no-switch>
+              <code-block lang="javascript" no-switch code=`
                   out.beginElement("div", null, "0", component);
                   out.beginElement("h2", null, "1", component);
                   out.text("Images", component);
@@ -45,7 +45,7 @@
                   {
                     let _keyValue = 0;
                     for (const item of input.items) {
-                      const _keyScope = `[${_keyValue++}]`;
+                      const _keyScope = \`[\${_keyValue++}]\`;
                       out.beginElement("div", null, "3" + _keyScope, component, null, 0, {
                         onclick: _component.d("click", "onBannerClick", false, [item]),
                       });
@@ -55,7 +55,7 @@
                   }
                   out.endElement();
                   out.endElement();
-              </code-block>
+              `/>
               <div.home-performance-output-overlay>
                 VDOM Nodes <small>in the browser</small>
               </div>
