@@ -1,0 +1,18 @@
+/*
+  @license
+	Rollup.js v2.79.1
+	Thu, 22 Sep 2022 04:55:29 GMT - commit 69ff4181e701a0fe0026d0ba147f31bc86beffa8
+
+	https://github.com/rollup/rollup
+
+	Released under the MIT License.
+*/
+
+/**
+ * @license
+ * Lodash <https://lodash.com/>
+ * Copyright OpenJS Foundation and other contributors <https://openjsf.org/>
+ * Released under MIT license <https://lodash.com/license>
+ * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+ * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ */

@@ -1,0 +1,146 @@
+<!doctype html><html lang=en><head><meta charset=UTF-8><title>marko.json &amp;amp; marko-tag.json | Marko</title><link rel=icon type=image/png sizes=32x32 href=/website/pr-95/assets/d78b83f1.png><meta name=viewport content="width=device-width, initial-scale=1"><meta name=robots content=none><meta name=description content="Marko is a friendly (and fast!) UI library that makes building web apps fun."><script>
+      if (window.self !== window.top) {
+        document.documentElement.classList.add("iframe");
+      }
+    </script><script src="/website/pr-95/assets/666.c78b2033.js" async></script><script src="/website/pr-95/assets/323.81aa39e9.js" async></script><script src="/website/pr-95/assets/987.ae467f67.js" async></script><link rel="stylesheet" href="/website/pr-95/assets/69bfda3f.css"></head><body class=docs><a href=#main id=skip-link>Skip to main content</a><!--M#s0-1-0-11--><header data-marko-key="@header s0-1-0-11" class=site-header><div class=content><a href=/ ><img src=/website/pr-95/assets/91bc26e5.svg alt="Marko Home" class=site-logo></a><div class=stuff><nav class=site-menu><a href=/docs/getting-started/ >Docs</a><a href=/try-online>Try Online</a><a href=https://github.com/marko-js/marko>GitHub</a><form class="SiteSearch search" role=search action=https://google.com/search><svg width=1em height=1em viewBox="0 0 64 64" fill=none stroke=#595959 stroke-width=5 focusable=false class=SiteSearch-icon><path d="M41 39a1 1 0 0 0-27-27 1 1 0 0 0 27 27l15 16-2 2-15-15" /></svg><input name=q type=search placeholder="search docs…" pattern=.*?\S+.*? title="Enter something to search for" required autocapitalize=off class=SiteSearch-input><button name=q value=site:markojs.com class=SiteSearch-submit>Go</button></form></nav><button data-marko='{"onclick":"toggleMenu s0-1-0-11 false"}' class=menu>&#9776;</button></div></div></header><!--M/--><!--M#s0-1-0-12--><div data-marko-key="@sidebar s0-1-0-12" class=doc-sidebar><button data-marko='{"onclick":"hide s0-1-0-12 false"}' class=close>&#10005;</button><h1>Marko <!--M^s0-1-0-12-9 s0-1-0-12 9--><select data-marko='{"onchange":"switchVersion s0-1-0-12-9 false"}'><option value=current selected>5.25.18</option><option value=http://marko-v4.github.io/docs/ >4.x</option><option value=http://v3.markojs.com/docs/ >3.x</option><option value=http://marko-v2.github.io/docs/ >2.x</option></select><!--M/--></h1><form class="SiteSearch search" role=search action=https://google.com/search><svg width=1em height=1em viewBox="0 0 64 64" fill=none stroke=#595959 stroke-width=5 focusable=false class=SiteSearch-icon><path d="M41 39a1 1 0 0 0-27-27 1 1 0 0 0 27 27l15 16-2 2-15-15" /></svg><input name=q type=search placeholder="search docs…" pattern=.*?\S+.*? title="Enter something to search for" required autocapitalize=off class=SiteSearch-input><button name=q value=site:markojs.com class=SiteSearch-submit>Go</button></form><ul class=toc-level0><li class=section><a href=/docs/guides-overview/ >GUIDES</a></li><li><a href=/docs/installing/ >Installing</a></li><li><a href=/docs/getting-started/ >Getting started</a></li><li><a href=/docs/conditionals-and-lists/ >Conditionals and lists</a></li><li><a href=/docs/custom-tags/ >Custom tags</a></li><li><a href=/docs/state/ >State</a></li><li><a href=/docs/styles/ >Styles</a></li><li><a href=/docs/events/ >Events</a></li><li><a href=/docs/body-content/ >Body content</a></li><li><a href=/docs/typescript/ >TypeScript</a></li><li><a href=/docs/marko-5-upgrade/ >Marko 5 upgrade</a></li><li><a href=/docs/troubleshooting-streaming/ >Troubleshooting Streaming</a></li></ul><ul class=toc-level0><li class=section><a href=/docs/tutorials-overview/ >TUTORIALS</a></li><li><a href=/docs/color-picker/ >Color Picker</a></li></ul><ul class=toc-level0><li class=section><a href=/docs/reference-overview/ >REFERENCE</a></li><li><a href=/docs/rendering/ >Rendering</a></li><li><a href=/docs/syntax/ >Syntax</a></li><li><a href=/docs/core-tags/ >Core tags</a></li><li><a href=/docs/class-components/ >Class components</a></li><li><a class=selected href=/docs/marko-json/ >marko.json</a><ul class="toc toc-level1"><li><a href="#single-component-definition">Single component definition</a><ul class="toc toc-level2"><li><a href="#options">Options</a></li><li><a href="#attributes">Attributes</a></li><li><a href="#paths">Paths</a></li></ul></li><li><a href="#tag-library-definition">Tag library definition</a><ul class="toc toc-level2"><li><a href="#options_1">Options</a></li></ul></li><li><a href="#shorthands">Shorthands</a></li></ul></li><li><a href=/docs/compiler/ >Compiler</a></li></ul><ul class=toc-level0><li class=section><a href=/docs/bundler-integrations-overview/ >BUNDLER INTEGRATIONS</a></li><li><a href=/docs/vite/ >Vite</a></li><li><a href=/docs/webpack/ >Webpack</a></li><li><a href=/docs/rollup/ >Rollup</a></li><li><a href=/docs/lasso/ >Lasso</a></li></ul><ul class=toc-level0><li class=section><a href=/docs/server-integrations-overview/ >SERVER INTEGRATIONS</a></li><li><a href=/docs/cloudflare-workers/ >Cloudflare Workers</a></li><li><a href=/docs/express/ >Express</a></li><li><a href=/docs/fastify/ >Fastify</a></li><li><a href=/docs/koa/ >Koa</a></li><li><a href=/docs/http/ >HTTP</a></li></ul><ul class=toc-level0><li class=section><a href=/docs/tooling-overview/ >TOOLING</a></li><li><a href=/docs/editor-plugins/ >Editor plugins</a></li></ul><ul class=toc-level0><li class=section><a href=/docs/articles-overview/ >ARTICLES</a></li><li><a href=/docs/marko-vs-react/ >Marko vs React</a></li><li><a href=/docs/why-is-marko-fast/ >Why is Marko Fast</a></li><li><a href=/docs/10-awesome-marko-features/ >10 Awesome Marko Features</a></li></ul></div><!--M/--><main id=main tabindex=-1 class=content><div class=doc-layout><div class=doc-container><div class=doc-content><h1 id=markojson-marko-tagjson><a name=markojson-marko-tagjson class=anchor href=#markojson-marko-tagjson><span class=header-link></span></a><code>marko.json</code> &amp; <code>marko-tag.json</code></h1><p>Marko supports configuration files for validation, enabling experimental features, and custom paths for component files.</p><p>These configuration files are automatically found with <a href=/docs/custom-tags/#how-tags-are-discovered>the same discovery mechanism as custom tags</a>.</p><p>There are 2 types of configuration files:</p><ol><li><code>marko.json</code> describes an entire suite of components.</li><li><code>marko-tag.json</code> describes a single component.</li></ol><h2 id=single-component-definition><a name=single-component-definition class=anchor href=#single-component-definition><span class=header-link></span></a>Single component definition</h2><p><code>marko-tag.json</code> configures a single component. It’s automatically discovered if placed inside a <a href=/docs/custom-tags/#tag-directories>tag directory</a>.</p><h3 id=options><a name=options class=anchor href=#options><span class=header-link></span></a>Options</h3><script>if(localStorage.getItem('markojs-website:syntax') === 'concise'){document.body.classList.add('concise')}</script><pre class=highlighted style=color:#D0D0E0;background-color:#202034>{
+  <span style=color:#FFF066>"html"</span>: <span style=color:#AE81FF>true</span>, <span style=color:#8F8F9E>// Treat as a native HTML tag, not a custom tag.</span>
+  <span style=color:#FFF066>"htmlType"</span>: <span style=color:#FFF066>"svg"</span>, <span style=color:#8F8F9E>// Optimizes for specific types of native tags (currently only `svg` and `html`).</span>
+  <span style=color:#FFF066>"open-tag-only"</span>: <span style=color:#AE81FF>true</span>, <span style=color:#8F8F9E>// Forbids passing body content to this tag.</span>
+  <span style=color:#FFF066>"featureFlags"</span>: [ <span style=color:#FFF066>"feature-a"</span> ], <span style=color:#8F8F9E>// Enable beta features by passing feature flags.</span>
+  <span style=color:#FFF066>"nested-tags"</span>: { <span style=color:#8F8F9E>// This section configures attribute tags.</span>
+    <span style=color:#FFF066>"tab"</span>: {
+      <span style=color:#FFF066>"target-property"</span>: <span style=color:#FFF066>"tabs"</span>, <span style=color:#8F8F9E>// Puts `&lt;@tab>` tags into `input.tabs`.</span>
+      <span style=color:#FFF066>"is-repeated"</span>: <span style=color:#AE81FF>true</span>,  <span style=color:#8F8F9E>// Allow more than one nested `&lt;@tab>`.</span>
+      <span style=color:#FFF066>"attributes"</span>: {
+        <span style=color:#8F8F9E>// Same as the “Attributes” section below.</span>
+      }
+    }
+  }
+}
+</pre><h3 id=attributes><a name=attributes class=anchor href=#attributes><span class=header-link></span></a>Attributes</h3><p>One commonly-used feature of this config file is compile-time checks for attributes.</p><pre class=highlighted style=color:#D0D0E0;background-color:#202034>{
+  <span style=color:#FFF066>"attributes"</span>: {
+    <span style=color:#FFF066>"heading"</span>: <span style=color:#FFF066>"string"</span>
+  }
+}
+</pre><p>The above code ensures that the <code>heading</code> attribute is the <em>only</em> attribute supplied to this tag.</p><p>The <code>string</code> value is used as documentation for the custom tag. It may be picked up by tooling, like Marko’s editor plugins, to provide hints to the user.</p><p>The recommended list of attribute types are as follows:</p><ul><li><code>expression</code> (any JavaScript expression)</li><li><code>string</code></li><li><code>number</code></li><li><code>boolean</code></li><li><code>regexp</code></li><li><code>date</code></li><li><code>object</code></li><li><code>array</code></li><li><code>function</code></li></ul><p>You can also provide an object for an attribute definition’s value for additional options:</p><pre class=highlighted style=color:#D0D0E0;background-color:#202034>{
+  <span style=color:#FFF066>"attributes"</span>: {
+    <span style=color:#FFF066>"heading"</span>: {
+      <span style=color:#FFF066>"type"</span>: <span style=color:#FFF066>"string"</span>, <span style=color:#8F8F9E>// Same as setting "string" above.</span>
+      <span style=color:#FFF066>"default-value"</span>: <span style=color:#AE81FF>0</span>, <span style=color:#8F8F9E>// The attribute will default to this value.</span>
+      <span style=color:#FFF066>"required"</span>: <span style=color:#AE81FF>true</span>, <span style=color:#8F8F9E>// Error during compilation if this attribute is undefined. (Mutually exclusive with "default-value"</span>
+      <span style=color:#FFF066>"preserve-name"</span>: <span style=color:#AE81FF>true</span>, <span style=color:#8F8F9E>// By default component attributes are camelCased; this disables that feature.</span>
+      <span style=color:#FFF066>"remove-dashes"</span>: <span style=color:#AE81FF>true</span>, <span style=color:#8F8F9E>// By default native tag attributes are dash-cased; this disables that feature.</span>
+
+      <span style=color:#8F8F9E>// The following attributes do nothing, but are picked up by tooling.</span>
+      <span style=color:#FFF066>"deprecated"</span>: <span style=color:#AE81FF>true</span>,
+      <span style=color:#FFF066>"description"</span>: <span style=color:#FFF066>"The component’s heading text"</span> <span style=color:#8F8F9E>// Describes the attribute’s purpose.</span>
+    }
+  }
+}
+</pre><p>We can also describe a <em>pattern</em> of attributes to match a definition:</p><pre class=highlighted style=color:#D0D0E0;background-color:#202034>{
+    <span style=color:#FFF066>"attributes"</span>: {
+        <span style=color:#FFF066>"data-*"</span>: {
+          <span style=color:#FFF066>"type"</span>: <span style=color:#FFF066>"string"</span>,
+          <span style=color:#FFF066>"pattern"</span>: <span style=color:#AE81FF>true</span>
+        }
+    }
+}
+</pre><p>In the above, all attributes prefixed with <code>data-</code> are configured to be a <code>string</code>.</p><blockquote class=note><p><strong>Note:</strong> Future Marko versions will describe these definitions/types in the component itself, reducing the need for this configuration file.</p></blockquote><h3 id=paths><a name=paths class=anchor href=#paths><span class=header-link></span></a>Paths</h3><p>There are several options that override the default discovery of component files, such as the template.</p><p>Typically, you should let Marko find these files automatically, but here is a reference in case you encounter these settings in the wild.</p><pre class=highlighted style=color:#D0D0E0;background-color:#202034>{
+  <span style=color:#FFF066>"template"</span>: <span style=color:#FFF066>"./template.marko"</span>, <span style=color:#8F8F9E>// Custom path to the `.marko` template.</span>
+  <span style=color:#FFF066>"renderer"</span>: <span style=color:#FFF066>"./renderer.js"</span>, <span style=color:#8F8F9E>// Custom path to the `renderer.js` file.</span>
+
+  <span style=color:#8F8F9E>// Compiler file hooks</span>
+  <span style=color:#FFF066>"parse"</span>: <span style=color:#FFF066>"./parse.js"</span>, <span style=color:#8F8F9E>// Used to augment parsing.</span>
+  <span style=color:#FFF066>"migrate"</span>: <span style=color:#FFF066>"./migrate.js"</span>, <span style=color:#8F8F9E>// Used for migrating deprecated features.</span>
+  <span style=color:#FFF066>"transform"</span>: <span style=color:#FFF066>"./transform.js"</span>, <span style=color:#8F8F9E>// Used to modify the AST before generating it.</span>
+  <span style=color:#FFF066>"analyze"</span>: <span style=color:#FFF066>"./analyze.js"</span> <span style=color:#8F8F9E>// Used to analyze metadata the entire ast before beginning to translate it.</span>
+  <span style=color:#FFF066>"translate"</span>: <span style=color:#FFF066>"./translate.js"</span> <span style=color:#8F8F9E>// Used to generate custom JS.</span>
+}
+</pre><p>For more information about the compiler hooks <a href=/docs/compiler/#hooks>jump over here</a>.</p><h2 id=tag-library-definition><a name=tag-library-definition class=anchor href=#tag-library-definition><span class=header-link></span></a>Tag library definition</h2><p>Along with configuring a single component, you can use a <code>marko.json</code> file to configure an <em>entire library of components</em>.</p><p>Similar to <a href=#single-component-definition><code>marko-tag.json</code></a>, this file is discovered if placed within a <a href=/docs/custom-tags/#tag-directories>tag directory</a>. It will also be discovered at the root directory of a project, or <a href=/docs/custom-tags/#publishing-tags-to-npm>in a <code>node_module</code> package</a>.</p><h3 id=options_1><a name=options_1 class=anchor href=#options_1><span class=header-link></span></a>Options</h3><pre class=highlighted style=color:#D0D0E0;background-color:#202034>{
+  <span style=color:#FFF066>"taglib-id"</span>: <span style=color:#FFF066>"my-custom-tag-library"</span>, <span style=color:#8F8F9E>// Names the component library, for better errors.</span>
+  <span style=color:#FFF066>"tags-dir"</span>: <span style=color:#FFF066>"./ui-modules"</span>, <span style=color:#8F8F9E>// What directory to crawl to autodiscover components. Default:`./components/`</span>
+  <span style=color:#FFF066>"taglib-imports"</span>: [<span style=color:#FFF066>"./some-folder/marko.json"</span>, <span style=color:#FFF066>"./other-folder/marko.json"</span>], <span style=color:#8F8F9E>// Creates a _combined_ tag library by referencing others.</span>
+
+  <span style=color:#FFF066>"tags"</span>: { <span style=color:#8F8F9E>// Definitions for individual tags.</span>
+    <span style=color:#FFF066>"my-tag"</span>: {
+      <span style=color:#8F8F9E>// Same options as “marko-tag.json”.</span>
+    }
+  },
+
+  <span style=color:#FFF066>"attributes"</span>: {
+    <span style=color:#8F8F9E>// Defines attributes on all tags.</span>
+    <span style=color:#8F8F9E>// Options are the same as the “attributes” section in “marko-tag.json”.</span>
+  },
+
+  <span style=color:#8F8F9E>// Compiler file hooks (run on all templates)</span>
+  <span style=color:#FFF066>"migrator"</span>: <span style=color:#FFF066>"./migrator.js"</span>, <span style=color:#8F8F9E>// Hooks into the migration stage for migrating deprecated features.</span>
+  <span style=color:#FFF066>"transformer"</span>: <span style=color:#FFF066>"./transformer.js"</span>, <span style=color:#8F8F9E>// Used to modify the AST before generating it.</span>
+  <span style=color:#FFF066>"text-transformer"</span>: <span style=color:#FFF066>"./text-transformer.js"</span>, <span style=color:#8F8F9E>// Used to transform all static text in the template.</span>
+}
+</pre><blockquote class=null><p><strong>⚠️ Note:</strong> Compiler hooks are currently undocumented: avoid using them. The compiler API is overhauled in Marko 5, and will be documented once that transition is complete.</p></blockquote><h2 id=shorthands><a name=shorthands class=anchor href=#shorthands><span class=header-link></span></a>Shorthands</h2><p>Both configuration files support <em>shorthands</em> for defining <code>tags</code> and <code>attributes</code>. For example, take this <code>marko.json</code> file:</p><div class=code-block-filename>marko.json</div><pre class=highlighted style=color:#D0D0E0;background-color:#202034>{
+  <span style=color:#FFF066>"taglib-id"</span>: <span style=color:#FFF066>"my-custom-tag-library"</span>,
+  <span style=color:#FFF066>"tags"</span>: {
+    <span style=color:#FFF066>"my-layout"</span>: {
+      <span style=color:#FFF066>"attributes"</span>: {
+        <span style=color:#FFF066>"name"</span>: <span style=color:#FFF066>"string"</span>,
+        <span style=color:#FFF066>"age"</span>: <span style=color:#FFF066>"number"</span>
+      },
+      <span style=color:#FFF066>"nested-tags"</span>: {
+        <span style=color:#FFF066>"heading"</span>: {
+          <span style=color:#FFF066>"attributes"</span>: {
+            <span style=color:#FFF066>"color"</span>: <span style=color:#FFF066>"string"</span>
+          }
+        },
+        <span style=color:#FFF066>"body"</span>: {
+          <span style=color:#FFF066>"attributes"</span>: {
+            <span style=color:#FFF066>"color"</span>: <span style=color:#FFF066>"string"</span>
+          }
+        }
+      }
+    }
+  }
+}
+</pre><p>As a shorthand, anywhere <code>tags</code> or <code>nested-tags</code> is used, you can remove the outer object and wrap the individual tags in <code>&lt;angle-brackets&gt;</code>.</p><p>For <code>attributes</code>, you can remove the outer object and prefix the attributes with an <code>@</code>.</p><p>The above example using the shorthand syntax would become:</p><div class=code-block-filename>marko.json</div><pre class=highlighted style=color:#D0D0E0;background-color:#202034>{
+  <span style=color:#FFF066>"taglib-id"</span>: <span style=color:#FFF066>"my-custom-tag-library"</span>,
+  <span style=color:#FFF066>"&lt;my-layout>"</span>: {
+    <span style=color:#FFF066>"@name"</span>: <span style=color:#FFF066>"string"</span>,
+    <span style=color:#FFF066>"@age"</span>: <span style=color:#FFF066>"number"</span>,
+    <span style=color:#FFF066>"&lt;heading>"</span>: {
+      <span style=color:#FFF066>"@color"</span>: <span style=color:#FFF066>"string"</span>
+    },
+    <span style=color:#FFF066>"&lt;body>"</span>: {
+      <span style=color:#FFF066>"@color"</span>: <span style=color:#FFF066>"string"</span>
+    }
+  }
+}
+</pre><p>For <code>nested-tags</code>, there is also a shorthand for <code>is-repeated</code> (a postfix of <code>[]</code>) and <code>target-property</code> (a prefix of <code>@newName</code>):</p><div class=code-block-filename>marko.json</div><pre class=highlighted style=color:#D0D0E0;background-color:#202034>{
+  <span style=color:#FFF066>"&lt;my-layout>"</span>: {
+    <span style=color:#FFF066>"@sections &lt;section>[]"</span>: {
+      <span style=color:#FFF066>"@color"</span>: <span style=color:#FFF066>"string"</span>
+    }
+  }
+}
+</pre><p>Is equivalent to:</p><div class=code-block-filename>marko.json</div><pre class=highlighted style=color:#D0D0E0;background-color:#202034>{
+  <span style=color:#FFF066>"tags"</span>: {
+    <span style=color:#FFF066>"my-layout"</span>: {
+      <span style=color:#FFF066>"nested-tags"</span>: {
+        <span style=color:#FFF066>"section"</span>: {
+          <span style=color:#FFF066>"target-property"</span>: <span style=color:#FFF066>"sections"</span>,
+          <span style=color:#FFF066>"is-repeated"</span>: <span style=color:#AE81FF>true</span>,
+          <span style=color:#FFF066>"attributes"</span>: {
+            <span style=color:#FFF066>"color"</span>: <span style=color:#FFF066>"string"</span>
+          }
+        }
+      }
+    }
+  }
+}
+</pre><a href=https://github.com/marko-js/marko/blob/main/packages/marko/docs/marko-json.md class=edit-on-github>EDIT <img alt="on GitHub" src=/website/pr-95/assets/0bc571bc.svg></a><h2 id=contributors><a name=contributors class=anchor href=#contributors><span class=header-link></span></a> Contributors</h2><p>Helpful? You can thank these awesome people! You can also <a href=https://github.com/marko-js/marko/blob/main/packages/marko/docs/marko-json.md>edit this doc</a> if you see any issues or want to improve it.</p><div class=contributors><a href=https://github.com/DylanPiercey class=contributor><img src=https://avatars.githubusercontent.com/u/4985201?v=4 alt class=photo><span class=name>DylanPiercey</span></a><a href=https://github.com/mlrawlings class=contributor><img src=https://avatars.githubusercontent.com/u/1958812?v=4 alt class=photo><span class=name>mlrawlings</span></a><a href=https://github.com/timgates42 class=contributor><img src=https://avatars.githubusercontent.com/u/47873678?v=4 alt class=photo><span class=name>timgates42</span></a><a href=https://github.com/marko-js/marko/blob/main/packages/marko/docs/marko-json.md class="contributor you"><div class=photo><span class=icon>+</span></div><span class=name>You?</span></a></div><footer class="site-footer doc-footer"><a href=https://openjsf.org/  class=openjsf><img src=/website/pr-95/assets/6876aea9.svg alt> <span><span class=bold>OpenJS</span>&nbsp;<span class=light>Foundation</span></span></a><div class=separator></div><a href=https://github.com/marko-js/marko/blob/main/LICENSE class=osi><img src=/website/pr-95/assets/1b70b500.svg alt> MIT&nbsp;License</a><div class=separator></div><a href=https://github.com/eBay class=ebay><img src=/website/pr-95/assets/339b8a9e.svg alt=eBay> open&nbsp;source</a></footer></div></div></div></main><script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-66854919-1', 'markojs.com');
+    ga('send', 'pageview');
+  </script><a href=https://discord.gg/marko target=_blank class=discord-button><img src=/website/pr-95/assets/78800ea4.svg alt="Chat in Marko's Discord Server"></a><script>$MC=(window.$MC||[]).concat({"l":1,"w":[["s0-1-0-11",0,{}],["s0-1-0-12",1,{"currentDoc":"marko-json","toc":"<ul class=\"toc toc-level1\"><li><a href=\"#single-component-definition\">Single component definition\u003C/a><ul class=\"toc toc-level2\"><li><a href=\"#options\">Options\u003C/a>\u003C/li><li><a href=\"#attributes\">Attributes\u003C/a>\u003C/li><li><a href=\"#paths\">Paths\u003C/a>\u003C/li>\u003C/ul>\u003C/li><li><a href=\"#tag-library-definition\">Tag library definition\u003C/a><ul class=\"toc toc-level2\"><li><a href=\"#options_1\">Options\u003C/a>\u003C/li>\u003C/ul>\u003C/li><li><a href=\"#shorthands\">Shorthands\u003C/a>\u003C/li>\u003C/ul>"}],["s0-1-0-12-9",2,{}]],"t":["OIKmBXjW","mFesaajv","07hv1F0+"]})</script></body></html>
