@@ -5,6 +5,7 @@
 ``` bash
 git clone https://github.com/marko-js/website.git
 cd website
+git submodule update --init --recursive
 npm install
 npm run dev
 ```

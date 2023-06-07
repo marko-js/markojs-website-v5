@@ -19,7 +19,7 @@ taglib.register(
   require("@marko/build/dist/components/marko.json")
 );
 
-export default ({ output, translator = defaultTranslator }) => {
+export default ({ output, optimize, translator = defaultTranslator }) => {
   let cssContent;
   let buildCache;
   return {
@@ -45,7 +45,7 @@ export default ({ output, translator = defaultTranslator }) => {
       ];
 
       if (ext === ".marko") {
-        plugins.push([markoPlugin, { output, translator, fileSystem: fs, cache: buildCache || new Map() }]);
+        plugins.push([markoPlugin, { output, optimize, translator, fileSystem: fs, cache: buildCache || new Map() }]);
       } else if (ext === ".js") {
         plugins.push(commonjsPlugin);
       } else {

@@ -1,4 +1,4 @@
-<attrs/{ getTranslator, files }/>
+<attrs/{ getCompilerOptions, files }/>
 <let/selectedIndex = 0/>
 <let/previewType = "preview"/>
 <let/debounce = false/>
@@ -19,18 +19,20 @@
       </@actions>
       <@body>
         <let/activeEditor = null/>
-        <activeEditor
-          value=selectedFile.content 
-          filename=selectedFile.path 
-          valueChange(content) {
-            const modifiedFile = { ...selectedFile, content };
-            files = [
-              ...files.slice(0, selectedIndex), 
-              modifiedFile,
-              ...files.slice(selectedIndex+1)
-            ];
-            debounce = true;
-          }/>
+        <if=activeEditor>
+          <activeEditor
+            value=selectedFile.content 
+            filename=selectedFile.path 
+            valueChange(content) {
+              const modifiedFile = { ...selectedFile, content };
+              files = [
+                ...files.slice(0, selectedIndex), 
+                modifiedFile,
+                ...files.slice(selectedIndex+1)
+              ];
+              debounce = true;
+            }/>
+        </if>
         <lifecycle onMount = (async () => { 
           const e = await import("./components/editor");
           await e.loading;
@@ -68,7 +70,7 @@
           type=previewType
           files=files
           selectedFile=selectedFile
-          getTranslator=getTranslator
+          getCompilerOptions=getCompilerOptions
           debounce=debounce/>
         <lifecycle onMount = (async () => { 
           preview = await import("./components/preview");
