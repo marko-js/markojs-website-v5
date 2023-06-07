@@ -45,10 +45,14 @@ class {
   }
 }
 
-<div.scroll-locked-stream-example class=input.class key="root">
-  <home-demo-page progress=state.progress buffered label="Buffered pages don't show content as it loads"/>
-  <home-demo-page.scroll-locked-progressive progress=state.progress label="Streaming pages show content incrementally"/>
-</div>
+<svg viewBox="0 0 620 380" overflow="visible" role="presentation">
+  <foreignObject width="100%" height="100%" overflow="visible">
+    <div.scroll-locked-stream-example class=input.class key="root">
+      <home-demo-page progress=state.progress buffered label="Buffered pages don't show content as it loads"/>
+      <home-demo-page.scroll-locked-progressive progress=state.progress label="Streaming pages show content incrementally"/>
+    </div>
+  </foreignObject>
+</svg>
 
 style {
   .scroll-locked-stream-example {

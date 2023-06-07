@@ -54,11 +54,10 @@ module.exports = function markodown(source) {
     toc.addHeading(linkText, anchorName, level);
 
     return (
-      `<h${level} id="${anchorName}">` +
-      `<a name="${anchorName}" class="anchor" href="#${anchorName}">` +
-      `<span class="header-link"></span>` +
-      `</a>` +
+      `<h${level} class="heading" id="${anchorName}">` +
+      `<a class="heading-link" href="#${anchorName}">` +
       text +
+      `</a>` +
       `</h${level}>`
     );
   };
@@ -120,11 +119,11 @@ Node.prototype.toHTML = function(ignoreSelf) {
   }
 
   if (this.childNodes.length) {
-    out += '<ul class="toc toc-level' + this.level + '">';
+    out += '<ol class="toc toc-level' + this.level + '">';
     this.childNodes.forEach(function(childNode) {
       out += "<li>" + childNode.toHTML() + "</li>";
     });
-    out += "</ul>";
+    out += "</ol>";
   }
 
   return out;

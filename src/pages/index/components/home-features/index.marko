@@ -1,66 +1,52 @@
-<header.home-features>
-    <div.feature>
-        <h2.blue>Familiar</h2>
-        <p>If you know HTML, CSS, and Javascript, you know Marko</p>
+<dl.home-features>
+    <div.home-feature> <!-- Yep, this is valid: https://html.spec.whatwg.org/#the-dl-element -->
+        <dt.blue>Familiar</dt>
+        <dd>If you know HTML, CSS, and JavaScript, you know Marko</dd>
     </div>
-    <div.feature>
-        <h2.red>Performant</h2>
-        <p>Streaming, partial hydration, an optimizing compiler, & a small runtime</p>
+    <div.home-feature>
+        <dt.red>Performant</dt>
+        <dd>Streaming, partial hydration, an optimizing compiler, & a small runtime</dd>
     </div>
-    <div.feature>
-        <h2.yellow>Scalable</h2>
-        <p>Start with simple HTML templates and add powerful components as needed</p>
+    <div.home-feature>
+        <dt.yellow>Scalable</dt>
+        <dd>Start with simple HTML templates and add powerful components as needed</dd>
     </div>
-    <div.feature>
-        <h2.green>Trusted</h2>
-        <p>Marko is powering high-traffic websites like ebay.com</p>
+    <div.home-feature>
+        <dt.green>Trusted</dt>
+        <dd>Marko powers high-traffic websites like ebay.com</dd>
     </div>
-</header>
+</dl>
 
 style {
     .home-features {
         display: flex;
-        flex-direction:row;
-        justify-content:space-between;
-        padding:2em;
-        flex-wrap:wrap;
-        max-width:80em;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        margin: 2em;
+        max-width: 80em;
     }
 
-    .home-features .feature {
-        width:23%;
+    .home-feature {
+        width: 23%;
     }
 
     @media (max-width:50em) {
-        .home-features .feature {
-            width:47%;
-            margin-bottom:1em;
+        .home-feature {
+            width: 47%;
+            margin-bottom: 1em;
         }
     }
 
-    .home-features h2 {
-        padding:0;
-        border:0;
+    .home-feature > dt {
+        font-size: 2.1em;
     }
 
-    .home-features p {
-        padding:0;
-        margin:0;
+    .home-feature > dd {
+        margin: 0;
     }
 
-    .blue {
-        color:#09d;
-    }
-
-    .green {
-        color:#7d0;
-    }
-
-    .yellow {
-        color:#ffc400;
-    }
-
-    .red {
-        color:#d04;
-    }
+    .blue { color:#09d; }
+    .green { color:#7d0; }
+    .yellow { color:#ffc400; }
+    .red { color:#d04; }
 }

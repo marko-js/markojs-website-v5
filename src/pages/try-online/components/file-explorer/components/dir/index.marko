@@ -20,7 +20,7 @@ class {
 <li.dir class={ expanded: state.expanded }>
   <label on-click("setState", "expanded", !state.expanded)>${input.name}</label>
   <if(input.content)>
-    <ul>
+    <ol>
       <for|name, content| in=input.content>
         <entry
           path=path.join(input.path, name)
@@ -29,6 +29,6 @@ class {
           selected-path=input.selectedPath
           on-change("emit", "change")/>
       </for>
-    </ul>
+    </ol>
   </if>
 </li>

@@ -33,7 +33,7 @@ module.exports = {
     });
 
     handleScroll();
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
   },
   reset() {
     this.removeClass(classNames.fixed);

@@ -5,50 +5,36 @@ import createOverviewTree from '../../../../utils/create-overview-tree';
 static const parentTree = createOverviewTree(structure);
 
 static function getDocData(currentDoc, section, doc) {
-    let docSlug;
-    let selected;
+    let slug, selected, title;
 
-    let docTitle = doc;
     if (typeof doc === 'object') {
-        docTitle = doc.title;
-
-        let sectionTitleSlug = formatSlug(section.title);
-        let titleSlug = formatSlug(docTitle);
-
-        docSlug = `${sectionTitleSlug}-${titleSlug}-overview`;
-
+        title = doc.title;
+        slug = formatSlug(`${section.title}-${title}-overview`);
         // Select the parents of "selected" documents, if they exist
-        selected = (parentTree[currentDoc] && parentTree[currentDoc][docSlug]) || (docSlug === currentDoc);
+        selected = parentTree[currentDoc]?.[slug] || (slug === currentDoc);
     } else {
-        docSlug = formatSlug(docTitle);
-        selected = docSlug === currentDoc;
+        title = doc;
+        slug = formatSlug(title);
+        selected = slug === currentDoc;
     }
 
-    docSlug += '/';
-
-    return {
-        docTitle,
-        docSlug,
-        selected
-    };
+    return { title, slug, selected };
 }
 
 <macro|{ structure, isNested }| name="sidebar-overview">
   <for|section| of=structure>
-    <ul class=(isNested ? "toc toc-level1" : "toc-level0")>
+    <ol class=(isNested ? "toc toc-level1" : "toc-level0")>
       <if (!isNested)>
         <li.section>
-          $ let title = section.title.toUpperCase();
-          $ let overviewSlug = formatSlug(title);
-          <a href=`/docs/${overviewSlug}-overview/`>${title}</a>
+          <a href=`/docs/${formatSlug(section.title)}-overview/`>${section.title}</a>
         </li>
       </if>
 
       <for|doc| of=section.docs>
+        $ let { title, slug, selected } = getDocData(input.currentDoc, section, doc);
         <li>
-          $ let { docTitle, docSlug, selected } = getDocData(input.currentDoc, section, doc);
-          <a class={ selected } href=`/docs/${docSlug}`>
-            ${docTitle}
+          <a class={ selected } href=`/docs/${slug}/`>
+            ${title}
           </a>
 
           <if(selected)>
@@ -61,13 +47,15 @@ static function getDocData(currentDoc, section, doc) {
           </if>
         </li>
       </for>
-    </ul>
+    </ol>
   </for>
 </macro>
 
-<div.doc-sidebar class=input.class key="sidebar">
-    <button.close on-click('hide')>&#10005;</button>
-    <h1>Marko <version-switcher/></h1>
-    <layout-search.search />
+<nav.doc-sidebar class=input.class key="sidebar"
+  hidden /* for Reader View, etc. */
+  role="doc-toc" aria-labelledby:scoped="sidebar">
+    <button.sidebar-close on-click('hide') aria-label="Close menu">&#10005;</button>
+    <h2 id:scoped="sidebar">Marko <version-switcher/></h2>
+    <layout-search.sidebar-search />
     <sidebar-overview structure=structure />
-</div>
+</nav>

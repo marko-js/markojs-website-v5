@@ -1,50 +1,33 @@
-import getAnchorName from './getAnchorName';
+import getAnchorName from './getAnchorName.js';
 
-$ var className = input['class'];
-$ var text = input.text;
-$ var anchorName = input.anchorName || getAnchorName(text, out);
+$ const { h = 2, text, renderBody, anchorName, ...attrs } = input;
+$ const anchorId = anchorName || getAnchorName(text, out);
 
 style {
-    .heading a.anchor {
-        display: inline-block;
-        cursor: pointer;
-        position: absolute;
-        text-align: center;
-        margin-left: -1.1em;
-        padding: 0 0.3em;
-        opacity: 0;
+    .heading-link,
+    .heading-link:hover {
+        position: relative;
         color: inherit;
     }
 
-    .heading:hover a.anchor {
-        opacity: 0.5;
-    }
-
-    .heading.header-link {
-        display: inline-block;
-        font-family: FontAwesome;
-        font-style: normal;
-        font-weight: normal;
-        line-height: 0.5em;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        font-size: 1em;
-    }
-
-    .heading .header-link:before {
+    .heading-link::before {
         content: "#";
-        font-weight: 600;
+        position: absolute;
+        right: 100%;
+        padding: 0 0.3em;
+        opacity: 0;
+    }
+
+    .heading:hover > .heading-link::before,
+    .heading-link:is(:hover, :focus)::before {
+        opacity: 0.5;
     }
 }
 
-<${input.tag} class=['heading', className]>
-    <a name=anchorName class="anchor" href=`#${anchorName}`>
-        <span class="header-link"></span>
+<!-- https://amberwilson.co.uk/blog/are-your-anchor-links-accessible/ (check the bottom for additions) -->
+<${`h${h}`} class=["heading", attrs.class] ...attrs id=anchorId>
+    <a.heading-link href=`#${anchorId}`>
+        <if(text)>${text}</if>
+        <else><${renderBody}/></else>
     </a>
-    <if(text)>
-        ${text}
-    </if>
-    <else>
-        <${input.renderBody}/>
-    </else>
 </>

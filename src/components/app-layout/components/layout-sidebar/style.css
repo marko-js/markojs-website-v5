@@ -1,40 +1,38 @@
 .doc-sidebar {
-  width:16em;
-  margin-right:2em;
+  width: 17em;
   position: absolute;
-  padding:2.5rem;
-  padding-bottom:4rem;
+  padding: 2.5rem;
+  padding-bottom: 4rem;
   top:0; left:0; bottom:0;
-  overflow:auto;
-  transform:translateY(4em) translateZ(0);
-  display:none;
+  overflow: auto;
+  overscroll-behavior: contain;
+  transform: translateY(4em) translateZ(0);
+  display: none;
   z-index: 50;
-  background-color: #fff;
+  background: #fff;
 }
 
 body.docs .doc-sidebar {
-  display:block;
+  display: block;
 }
 
-.doc-sidebar button.close {
-  display:none;
-  position:fixed;
-  top:0; right:0;
-  padding:0.75em;
-  padding-right:1em;
-  font-size:2rem;
-  line-height: 1em;
-  border:0;
-  background:transparent;
+.sidebar-close {
+  display: none;
+  position: fixed;
+  top: 0; right: 0;
+  padding: 0.75em;
+  margin-right: 0.25em;
+  font-size: 2rem;
+  line-height: 1;
+  border: 1px solid transparent; /* for High-Contrast Mode */
+  background: none;
+}
+.sidebar-close:hover {
+  background: radial-gradient(circle closest-side, #ccc 58%, rgba(0,0,0,0) 59%);
 }
 
-.doc-sidebar h1 {
-  font-size:1.25em;
-}
-
-.doc-sidebar h1 select {
-  top:-0.2em;
-  position: relative;
+.doc-sidebar h2 {
+  font-size: 1.25em;
 }
 
 .doc-sidebar.fixed {
@@ -58,45 +56,38 @@ body.docs .doc-sidebar {
   color:#d04;
   line-height: 1em;
   margin-bottom: 0.5em;
+  text-transform: uppercase;
 }
 
-.doc-sidebar .section:not(:first-child) {
-  margin-top: 1.5em;
+.doc-sidebar ol {
+  padding: 0;
+  list-style: none;
 }
 
-.doc-sidebar ul {
-  margin:0;
-  padding:0;
-  list-style-type:none;
-}
-
-.doc-sidebar > ul {
+.doc-sidebar > ol {
   margin-top:1.5em;
 }
 
-.doc-sidebar ul a {
-  color:#626467;
-  display:block;
+.doc-sidebar ol a {
+  color: #626467;
+  display: block;
   position: relative;
 }
 
-.doc-sidebar ul.toc {
-  font-size:0.9em;
-  margin-left:1rem;
+.doc-sidebar ol.toc {
+  font-size: 0.9em;
+  margin-left: 1rem;
 
 }
 
-.doc-sidebar ul a:hover,
-.doc-sidebar ul a.selected,
-.doc-sidebar ul.toc a:hover,
-.doc-sidebar ul.toc a:hover code,
-.doc-sidebar ul.toc a.selected,
-.doc-sidebar ul.toc a.selected code {
+.doc-sidebar ol a:is(:hover, .selected),
+.doc-sidebar ol.toc a:is(:hover, .selected),
+.doc-sidebar ol.toc a:is(:hover, .selected) code {
   color:#27292b;
   text-decoration: none;
 }
 
-.doc-sidebar ul li a.selected:before {
+.doc-sidebar ol li a.selected::before {
   content:'';
   height:100%;
   position: absolute;
@@ -105,38 +96,37 @@ body.docs .doc-sidebar {
   border-left:2px solid #e7e9eb;
 }
 
-.doc-sidebar > ul > li > a.selected:before {
-  border-left:2px solid #ffc400;
+.doc-sidebar > ol > li > a.selected::before {
+  border-color: #ffc400;
 }
 
-.doc-sidebar ul.toc ul {
-  display:none;
-}
-
-.doc-sidebar ul.toc a.selected + ul {
-  display:block;
-}
-
-.doc-sidebar > .search {
+.doc-sidebar ol.toc ol {
   display: none;
-  margin: 0px;
+}
+
+.doc-sidebar ol.toc a.selected + ol {
+  display: block;
+}
+
+.sidebar-search {
+  display: none;
+  margin: 0;
   margin-top: 1.5em;
 }
 
 @media (max-width:45em) {
   .doc-sidebar,
-  .doc-sidebar.no-header,
-  .doc-sidebar.fixed,
+  .doc-sidebar:is(.no-header, .fixed),
   body.docs .doc-sidebar {
       font-size:1.1em;
       display:block;
       position: fixed;
       bottom: 0;
       transform: none;
-      pointer-events: none;
       width:100%;
       height:100%;
       opacity:0;
+      visibility: hidden; /* stops Tab-focus from wandering into closed sidebar */
       transition: opacity 0.2s;
       background:#fff;
       z-index: 400;
@@ -144,18 +134,18 @@ body.docs .doc-sidebar {
   .doc-sidebar.show,
   body.docs .doc-sidebar.show {
       opacity:1;
-      pointer-events: auto;
+      visibility: visible;
   }
 
-  .doc-sidebar button.close,
-  .doc-sidebar ul.toc ul {
+  .sidebar-close,
+  .doc-sidebar ol.toc ol {
       display:block;
       z-index: 60;
   }
-  .doc-sidebar ul a {
+  .doc-sidebar ol a {
       padding:0.25em;
   }
-  .doc-sidebar > .search {
+  .sidebar-search {
       display: flex;
       width: 12em;
   }

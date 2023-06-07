@@ -2,92 +2,63 @@
     flex:1;
     width:100%;
     max-width:60em;
-    padding-left:16em;
 }
 
-@media (max-width:45em) {
+@media (min-width:45em) {
   .doc-container {
-      padding-left:0;
+    padding-left: 17em;
   }
 }
 
 .doc-content {
-    display:block;
-    width:100%;
-    text-align:left;
     position: relative;
 }
 
 .doc-content > * {
     margin-bottom: 1.25rem;
 }
-.doc-content > h1,
-.doc-content > h2,
-.doc-content > h3,
-.doc-content > h4,
-.doc-content > h5,
-.doc-content > h6 {
+.doc-content > :is(h2, h3, h4, h5, h6) {
     padding-top:1.25rem;
 }
-.doc-content > h1:first-child {
-    padding-top:0;
-}
 
-.doc-content > h1,
-.doc-content > h2 {
+.doc-content > :is(h1, h2) {
   border-bottom:1px solid #f2f4f6;
 }
 
 .doc-layout {
-    display: flex;
-    flex-direction:row;
-    width:100%;
     padding:2em;
 }
 
-
-.doc-content .doc-footer {
-    background: transparent;
+.doc-footer {
     margin-bottom:-2em;
 }
 
-table.markdown-table {
-    border-collapse: separate;
-    border-spacing: 0;
-    font-size:0.85em;
+.markdown-table {
+  border-collapse: collapse;
+  font-size: 0.85em;
 }
 
-table.markdown-table th,
-table.markdown-table td {
-    padding:0.5em 1em;
+.markdown-table th,
+.markdown-table td {
+  padding: 0.5em 1em;
 }
 
-/*
-table.markdown-table tbody tr:nth-child(even) {
+.markdown-table tr:nth-child(even) {
   background: #f6f8fa;
 }
 
-table.markdown-table tbody tr:nth-child(even) code {
-  background: #ebedef;
-}
-*/
-
-table.markdown-table thead {
+.markdown-table thead {
+  border: hidden;
   background: #09c;
   color: #fff;
 }
 
-table.markdown-table th {
+.markdown-table th {
   font-weight: 600;
 }
 
-table.markdown-table td {
-  border-bottom: 1px solid #dbdddf;
-  border-right: 1px solid #dbdddf;
-}
-
-table.markdown-table td:first-child {
-  border-left: 1px solid #dbdddf;
+.markdown-table td {
+  border: 1px solid #dbdddf;
 }
 
 blockquote.protip {

@@ -5,51 +5,29 @@ $ var editPath = `https://github.com/${input.repo}/blob/main/${input.repoPath}`;
 style {
     .contributors {
         display: flex;
-        flex-direction:row;
         flex-wrap:wrap;
     }
-    .contributors .contributor {
-        display:flex;
-        flex-direction:column;
-        width:4em;
-        margin:1em;
-        align-items:center;
-        text-decoration:none;
-    }
-    .contributors .photo {
-        width:4em;
-        height:4em;
-        border-radius:0.2rem;
-        box-shadow:0 0 0.2em #c9cbcd;
-    }
-    .contributors .name {
-        width:150%;
-        text-align:center;
+    .contributor {
         font-size:0.5em;
+        width:8em;
+        margin:2em;
+        text-align:center;
+        text-decoration:none;
         color:#595b5d;
-        margin-top:0.2rem;
     }
-    .contributors .you .photo {
-        display: flex;
-        align-items:center;
-        justify-content:center;
-        background:#09d;
-    }
-    .contributors .you .icon {
-        font-size:2em;
-        color:#fff;
-        margin-top: -0.15em;
+    .contributor > .photo {
+        display: block;
+        width:8em;
+        height:8em;
+        border-radius:0.2rem;
+        box-shadow:0 0 0.4em #c9cbcd;
+        margin-bottom:0.2rem;
     }
 }
 
 <await(getContributors(input.repo, input.repoPath))>
     <@then|contributors|>
-        <h2 id="contributors">
-            <a name="contributors" class="anchor" href="#contributors">
-                <span class="header-link"/>
-            </a>
-            Contributors
-        </h2>
+        <heading h=2 text="Contributors"/>
         <p>
             Helpful? You can thank these awesome people! You can also
             <a href=editPath>
@@ -61,14 +39,12 @@ style {
             <for|contributor| of=contributors>
                 <a.contributor href=contributor.profile>
                     <img.photo src=contributor.photo alt=""/>
-                    <span.name>${contributor.username}</span>
+                    ${contributor.username}
                 </a>
             </for>
-            <a.contributor.you href=editPath>
-                <div.photo>
-                    <span class="icon">+</span>
-                </div>
-                <span.name>You?</span>
+            <a.contributor href=editPath>
+                <img.photo src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3crect width='24' height='24' fill='%2309d'/%3e%3cpath d='m12 9v6M9 12h6' stroke='white'/%3e%3c/svg%3e" alt="+"/>
+                You?
             </a>
         </div>
     </@then>

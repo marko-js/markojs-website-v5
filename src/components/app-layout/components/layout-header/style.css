@@ -1,112 +1,87 @@
 .site-header {
-  position:absolute;
-  top:0;
-  left:0;
-  right:0;
-  background-color:#fff;
-  height:4em;
-  width:100%;
-  border-bottom:1px solid #fff;
-  transition:all 0.3s;
+  position: sticky;
+  top: 0;
+  left: 0;
   z-index: 99;
-  transform:translate3d(0, 1px, 0);
+  min-height: 4em;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: space-between;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  transform: translate3d(0, 1px, 0);
+  transition: transform 0.3s;
 }
-
 .site-header.headspace--fixed {
-  position:fixed;
-  transform:translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
 }
 .site-header.headspace--hidden {
-  transform:translate3d(0, -4em, 0); /* y value should be -1 * height */
-}
-.site-header .content {
-  display: flex;
-  flex-direction:row;
-  justify-content:space-between;
-  align-items:center;
-  flex:1;
+  transform: translate3d(0, -4em, 0); /* y value should be -1 * height */
 }
 
-.site-header.headspace--fixed,
-body:not(.home) .site-header {
-  border-bottom-color:#dbdddf;
-  box-shadow: 0 0 0.7em rgba(0,5,10,0.15);
-}
-
-body {
-  padding-top:4em;
-}
-
-.site-banner {
-  height:1.5em;
-  color:#fff;
-  background:#09d;
-  text-align:center;
-}
-
-.site-banner a {
-  color:#fff;
-  text-decoration: underline;
+/* using a pseudo-element instead of `box-shadow` because of https://ishadeed.com/article/new-facebook-css/#using-an-image-for-the-shadow */
+.site-header.headspace--fixed::after,
+body:not(.home) .site-header::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0; right: 0;
+  border-top: #dbdddf 1px solid;
+  height: 0.7em;
+  background: linear-gradient(rgba(0, 5, 10, 5%), rgba(0, 5, 10, 0%));
+  pointer-events: none;
 }
 
 .site-logo {
-  height:2.2em;
-  margin-left:2em;
-  display:block;
+  height: 2.2em;
+  margin-left: 2em;
+  display: block; /* remove descender space underneath */
 }
 
-.site-header button.menu {
-  display:none;
-  border:0;
-  background:transparent;
-  font-size:2em;
-  padding:0.5em;
-  padding-right:1em;
-  cursor:pointer;
-  line-height:1em;
+.site-menu-button {
+  border: 1px solid transparent; /* for High-Contrast Mode */
+  background: none;
+  font-size: 1em;
+  line-height: 1;
+  padding: 0.5em;
+  margin: 0 0.5em;
+  border-radius: 99rem;
+  color: #595959;
 }
-
-.site-header .stuff {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  flex:1;
+.site-menu-button:hover {
+  background: radial-gradient(circle closest-side, #ccc 98%, rgba(0,0,0,0) 99%);
 }
-@media (max-width:45em) {
-  .site-header button.menu {
-      display:block;
+@media (min-width: 45em) {
+  .site-menu-button {
+    display: none;
   }
+}
+
+.site-menu-icon {
+  display: block;
+  font-size: 2em;
+  margin: auto;
 }
 
 .site-menu {
   display: flex;
-  flex-direction:row;
   align-items: center;
+  justify-content: flex-end;
+  flex-grow: 1;
 }
 .site-menu > a {
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:4em;
-  padding:1.5em;
+  padding: 1em 1.5em;
   text-decoration: none;
-  color:#595959;
+  color: #595959;
 }
-.site-menu > a:hover {
+.site-menu > a:is(:hover, :focus) {
   text-decoration: underline;
 }
 
-@media (max-width:45em) {
-  .site-menu > .search {
-      display:none;
-  }
-  .site-menu {
-    align-items: stretch;
-    flex:1;
-    max-width: 20em;
-  }
-  .site-menu > a {
-    padding:0;
-    flex:1;
+@media (max-width: 45em) {
+  .site-search {
+    display: none;
   }
 }
