@@ -36,23 +36,23 @@ module.exports = function (path, t) {
     lang = nodePath.extname(filePath).slice(1);
     code = fs.readFileSync(filePath, "utf-8");
   } else {
-    const bodyNodes = path.get("body.body");
+    const codeNodePath = attrs.code;
     const langNodePath = attrs.lang;
 
-    if (!bodyNodes.length) {
+    if (!codeNodePath || !(codeNodePath.isStringLiteral() || codeNodePath.isTemplateLiteral())) {
       throw path.buildCodeFrameError(
-        "<code-block> missing body content."
+        "<code-block> missing code."
       );
     }
 
     if (!langNodePath || !langNodePath.isStringLiteral()) {
       throw (langNodePath || path).buildCodeFrameError(
-        "<code-block> with body content requires a lang attribute that is a string."
+        "<code-block> with code requires a lang attribute that is a string."
       );
     }
 
     lang = langNodePath.node.value;
-    code = path.hub.file.code.slice(bodyNodes[0].node.start, bodyNodes.at(-1).node.end);
+    code = codeNodePath.isStringLiteral() ? codeNodePath.node.value : codeNodePath.node.quasis[0].value.cooked;
   }
 
   const linesNodePath = attrs.lines;

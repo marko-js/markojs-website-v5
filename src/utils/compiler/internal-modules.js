@@ -8,14 +8,7 @@ internalModuleLookup.events = () => require("events-light");
 internalModuleLookup.marked = () => require("marked");
 internalModuleLookup.path = () => require("path");
 internalModuleLookup.url = () => require("url");
-
-if (process.env.NODE_ENV === "production") {
-  internalModuleLookup["@marko/runtime-fluurt/dist/dom"] = () =>
-    require("../../../browser-shims/v6/runtime");
-} else {
-  internalModuleLookup["@marko/runtime-fluurt/dist/debug/dom"] = () =>
-    require("../../../browser-shims/v6/runtime");
-}
+internalModuleLookup["@marko/runtime-fluurt/dist/debug/dom"] = () => require("../../../browser-shims/v6/runtime");
 
 [
   require.context("@marko/translator-default/dist", true, /\.(js(on)?)$/),

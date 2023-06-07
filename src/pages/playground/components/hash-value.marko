@@ -1,18 +1,17 @@
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
 
-<attrs/{ default:defaultValue }/>
-<let/value = (
-  (() => { 
-    try {
-      if (typeof window !== "undefined") {
-        return JSON.parse(decompressFromEncodedURIComponent(window.location.hash.slice(1)));
-      }
-    } catch(e) {
-      console.error(e);
+static function getInitialValue() {
+  try {
+    if (typeof window !== "undefined") {
+      return JSON.parse(decompressFromEncodedURIComponent(window.location.hash.slice(1)));
     }
-  })() 
-  || defaultValue
-)/>
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+<attrs/{ value:defaultValue }/>
+<let/value = getInitialValue() || defaultValue/>
 <lifecycle 
   onMount() {
     window.addEventListener("hashchange", this.handler = () => {
