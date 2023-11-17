@@ -1,16 +1,46 @@
-<form.SiteSearch class=input.class
-  role="search"
-  action="https://google.com/search">
-  <svg.SiteSearch-icon width="1em" height="1em" viewBox="0 0 64 64" fill="none" stroke="#595959" stroke-width="5" focusable="false">
-    <path d="M41 39a1 1 0 0 0-27-27 1 1 0 0 0 27 27l15 16-2 2-15-15"/>
-  </svg>
-  <input.SiteSearch-input name="q"
-    type="search"
-    placeholder="search docs…"
-    pattern=/.*?\S+.*?/ title="Enter something to search for"
-    required autocapitalize="off"
-  />
-  <button.SiteSearch-submit name="q" value="site:markojs.com">
-    Go
-  </button>
-</form>
+<link rel="preconnect" href="https://GB0QQV5RQM-dsn.algolia.net" crossorigin />
+<div.search key="container"/>
+
+style {
+  .search {
+    padding: 0 1.5em;
+  }
+
+  .search > button {
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .search {
+      padding: 1.5em;
+      padding-left: 0;
+      display: flex;
+    }
+
+    .search.search.search .DocSearch-Button {
+      background: transparent;
+      padding: 0 0.5em;
+      border-radius: 0;
+      box-shadow: none;
+      outline: unset;
+      height: auto;
+
+    }
+
+    .search.search .DocSearch-Button:focus-visible {
+      outline: -webkit-focus-ring-color auto 1px;
+    }
+
+    .search .DocSearch-Button-Container {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  @media (max-width:45em) {
+    .search {
+      padding: 0;
+      display: flex;
+    }
+  }
+}

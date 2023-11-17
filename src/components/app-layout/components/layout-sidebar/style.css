@@ -117,12 +117,6 @@ body.docs .doc-sidebar {
   display:block;
 }
 
-.doc-sidebar > .search {
-  display: none;
-  margin: 0px;
-  margin-top: 1.5em;
-}
-
 @media (max-width:45em) {
   .doc-sidebar,
   .doc-sidebar.no-header,
@@ -154,9 +148,5 @@ body.docs .doc-sidebar {
   }
   .doc-sidebar ul a {
       padding:0.25em;
-  }
-  .doc-sidebar > .search {
-      display: flex;
-      width: 12em;
   }
 }

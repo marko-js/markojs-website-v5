@@ -64,6 +64,7 @@ body {
   padding-right:1em;
   cursor:pointer;
   line-height:1em;
+  padding-top: 0.3em;
 }
 
 .site-header .stuff {
@@ -97,9 +98,6 @@ body {
 }
 
 @media (max-width:45em) {
-  .site-menu > .search {
-      display:none;
-  }
   .site-menu {
     align-items: stretch;
     flex:1;
