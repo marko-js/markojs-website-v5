@@ -1,6 +1,6 @@
 const path = require("path");
 const webpack = require("webpack");
-const { taglib } = require("@marko/compiler");
+const { taglib, configure } = require("@marko/compiler");
 const { configBuilder } = require("@marko/build");
 const nodeExternals = require("webpack-node-externals");
 const { load } = require("./src/utils/language-registry");
@@ -10,6 +10,10 @@ const { getServerConfig, getBrowserConfigs } = configBuilder({
   production
 });
 const prPreview = process.env.PR_PREVIEW;
+
+configure({
+  translator: require("@marko/translator-default"),
+});
 
 // globally register <code-block> so it can be used by the markdown files
 taglib.register(
@@ -65,7 +69,6 @@ module.exports = [
       ...config.resolve,
       alias: {
         "@marko/compiler": path.join(__dirname, "browser-shims/compiler"),
-        "@marko/translator-fluurt": path.join(__dirname, "browser-shims/translator.js"),
         util: require.resolve("util/"),
         buffer: require.resolve("buffer"),
         assert: require.resolve("assert/"),

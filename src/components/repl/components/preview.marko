@@ -157,7 +157,7 @@ import fs, { vol } from "memfs"
 
           if (getCompilerOptions?.().translator) {
             // new api
-            template.default.insertBefore(contentDocument.body, null, {});
+            template.default.mount({}, contentDocument.body);
           } else {
             const renderResult = await template.render({});
             renderResult.appendTo(contentDocument.body);

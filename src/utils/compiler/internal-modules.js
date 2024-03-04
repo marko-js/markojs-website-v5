@@ -8,7 +8,7 @@ internalModuleLookup.events = () => require("events-light");
 internalModuleLookup.marked = () => require("marked");
 internalModuleLookup.path = () => require("path");
 internalModuleLookup.url = () => require("url");
-internalModuleLookup["@marko/runtime-fluurt/dist/debug/dom"] = () => require("../../../browser-shims/v6/runtime");
+internalModuleLookup["@marko/runtime-tags/debug/dom"] = () => require("@marko/runtime-tags/debug/dom");
 
 [
   require.context("@marko/translator-default/dist", true, /\.(js(on)?)$/),

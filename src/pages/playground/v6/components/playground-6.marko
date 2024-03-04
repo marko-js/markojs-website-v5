@@ -1,4 +1,4 @@
-import * as fluurtTranslator from "../../../../../browser-shims/v6/translator";
+import * as tagsTranslator from "@marko/translator-tags";
 
 <hash-value/files=[
   {
@@ -11,7 +11,7 @@ import * as fluurtTranslator from "../../../../../browser-shims/v6/translator";
 <repl
   getCompilerOptions() {
     return {
-      translator: fluurtTranslator,
+      translator: tagsTranslator,
       optimize: false,
     };
   }
