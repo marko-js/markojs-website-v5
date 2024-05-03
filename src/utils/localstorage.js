@@ -2,7 +2,12 @@ function getMarkoWebsiteKey(key) {
   return `markojs-website:${key}`;
 }
 
-exports.get = key => localStorage.getItem(getMarkoWebsiteKey(key));
-exports.set = (key, value) =>
-  localStorage.setItem(getMarkoWebsiteKey(key), value);
-exports.getMarkoWebsiteKey = getMarkoWebsiteKey;
+export function get(key) {
+  return localStorage.getItem(getMarkoWebsiteKey(key));
+}
+
+export function set(key, value) {
+  return localStorage.setItem(getMarkoWebsiteKey(key), value);
+}
+
+export {getMarkoWebsiteKey};

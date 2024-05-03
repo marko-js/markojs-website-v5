@@ -1,19 +1,20 @@
-var siteHeaderEvents = require("./events");
+import siteHeaderEvents from "./events";
 
 var classNames = {
   base: "headspace",
   fixed: "headspace--fixed",
-  hidden: "headspace--hidden"
+  hidden: "headspace--hidden",
 };
-var debounce = cb => () => window.requestAnimationFrame(cb);
+var debounce = (cb) => () => window.requestAnimationFrame(cb);
 var tolerance = 3;
 
-module.exports = {
+export default {
   onMount() {
     siteHeaderEvents.emit("create", this);
     var scrollLast = 0;
-    var startOffset = this.getEl('header').offsetHeight;
-    var bannerHeight = (this.getEl('banner') || { offsetHeight:0 }).offsetHeight;
+    var startOffset = this.getEl("header").offsetHeight;
+    var bannerHeight = (this.getEl("banner") || { offsetHeight: 0 })
+      .offsetHeight;
 
     var handleScroll = debounce(() => {
       var scrollCurrent = window.pageYOffset;
@@ -50,10 +51,10 @@ module.exports = {
     siteHeaderEvents.emit("hide");
   },
   addClass(cls) {
-    this.getEl('header').classList.add(cls);
+    this.getEl("header").classList.add(cls);
   },
   removeClass(cls) {
-    this.getEl('header').classList.remove(cls);
+    this.getEl("header").classList.remove(cls);
   },
   pause() {
     this.paused = true;
@@ -65,7 +66,7 @@ module.exports = {
       })
     );
   },
-  toggleMenu () {
-    siteHeaderEvents.emit('toggle-menu');
-  }
+  toggleMenu() {
+    siteHeaderEvents.emit("toggle-menu");
+  },
 };

@@ -1,1 +1,2 @@
-module.exports = require("memfs");
+import memfs from "memfs";
+export default memfs;

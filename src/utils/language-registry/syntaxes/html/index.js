@@ -1,17 +1,17 @@
-exports.grammar = require("./tmLanguage.json");
-exports.grammarConfig = {
-  embeddedLanguages: ["source.css", "source.ts"]
-}
+import grammar from "./tmLanguage.json";
+const grammarConfig = {
+  embeddedLanguages: ["source.css", "source.ts"],
+};
 
-exports.editorConfig = {
+const editorConfig = {
   comments: {
-    blockComment: ["<!--", "-->"]
+    blockComment: ["<!--", "-->"],
   },
   brackets: [
     ["<!--", "-->"],
     ["<", ">"],
     ["{", "}"],
-    ["(", ")"]
+    ["(", ")"],
   ],
   autoClosingPairs: [
     { open: "{", close: "}" },
@@ -19,7 +19,7 @@ exports.editorConfig = {
     { open: "(", close: ")" },
     { open: "'", close: "'" },
     { open: '"', close: '"' },
-    { open: "<!--", close: "-->", notIn: ["comment", "string"] }
+    { open: "<!--", close: "-->", notIn: ["comment", "string"] },
   ],
   surroundingPairs: [
     { open: "'", close: "'" },
@@ -27,12 +27,18 @@ exports.editorConfig = {
     { open: "{", close: "}" },
     { open: "[", close: "]" },
     { open: "(", close: ")" },
-    { open: "<", close: ">" }
+    { open: "<", close: ">" },
   ],
   folding: {
     markers: {
       start: new RegExp("^\\s*<!--\\s*#region\\b.*-->"),
-      end: new RegExp("^\\s*<!--\\s*#endregion\\b.*-->")
-    }
-  }
+      end: new RegExp("^\\s*<!--\\s*#endregion\\b.*-->"),
+    },
+  },
+};
+
+export default {
+  grammar,
+  grammarConfig,
+  editorConfig,
 };

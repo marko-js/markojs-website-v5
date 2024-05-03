@@ -1,8 +1,8 @@
-exports.grammar = require("./tmLanguage.json");
-exports.grammarConfig = {
+import grammar from "./tmLanguage.json";
+const grammarConfig = {
   embeddedLanguages: ["source.css", "source.ts"],
 };
-exports.editorConfig = {
+const editorConfig = {
   comments: {
     blockComment: ["<!--", "-->"],
   },
@@ -44,6 +44,13 @@ exports.editorConfig = {
       end: new RegExp("^\\s*<!--\\s*#endregion\\b.*-->"),
     },
   },
-  wordPattern:
-    new RegExp("(-?\\d*\\.\\d\\w*)|([^\\`\\~\\!\\@\\$\\^\\&\\*\\(\\)\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\s]+)"),
+  wordPattern: new RegExp(
+    "(-?\\d*\\.\\d\\w*)|([^\\`\\~\\!\\@\\$\\^\\&\\*\\(\\)\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\s]+)"
+  ),
+};
+
+export default {
+  grammar,
+  grammarConfig,
+  editorConfig,
 };

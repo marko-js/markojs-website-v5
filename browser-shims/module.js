@@ -1,6 +1,6 @@
-const path = require("path");
-const resolve = require("resolve");
-const resolveExports = require("resolve.exports");
+import path from "path";
+import resolve from "resolve";
+import resolveExports from "resolve.exports";
 
 const Module = {
   _nodeModulePaths: nodeModulePaths,
@@ -33,7 +33,7 @@ const Module = {
   },
 };
 
-module.exports = Module;
+export default Module;
 
 function nodeModulePaths(dir) {
   const paths = [];

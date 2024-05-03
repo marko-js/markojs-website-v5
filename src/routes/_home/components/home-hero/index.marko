@@ -1,0 +1,137 @@
+<header.home-header>
+  <img.logo src="../../../../logos/marko.svg" alt=""/>
+  <div.header-content>
+      <img.logo-text src="./marko-text.svg" alt="Marko"/>
+      <h1 key="tagline">
+          <span>A declarative, HTML-based language<br>that makes building web apps fun</span>
+          <!--
+          <span>It's like HTML and JS had a perfect<br/>baby that grew up to be awesome</span>
+          <span>Yes, you can copy and paste<br/>HTML from StackOverflow</span>
+          <span>Server-side rendering + Client-side<br/>rendering = <b>Awesomorphic</b></span>
+          <span>Bringing back progressive<br>HTML rendering to the masses</span>
+          <!-- A language for the web that brings together the best of HTML, CSS, & JS -->
+      </h1>
+      <div.actions>
+          <a.button.get-started href="/docs/getting-started/">
+              <span>Get started</span>
+          </a>
+          <github-link/>
+      </div>
+  </div>
+</header>
+
+style {
+  @keyframes fadein {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+  }
+
+  @keyframes fadeout {
+      from { opacity: 1; }
+      to   { opacity: 0; }
+  }
+
+  .home-header {
+      display: flex;
+      background-color:#fff;
+      width:100%;
+      padding:2.5em 2em;
+      justify-content:center;
+      align-items:flex-start;
+      flex-direction:row;
+  }
+
+  .home-header .header-content {
+      display: flex;
+      align-items:flex-start;
+      flex-direction: column;
+      justify-content: flex-start;
+  }
+
+  .home-header h1 {
+      font-size: min(3.2vw, 2em);
+      font-weight:300;
+      margin:0.5em 0 0.6em;
+      padding:0;
+      border:0;
+      color:#46484a;
+      width:17em;
+      transform: translateZ(-1px); /* Force new compositing layer to prevent jank in safari */
+      position: relative;
+  }
+  .home-header h1 span:not(:first-child) {
+      position: absolute;
+      top:0; right:0; left:0; bottom:0;
+      opacity:0;
+  }
+
+  .home-fade-in {
+      animation: fadein 1.0s;
+  }
+
+  .home-fade-out {
+      animation: fadeout 1.0s;
+  }
+
+  .home-header img.logo {
+      height:9em;
+      width:16.425em;
+      margin-right:2em;
+      margin-top:1.5em;
+  }
+
+  .home-header img.logo-text {
+      height:5em;
+  }
+
+  .home-header .actions {
+      display: flex;
+      flex-direction:row;
+  }
+
+  .home-header .actions .button {
+      display:flex;
+      flex-direction:row;
+      align-items:center;
+      justify-content:space-between;
+      padding:0.75em;
+      text-decoration:none;
+      border-radius:0.2em;
+      margin-left:1em;
+      box-shadow: 0 0.25em 0.5em rgba(0,0,0,0.3);
+  }
+
+  .home-header .actions .button:first-child {
+      margin-left:0;
+  }
+
+  .home-header .actions .button.get-started {
+    background: linear-gradient(to bottom, hsl(352, 99.9%, 62.9%), hsl(345, 90.3%, 51.8%), hsl(341, 92.3%, 40.8%));
+      background-color: ;
+      color:#fff;
+      padding-left:2em;
+      padding-right:2em;
+  }
+
+  .home-header .actions .button.get-started:hover {
+    background: linear-gradient(to bottom, hsl(340, 80.9%, 55.4%), hsl(338, 80.3%, 44.8%), hsl(335, 78.1%, 35.9%));
+  }
+
+  @media (max-width:45em) {
+      .home-header {
+          flex-direction:column;
+          align-items:center;
+      }
+      .home-header .header-content {
+          align-items:center;
+      }
+      .home-header h1 {
+          font-size: min(5.2vw, 2em);
+          text-align:center;
+      }
+      .home-header img.logo {
+          margin:0;
+          margin-bottom:1em;
+      }
+  }
+}

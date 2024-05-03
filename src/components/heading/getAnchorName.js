@@ -1,4 +1,4 @@
-module.exports = function getAnchorName(title, out) {
+export default function getAnchorName(title, out) {
   var anchorCache = out.global.anchorCache || (out.global.anchorCache = {});
   var anchorName = title
     .replace(/[ \-]+/g, "-")
@@ -12,4 +12,4 @@ module.exports = function getAnchorName(title, out) {
     anchorName += "_" + repeat;
   }
   return anchorName;
-};
+}

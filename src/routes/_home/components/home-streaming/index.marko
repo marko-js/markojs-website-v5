@@ -1,0 +1,22 @@
+<home-feature-block.home-streaming align="left">
+    <@title text="Progressive Rendering" anchorName="streaming"/>
+    <@content>
+        <p>Marko streams content to your users as soon as it’s ready. No waiting for client side JavaScript bundles or data requests to start rendering. HTML, assets, and images are loaded as soon as possible with asynchronous data loading in as it completes. </p>
+    </@content>
+    <@visual>
+        <scroll-locked-stream-example.home-streaming-example/>
+    </@visual>
+    <@action href="https://dev.to/ryansolid/server-rendering-in-javascript-optimizing-performance-1jnk"/>
+</home-feature-block>
+
+style {
+    .home-streaming {
+        background-color: #82e315;
+        background-image: linear-gradient(135deg, #1cdaa1, #82e315, #a2e315);
+    }
+    @media (max-width:60em) {
+        .home-streaming-example {
+            font-size: min(3vw, 1.25em);
+        }
+    }
+}

@@ -1,10 +1,10 @@
-var siteHeaderEvents = require("../layout-header/events");
+import siteHeaderEvents from "../layout-header/events";
 var forEach = [].forEach;
 var filter = [].filter;
 var slice = [].slice;
 var siteHeaderComponent;
 
-module.exports = {
+export default {
   onMount() {
     this.preventOverscroll();
     this.listenForHeaderChanges();
@@ -13,7 +13,7 @@ module.exports = {
 
   initScrollSpy() {
     var headersSelector = [1, 2, 3, 4, 5, 6]
-      .map(n => ".doc-content h" + n)
+      .map((n) => ".doc-content h" + n)
       .join(",");
     var headers = slice.call(document.querySelectorAll(headersSelector));
     var waiting = false;
@@ -27,7 +27,7 @@ module.exports = {
             var closestHeader;
             var closestTop;
 
-            headers.map(header => {
+            headers.map((header) => {
               var top = header.getBoundingClientRect().top;
               if (
                 closestTop == null ||
@@ -46,7 +46,7 @@ module.exports = {
             var childList = targetAnchor.nextSibling;
 
             if (childList) {
-              forEach.call(childList.querySelectorAll("a[href^=\\#]"), a =>
+              forEach.call(childList.querySelectorAll("a[href^=\\#]"), (a) =>
                 a.classList.remove("selected")
               );
             }
@@ -57,9 +57,10 @@ module.exports = {
                 parentList &&
                 filter.call(
                   parentList.querySelectorAll(":scope > li > a[href^=\\#]"),
-                  a => a !== targetAnchor
+                  (a) => a !== targetAnchor
                 );
-              siblings && siblings.forEach(a => a.classList.remove("selected"));
+              siblings &&
+                siblings.forEach((a) => a.classList.remove("selected"));
               targetAnchor.classList.add("selected");
               targetAnchor = parentList && parentList.previousElementSibling;
             }
@@ -73,7 +74,7 @@ module.exports = {
   },
 
   listenForHeaderChanges() {
-    forEach.call(this.el.querySelectorAll("a[href^=\\#]"), a => {
+    forEach.call(this.el.querySelectorAll("a[href^=\\#]"), (a) => {
       this.subscribeTo(a).on("click", () => {
         siteHeaderComponent.hide();
         siteHeaderComponent.pause();
@@ -86,7 +87,7 @@ module.exports = {
     var selectedLink = slice.call(this.el.querySelectorAll("a.selected")).pop();
 
     selectedLink &&
-      this.subscribeTo(selectedLink).on("click", e => {
+      this.subscribeTo(selectedLink).on("click", (e) => {
         window.scrollTo(0, 0);
         siteHeaderComponent.reset();
         e.preventDefault();
@@ -116,7 +117,7 @@ module.exports = {
           this.el.classList.add("show");
         }
       })
-      .on("create", _siteHeaderComponent => {
+      .on("create", (_siteHeaderComponent) => {
         siteHeaderComponent = _siteHeaderComponent;
 
         if (window.pageYOffset > siteHeaderComponent.el.offsetHeight) {
@@ -128,7 +129,7 @@ module.exports = {
 
   preventOverscroll() {
     var sidebar = this.getEl("sidebar");
-    this.subscribeTo(document.body).on("wheel", e => {
+    this.subscribeTo(document.body).on("wheel", (e) => {
       var delta = e.deltaY;
       var scrollTarget = sidebar.scrollTop + delta;
       var topY = 0;
@@ -182,5 +183,5 @@ module.exports = {
   hide() {
     this.el.classList.remove("show");
     document.body.style.overflow = "";
-  }
+  },
 };

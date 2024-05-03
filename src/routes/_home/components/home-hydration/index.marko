@@ -1,0 +1,27 @@
+<home-feature-block.home-hydration align="right">
+    <@title text="Code Elimination" anchorName="hydration"/>
+    <@content>
+        <p>Marko only sends the code for interactive components to the browser. Its compiler automatically detects which components only need to be rendered on the server. This means less to download and less to execute. Your users can enjoy top tier performance regardless of their devices or networks.</p>
+    </@content>
+    <@visual>
+        <home-demo-page.home-hydration-example hydrate-all label="Traditional hydration sends and re-excutes the code for all components"/>
+        <home-demo-page.home-hydration-example hydrate-partial label="Marko's hydration only sends the code for interactive components"/>
+    </@visual>
+    <@action href="https://medium.com/@mlrawlings/maybe-you-dont-need-that-spa-f2c659bc7fec"/>
+</home-feature-block>
+
+style {
+    .home-hydration {
+        background-color: #fec703;
+        background-image: linear-gradient(135deg, #ffe90d, #fec703, #ffa403);
+    }
+    .home-hydration-example:first-child {
+        margin-right:1em;
+    }
+    @media (max-width:60em) {
+        .home-hydration-example {
+            font-size: min(3vw, 1.25em);
+        }
+    }
+}
+

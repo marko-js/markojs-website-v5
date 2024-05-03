@@ -7,7 +7,7 @@ const { load } = require("./src/utils/language-registry");
 const production = process.env.NODE_ENV === "production";
 const { getServerConfig, getBrowserConfigs } = configBuilder({
   entry: path.join(__dirname, "src/pages"),
-  production
+  production,
 });
 const prPreview = process.env.PR_PREVIEW;
 
@@ -16,18 +16,15 @@ configure({
 });
 
 // globally register <code-block> so it can be used by the markdown files
-taglib.register(
-  "code-block",
-  {
-    "<code-block>": {
-      transformer: require.resolve("./src/utils/code-block-transformer"),
-      "parse-options": {
-          text: true,
-          preserveWhitespace: true
-      },
-    }
-  }
-);
+taglib.register("code-block", {
+  "<code-block>": {
+    transformer: require.resolve("./src/utils/code-block-transformer"),
+    "parse-options": {
+      text: true,
+      preserveWhitespace: true,
+    },
+  },
+});
 
 const encodedLanguageIds = new Map();
 const loadingRegistry = load({
@@ -40,28 +37,28 @@ const loadingRegistry = load({
     id = encodedLanguageIds.size + 1;
     encodedLanguageIds.set(scopeName, id);
     return id;
-  }
+  },
 });
 
 module.exports = [
-  ...getBrowserConfigs(config => {
+  ...getBrowserConfigs((config) => {
     shared(config);
 
     config.node = {
       ...config.node,
       __dirname: true,
-      __filename: true
-    }
+      __filename: true,
+    };
 
     config.module.rules.push(
       {
         test: /\.wasm$/,
         loader: "file-loader",
-        type: "javascript/auto"
+        type: "javascript/auto",
       },
       {
         test: /\.worker\.js$/,
-        loader: "worker-loader"
+        loader: "worker-loader",
       }
     );
 
@@ -75,6 +72,10 @@ module.exports = [
       },
       alias: {
         "@marko/compiler": path.join(__dirname, "browser-shims/compiler"),
+        "@marko/translator-fluurt": path.join(
+          __dirname,
+          "browser-shims/translator.js"
+        ),
         util: require.resolve("util/"),
         buffer: require.resolve("buffer"),
         assert: require.resolve("assert/"),
@@ -84,18 +85,25 @@ module.exports = [
         fs: path.join(__dirname, "browser-shims/fs.js"),
         module: path.join(__dirname, "browser-shims/module.js"),
         process: path.join(__dirname, "browser-shims/process.js"),
-      }
+        os: false,
+        stream: false,
+        http: false,
+      },
     };
 
-    config.plugins.push(new webpack.ProvidePlugin({
-      Buffer: [require.resolve("buffer"), "Buffer"],
-      process: path.join(__dirname, "browser-shims/process.js")
-    }));
+    config.plugins.push(
+      new webpack.ProvidePlugin({
+        Buffer: [require.resolve("buffer"), "Buffer"],
+        process: path.join(__dirname, "browser-shims/process.js"),
+      })
+    );
 
-    config.plugins.push(new webpack.DefinePlugin({
-      "process.env.NODE_DEBUG": undefined,
-      "process.env.MARKO_DEBUG": undefined
-    }));
+    config.plugins.push(
+      new webpack.DefinePlugin({
+        "process.env.NODE_DEBUG": undefined,
+        "process.env.MARKO_DEBUG": undefined,
+      })
+    );
 
     config.optimization.runtimeChunk = "single";
 
@@ -106,21 +114,21 @@ module.exports = [
 
     return config;
   }),
-  getServerConfig(config => {
+  getServerConfig((config) => {
     shared(config);
     config.externals = [
       // Exclude node_modules, but ensure non js files are bundled.
       // Eg: `.marko`, `.css`, etc.
       nodeExternals({
-        allowlist: [/\.(?!(?:js|json)$)[^.]+$/]
-      })
+        allowlist: [/\.(?!(?:js|json)$)[^.]+$/],
+      }),
     ];
     return config;
-  })
+  }),
 ];
 
 function shared(config) {
-  config.plugins.unshift(compiler => {
+  config.plugins.unshift((compiler) => {
     // Wait for language registry to be loaded before running bundling.
     // The syntax highlighter must be loaded async, but can only be
     // used synchronously during the the compilation.
@@ -130,19 +138,21 @@ function shared(config) {
     );
   });
 
-  const fileLoader = config.module.rules.find(({ test }) => typeof test === "function");
+  const fileLoader = config.module.rules.find(
+    ({ test }) => typeof test === "function"
+  );
   const originalTest = fileLoader.test;
-  fileLoader.test = file => !/\.(md)$/.test(file) && originalTest(file);
+  fileLoader.test = (file) => !/\.(md)$/.test(file) && originalTest(file);
 
   if (prPreview) {
     config.output.publicPath = `/website/pr-${prPreview}/assets/`;
   }
-  
+
   config.module.rules.push({
     test: /\.md$/,
     use: [
       "@marko/webpack/loader",
-      require.resolve("./src/utils/markodown-loader")
-    ]
+      require.resolve("./src/utils/markodown-loader"),
+    ],
   });
 }

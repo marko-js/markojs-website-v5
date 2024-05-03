@@ -1,12 +1,12 @@
-const fs = require("fs");
-const nodePath = require("path");
-const { format } = require("prettier");
-const highlight = require("./highlight");
-const { importDefault } = require("@marko/babel-utils");
-const { getMarkoWebsiteKey } = require("./localstorage");
+import fs from "fs";
+import nodePath from "path";
+import { format } from "prettier";
+import highlight from "./highlight";
+import { importDefault } from "@marko/babel-utils";
+import { getMarkoWebsiteKey } from "./localstorage";
 const ADDED_SYNTAX_SWITCH_SCRIPT = new WeakSet();
 
-module.exports = function (path, t) {
+export default function (path, t) {
   const attrs = attrsByName(path);
   let code;
   let lang;
@@ -39,10 +39,11 @@ module.exports = function (path, t) {
     const codeNodePath = attrs.code;
     const langNodePath = attrs.lang;
 
-    if (!codeNodePath || !(codeNodePath.isStringLiteral() || codeNodePath.isTemplateLiteral())) {
-      throw path.buildCodeFrameError(
-        "<code-block> missing code."
-      );
+    if (
+      !codeNodePath ||
+      !(codeNodePath.isStringLiteral() || codeNodePath.isTemplateLiteral())
+    ) {
+      throw path.buildCodeFrameError("<code-block> missing code.");
     }
 
     if (!langNodePath || !langNodePath.isStringLiteral()) {
@@ -52,7 +53,9 @@ module.exports = function (path, t) {
     }
 
     lang = langNodePath.node.value;
-    code = codeNodePath.isStringLiteral() ? codeNodePath.node.value : codeNodePath.node.quasis[0].value.cooked;
+    code = codeNodePath.isStringLiteral()
+      ? codeNodePath.node.value
+      : codeNodePath.node.quasis[0].value.cooked;
   }
 
   const linesNodePath = attrs.lines;
@@ -164,7 +167,7 @@ module.exports = function (path, t) {
   }
 
   path.replaceWith(t.markoPlaceholder(t.stringLiteral(html), false));
-};
+}
 
 function parseLineRange(string) {
   var ranges = string.split(",");
@@ -235,7 +238,7 @@ function redent(str) {
   let indent = 1;
   if (match) {
     indent = match[0].length;
-    while (match = indentReg.exec(str)) {
+    while ((match = indentReg.exec(str))) {
       const [{ length }] = match;
       if (length < indent) indent = length;
     }

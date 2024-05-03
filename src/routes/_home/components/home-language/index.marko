@@ -1,0 +1,113 @@
+<home-feature-block.home-language>
+    <@title text="HTML Reimagined" anchorName="language"/>
+    <@content>
+        <p>Marko is HTML re-imagined as a language for building dynamic and reactive user interfaces. Just about any valid HTML is valid Marko, but Marko extends the HTML language to allow building modern applications in a declarative way.</p>
+    </@content>
+    <@visual.home-language__examples>
+        <figure>
+            <code-block lang="marko" no-switch code=`
+                <!doctype html>
+                <html>
+                <head>
+                    <title>Hello Marko</title>
+                </head>
+                <body>
+                    <h1>My favorite colors</h1>
+                    <ul>
+                        <for|color| of=["red", "green", "blue"]>
+                            <li style=\`color:\${color}\`>
+                                \${color.toUpperCase()}
+                            </li>
+                        </for>
+                    </ul>
+                    <shared-footer/>
+                </body>
+                </html>
+            `/>
+            <figcaption>HTML Templates, Custom Tags, & Javascript Expressions</figcaption>
+        </figure>
+        <figure>
+            <div.home-language__interactive-container>
+                <div.home-language__interactive-example>
+                    <counter-example/>
+                </div>
+                <code-block no-switch file="./components/counter-example/index.marko"/>
+                <!--<code-block lang="marko" no-switch>
+                    <let/count=0/>
+                    <div>${count}</div>
+                    <button on-click=()=>count++>
+                        increment
+                    </button> 
+                </code-block>-->
+            </div>
+            <figcaption>Interactive Logic & Reactive Values</figcaption>
+        </figure>
+    </@visual>
+</home-feature-block>
+
+style {
+    .home-language {
+        background-color: #33d5f4;
+        background-image: linear-gradient(135deg, #25dbd2, #33d5f4, #039fea);
+    }
+    .home-language__examples {
+        display: flex;
+        flex-direction:row;
+    }
+
+    .home-language__examples figure {
+        flex:1;
+        flex-basis:0;
+        display: flex;
+        flex-direction: column;
+        margin:0 0.5em;
+    }
+
+    .home-language__examples figcaption {
+        padding-top:1em;
+        text-align: center;
+        font-size: 0.8em;
+        font-weight: 600;
+    }
+
+    .home-language__examples pre {
+        padding:2em;
+        flex:1;
+        box-shadow: 0 0.75em 0.75em rgba(0,0,0,0.3);
+    }
+
+    @media (max-width:55em) {
+        .home-language__examples {
+            font-size:1.9vw;
+        }
+    }
+
+    .home-language__interactive-container {
+        display: flex;
+        flex-direction:column;
+        justify-content:center;
+        flex:1;
+    }
+
+    .home-language__interactive-container pre {
+        margin:0;
+        border-top-right-radius:0;
+        border-top-left-radius:0;
+        flex:none;
+    }
+
+    .home-language__interactive-example {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        justify-content: center;
+        background-color:#fff;
+        padding:1rem;
+        font-size:3em;
+        border-top-right-radius:0.2rem;
+        border-top-left-radius:0.2rem;
+        line-height: 1;
+    }
+}

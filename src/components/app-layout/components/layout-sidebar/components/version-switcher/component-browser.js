@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   onMount() {
     const value = this.getEl("version").value;
     const valuev6 = value.startsWith("/docs/v6");
@@ -7,8 +7,8 @@ module.exports = {
     if (update) {
       window.location.href = value;
     }
-  },
+  }
   switchVersion(e) {
     window.location.href = e.target.value;
-  },
+  }
 };

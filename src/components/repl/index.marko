@@ -34,7 +34,7 @@
             }/>
         </if>
         <lifecycle onMount = (async () => { 
-          const e = await import("./components/editor");
+          const e = await import("./components/editor.marko");
           await e.loading;
           activeEditor = e;
         })/>
@@ -73,7 +73,7 @@
           getCompilerOptions=getCompilerOptions
           debounce=debounce/>
         <lifecycle onMount = (async () => { 
-          preview = await import("./components/preview");
+          preview = await import("./components/preview.marko");
         })/>
       </@body>
     </pane>

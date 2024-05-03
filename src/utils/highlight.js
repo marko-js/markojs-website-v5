@@ -1,8 +1,8 @@
-const langToScope = require("./lang-to-scope");
-const { getTokenizer, getColorMap } = require("./language-registry");
+import langToScope from "./lang-to-scope";
+import {getTokenizer, getColorMap} from "./language-registry";
 const NEW_LINE = /\r\n|[\n\r\u2028\u2029]/;
 
-module.exports = (lang, code) => {
+export default (lang, code) => {
   const tokenizer = getTokenizer(langToScope(lang));
   const colorMap = getColorMap();
   const lines = code.split(NEW_LINE);

@@ -1,0 +1,108 @@
+<section.home-feature-block class=[input.class, input.align && `home-feature-block-${input.align}`, !input.action && `home-feature-block-actionless`]>
+    <div.home-feature-block-container>
+        <div.home-feature-block-content>
+            <heading tag="h1" class="home-feature-block-title" ...input.title/>
+            <div.home-feature-block-content-body>
+              <${input.content}/>
+            </div>
+        </div>
+        <div.home-feature-block-visual class=input.visual.class>
+          <${input.visual}/>
+        </div>
+        <if(input.action)>
+          <div.home-feature-block-action>
+            <a class=input.action.class href=input.action.href>
+              ${input.action.text || "Learn More"}
+            </a>
+          </div>
+        </if>
+    </div>
+    <${input.breakout}/>
+</section>
+
+style {
+  .home-feature-block {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width:100%;
+      padding:2em;
+  }
+  .home-feature-block-title {
+      color:#fff;
+  }
+  .home-feature-block-container {
+      display: grid;
+      grid-template-areas: 
+          "content"
+          "visual"
+          "action";
+      gap: 2em 3em;
+      max-width: 70em;
+  }
+  .home-feature-block-actionless
+  .home-feature-block-container {
+    grid-template-areas: 
+      "content"
+      "visual";
+  }
+  .home-feature-block-content {
+      grid-area:content;
+      text-align: center;
+  }
+  .home-feature-block-content p {
+      margin-top:0.5rem;
+  }
+  .home-feature-block-visual {
+    grid-area:visual;
+    display: flex;
+    justify-content: center;
+  }
+  .home-feature-block-action {
+      grid-area:action;
+      text-align: center;
+  }
+  .home-feature-block-content-body {
+      font-size: 1.2em;
+  }
+  .home-feature-block-action a {
+      display:inline-block;
+      padding:0.75em 3em;
+      text-decoration:none;
+      border-radius:0.2em;
+      border:1px solid #fff;
+      color:#fff;
+  }
+  .home-feature-block-action a:hover {
+      color:#fff;
+      background-color:rgba(255,255,255,0.15);
+      text-decoration:none;
+      cursor: pointer;
+  }
+  @media (min-width: 60em) {
+    .home-feature-block-left
+    .home-feature-block-container {
+        grid-template-areas: 
+            "content visual"
+            "action  visual";
+        gap: 1em 3em;
+    }
+    .home-feature-block-right
+    .home-feature-block-container {
+        grid-template-areas: 
+            "visual content"
+            "visual action";
+        gap: 1em 3em;
+    }
+    .home-feature-block-left
+    .home-feature-block-content,
+    .home-feature-block-right
+    .home-feature-block-content,
+    .home-feature-block-left
+    .home-feature-block-action,
+    .home-feature-block-right
+    .home-feature-block-action {
+        text-align:left;
+    }
+  }
+}

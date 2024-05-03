@@ -1,10 +1,11 @@
-const { getComponentForEl } = require("marko/components");
-const localStorageUtil = require("../../utils/localstorage");
+import { getComponentForEl } from "marko/components";
+import localStorageUtil from "../../utils/localstorage";
 
-module.exports = {
+export default {
   changeSyntax() {
     const header = getComponentForEl(document.querySelector(".site-header"));
-    const beforeScroll = document.body.scrollTop || document.documentElement.scrollTop;
+    const beforeScroll =
+      document.body.scrollTop || document.documentElement.scrollTop;
     const beforePosition = this.el.offsetTop;
 
     header.pause();
@@ -23,6 +24,6 @@ module.exports = {
     document.documentElement.scrollTop = afterScroll;
     document.body.scrollTop = afterScroll;
 
-    setTimeout(()=> header.resume());
-  }
+    setTimeout(() => header.resume());
+  },
 };

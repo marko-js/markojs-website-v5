@@ -1,0 +1,48 @@
+<a.github-link href="https://github.com/marko-js/marko">
+    <img src="../../../../../../logos/github.svg" alt=""/>
+    <span.text>GitHub</span>
+    <span.stars key="star-count"/>
+</a>
+
+style {
+    .github-link {
+        display:flex;
+        flex-direction:row;
+        align-items:center;
+        justify-content:space-between;
+        padding:0.75em;
+        text-decoration:none;
+        border-radius:0.2em;
+        margin-left:1em;
+        color:#343638;
+        background: linear-gradient(to bottom, #fff, #f4f5f6);
+        box-shadow: 0 0.25em 0.5em rgba(0,0,0,0.25);
+    }
+
+    .github-link:hover {
+        color:#343638;
+        background:;
+        background: linear-gradient(to bottom, #fdfeff, #eaebec);
+        text-decoration:none;
+    }
+
+    .github-link img {
+        height:1.5em;
+        display:block;
+        margin-right:0.75em;
+    }
+
+    .github-link .text {
+        margin-right:0.75em;
+    }
+
+    .github-link .stars {
+        color:#545658;
+        font-size:0.9em;
+        white-space: nowrap;
+    }
+    .github-link .stars:after {
+        content:" \2605";
+        color:#ffc400;
+    }
+}

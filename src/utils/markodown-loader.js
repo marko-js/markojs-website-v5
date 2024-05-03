@@ -1,13 +1,13 @@
 const path = require("path");
 const { marked } = require("marked");
 
-module.exports = function markodown(source) {
+export default function markodown(source) {
   const filePath = this.resourcePath;
   const markdown = source
     .replace(/\&(?!\S+;)/g, "&amp;")
     .replace(/https?:\/\/markojs\.com\//g, "/")
     .replace(/(\#\w+)\./g, "$1") // TODO: fix marko-magic to not process jump links
-    .replace(/(?<=\]\()\.*([\w\d\-\/]+)\.md/g, match => {
+    .replace(/(?<=\]\()\.*([\w\d\-\/]+)\.md/g, (match) => {
       // Markdown documents from external sources do not have a file path
       if (filePath) {
         const linkpath = path.resolve(path.dirname(filePath), match);
@@ -22,7 +22,7 @@ module.exports = function markodown(source) {
   var anchorCache = {};
   var title;
 
-  markedRenderer.table = function(header, body) {
+  markedRenderer.table = function (header, body) {
     var output = '<table class="markdown-table">';
     if (header) {
       output += "<thead>" + header + "</thead>";
@@ -35,7 +35,7 @@ module.exports = function markodown(source) {
     return output;
   };
 
-  markedRenderer.blockquote = function(quote) {
+  markedRenderer.blockquote = function (quote) {
     var match = /^<p><strong>(\w+):<\/strong>/.exec(quote);
     var className = match && match[1].toLowerCase();
 
@@ -47,9 +47,9 @@ module.exports = function markodown(source) {
       }
     }
     return `<blockquote class="${className}">${quote}</blockquote>`;
-  }
+  };
 
-  markedRenderer.heading = function(text, level) {
+  markedRenderer.heading = function (text, level) {
     var anchorName = getAnchorName(text, anchorCache);
     var linkText = text
       .replace(/\s+\([^\)]+\)/g, "")
@@ -71,7 +71,7 @@ module.exports = function markodown(source) {
     );
   };
 
-  markedRenderer.code = function(code, lang, escaped) {
+  markedRenderer.code = function (code, lang, escaped) {
     var lines = "";
     var index = lang && lang.indexOf("{");
 
@@ -80,20 +80,43 @@ module.exports = function markodown(source) {
       lang = lang.slice(0, index);
     }
 
-    return `<code-block lang="${lang}" lines="${lines}" code=${JSON.stringify(code)}/>\n`;
+    return `<code-block lang="${lang}" lines="${lines}" code=${JSON.stringify(
+      code
+    )}/>\n`;
   };
 
-  markedRenderer.image = function(href, title, text) {
-    let imageCode = `<img src=${JSON.stringify(href)} alt=${JSON.stringify(text || "")} style="max-width:100%"/>`;
+  markedRenderer.image = function (href, title, text) {
+    let imageCode = `<img src=${JSON.stringify(href)} alt=${JSON.stringify(
+      text || ""
+    )} style="max-width:100%"/>`;
     return imageCode;
   };
 
   const markoSource = marked(markdown, {
-    renderer: markedRenderer
+    renderer: markedRenderer,
   }).replace(/\$/g, "&#36;");
 
-  return `import tocRegistry from ${JSON.stringify(`./${path.relative(path.dirname(filePath), require.resolve("./toc-registry"))}`)};\n` +
-  `static tocRegistry.set(${JSON.stringify(path.relative(__dirname, filePath))}, ${JSON.stringify(toc.toHTML())});\n` + `export const title = ${JSON.stringify(title)};\n` + "-----\n" + markoSource + "\n-----\n";
+  return (
+    `import tocRegistry from ${JSON.stringify(
+      `./${path.relative(
+        path.dirname(filePath),
+        require.resolve("./toc-registry")
+      )}`
+    )};\n` +
+    `import CodeBlock from ${JSON.stringify(
+      `./${path.relative(
+        path.dirname(filePath),
+        require.resolve("./toc-registry")
+      )}`
+    )};\n` +
+    `static tocRegistry.set(${JSON.stringify(
+      path.relative(__dirname, filePath)
+    )}, ${JSON.stringify(toc.toHTML())});\n` +
+    `export const title = ${JSON.stringify(title)};\n` +
+    "-----\n" +
+    markoSource +
+    "\n-----\n"
+  );
 }
 
 function getAnchorName(title, anchorCache) {
@@ -120,7 +143,7 @@ function Node(text, anchorName, level) {
   this.childNodes = [];
 }
 
-Node.prototype.toHTML = function(ignoreSelf) {
+Node.prototype.toHTML = function (ignoreSelf) {
   var out = "";
 
   if (!ignoreSelf && this.text && this.anchorName) {
@@ -129,7 +152,7 @@ Node.prototype.toHTML = function(ignoreSelf) {
 
   if (this.childNodes.length) {
     out += '<ul class="toc toc-level' + this.level + '">';
-    this.childNodes.forEach(function(childNode) {
+    this.childNodes.forEach(function (childNode) {
       out += "<li>" + childNode.toHTML() + "</li>";
     });
     out += "</ul>";
@@ -143,7 +166,7 @@ function TOC() {
   var currentParent = root;
 
   return {
-    addHeading: function(text, anchorName, level) {
+    addHeading: function (text, anchorName, level) {
       var curParentLevel = currentParent.level;
 
       var newNode = new Node(text, anchorName, level);
@@ -176,7 +199,7 @@ function TOC() {
       currentParent.childNodes.push(newNode);
       newNode.parent = currentParent;
     },
-    toHTML: function() {
+    toHTML: function () {
       var target = root;
 
       if (root.childNodes.length === 1) {
@@ -184,6 +207,6 @@ function TOC() {
       }
 
       return target.toHTML(true);
-    }
+    },
   };
-};
+}

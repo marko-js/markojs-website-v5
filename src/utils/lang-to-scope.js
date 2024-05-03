@@ -1,4 +1,4 @@
-module.exports = (lang) => {
+export default (lang) => {
   if (
     lang === "ts" ||
     lang === "typescript" ||

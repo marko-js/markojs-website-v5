@@ -1,1 +1,2 @@
-module.exports = require("../../node_modules/@marko/compiler/modules");
+import modules from "../../node_modules/@marko/compiler/modules";
+export default modules;

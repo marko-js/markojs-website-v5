@@ -1,4 +1,4 @@
 // TODO: remove this.
-var EventEmitter = require("events");
+import EventEmitter from "events";
 
-module.exports = new EventEmitter();
+export default new EventEmitter();

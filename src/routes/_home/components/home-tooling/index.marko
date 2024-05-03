@@ -1,0 +1,111 @@
+<home-feature-block.home-tooling align="right">
+    <@title text="Editor Support" anchorName="tooling"/>
+    <@content>
+        <p>
+            Marko provides
+            <a href="https://marketplace.visualstudio.com/items?itemName=Marko-JS.marko-vscode" title="Marko VSCode Extension">
+                first-class support
+            </a>
+            for the VSCode editor including syntax highlighting, Autocompletion,
+            Hyperclick to quickly jump to referenced files,
+            and Pretty printing to keep your code readable.
+        </p>
+        <p>Community plugins also provide syntax highlighting for Sublime, Atom, Webstorm &amp; others!</p>
+    </@content>
+    <@visual.home-tooling__screenshot-window>
+        <div.home-tooling__screenshot-title>
+            <div.red/>
+            <div.yellow/>
+            <div.green/>
+        </div>
+        <div.home-tooling__screenshot-screen>
+            <img src="./screen.png" alt=""/>
+        </div>
+    </@visual>
+    <@action href="/docs/editor-plugins" text="View editor plugins"/>
+</home-feature-block>
+
+style {
+    .home-tooling {
+        background-color: #ab1ec3;
+        background-image: linear-gradient(135deg, #c32176, #ab1ec3, #7729dc);
+    }
+    .home-tooling a:hover {
+        color: #fff;
+    }
+    .home-tooling__screenshot-window {
+        display: flex;
+        flex:1;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
+        box-shadow: 0 0.75em 0.75em rgba(0,0,0,0.3);
+        border-radius: 4px;
+        overflow:hidden;
+        width:30em;
+    }
+
+    .home-tooling__screenshot-screen {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
+        flex: 1;
+        width:100%;
+        overflow:hidden;
+        position: relative;
+    }
+
+    .home-tooling__screenshot-screen img {
+        position: absolute;
+        top:0; left:0;
+        height:100%;
+    }
+
+    @media (max-width:60em) {
+        .home-tooling__screenshot-window {
+            margin:auto;
+            width:100%;
+            max-width: 30em;
+        }
+        .home-tooling__screenshot-screen img {
+            position: static;
+            height:auto;
+            width:100%;
+        }
+    }
+
+    .home-tooling__screenshot-title {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        height:22px;
+        width:100%;
+        background:linear-gradient(to bottom, #f6f6f6 0%, #ddd 100%);
+        border-bottom:0;
+    }
+
+    .home-tooling__screenshot-title > div {
+        border:1px solid #ccc;
+        background:#fff;
+        border-radius: 50%;
+        height:12px;
+        width:12px;
+        margin-left:7px;
+    }
+
+    .home-tooling__screenshot-title .red {
+        background: #ff6159;
+        border-color:#e0453e;
+    }
+
+    .home-tooling__screenshot-title .yellow {
+        background: #ffbd2e;
+        border-color:#e09e19;
+    }
+
+    .home-tooling__screenshot-title .green {
+        background: #28ca42;
+        border-color:#10ab24;
+    }
+}

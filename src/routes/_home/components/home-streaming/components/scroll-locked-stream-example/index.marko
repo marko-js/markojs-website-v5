@@ -1,0 +1,60 @@
+class {
+  onCreate() {
+    this.state = { progress:0.1 };
+  }
+  onMount() {
+    this.observer = new IntersectionObserver((entries) => {
+      if (entries[0].intersectionRatio <= 0) {
+        this.cleanProgress();
+      } else {
+        this.initProgress();
+      }
+    });
+    this.observer.observe(this.getEl("root"));
+  }
+  onDestroy() {
+    this.cleanProgress();
+    this.observer.disconnect();
+  }
+  initProgress() {
+    // let min, max;
+    // this.updateBounds = () => {
+    //   const rect = this.getEl("root").getBoundingClientRect();
+    //   max = rect.top + window.scrollY;
+    //   min = Math.max(0, max - window.innerHeight);
+    //   this.updateProgress();
+    // }
+    // this.updateProgress = () => {
+    //   this.state.progress = 0.1 + Math.min(Math.max((window.scrollY-min)/max * 1.25, 0), 1) * 0.9;
+    // }
+    // this.updateBounds();
+    // window.addEventListener("resize", this.updateBounds);
+    // window.addEventListener("scroll", this.updateProgress);
+
+    const updateProgress = () => {
+      this.state.progress = (this.state.progress + 0.004) % 1.5;
+      this.frame = requestAnimationFrame(updateProgress);
+    };
+    this.frame = requestAnimationFrame(updateProgress);
+  }
+  cleanProgress() {
+    // window.removeEventListener("resize", this.updateBounds);
+    // window.removeEventListener("scroll", this.updateProgress);
+
+    cancelAnimationFrame(this.frame);
+  }
+}
+
+<div.scroll-locked-stream-example class=input.class key="root">
+  <home-demo-page progress=state.progress buffered label="Buffered pages don't show content as it loads"/>
+  <home-demo-page.scroll-locked-progressive progress=state.progress label="Streaming pages show content incrementally"/>
+</div>
+
+style {
+  .scroll-locked-stream-example {
+    display:flex;
+  }
+  .scroll-locked-progressive {
+    margin-left:1em;
+  }
+}

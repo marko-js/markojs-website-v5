@@ -1,12 +1,12 @@
-const formatSlug = require("./format-slug");
+import formatSlug from "./format-slug";
 
 /**
-* Creates an object where each key is the name of a document, and each value
-* are the parents of the document. This allows us to handle nested documents in
-* our sidenav.
-*/
+ * Creates an object where each key is the name of a document, and each value
+ * are the parents of the document. This allows us to handle nested documents in
+ * our sidenav.
+ */
 
-module.exports = function createOverviewTree(structure, nestedTitle) {
+export default function createOverviewTree(structure, nestedTitle) {
   let familyTree = {};
 
   for (let i = 0; i < structure.length; i++) {
@@ -39,4 +39,4 @@ module.exports = function createOverviewTree(structure, nestedTitle) {
   }
 
   return familyTree;
-};
+}
