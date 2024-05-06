@@ -1,16 +1,33 @@
-<header.site-header key="header">
-  <div.content>
-      <a href="/">
-          <img.site-logo src="../../../../logos/marko.svg" alt="Marko Home"/>
-      </a>
-      <div.stuff>
-          <nav.site-menu>
-              <a href="/docs/getting-started/">Docs</a>
-              <a href="/try-online">Try Online</a>
-              <a href="https://github.com/marko-js/marko">GitHub</a>
-              <layout-search />
-          </nav>
-          <button.menu on-click("toggleMenu")>&#9776;</button>
-      </div>
-  </div>
+<header key="header" class="site-header">
+    <div class="content">
+        <a href="/">
+            <img
+                src="../../../../logos/marko.svg"
+                alt="Marko Home"
+                class="site-logo"
+            >
+            <img
+                src="../../../../logos/marko-uwu.png"
+                alt="Marko Home"
+                class="site-logo-uwu"
+            >
+        </a>
+        <div class="stuff">
+            <nav class="site-menu">
+                <a href="/docs/getting-started/">
+                    Docs
+                </a>
+                <a href="/try-online">
+                    Try Online
+                </a>
+                <a href="https://github.com/marko-js/marko">
+                    GitHub
+                </a>
+                <layout-search/>
+            </nav>
+            <button on-click("toggleMenu") class="menu">
+                &#9776;
+            </button>
+        </div>
+    </div>
 </header>

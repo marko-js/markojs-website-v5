@@ -55,6 +55,20 @@ body {
   display:block;
 }
 
+.site-logo-uwu {
+  height:3.5em;
+  margin-left:2em;
+  display:none;
+}
+
+html.uwu .site-logo-uwu {
+  display: block
+}
+
+html.uwu .site-logo {
+  display: none;
+}
+
 .site-header button.menu {
   display:none;
   border:0;

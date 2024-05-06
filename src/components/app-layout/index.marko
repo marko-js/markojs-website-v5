@@ -1,22 +1,37 @@
-static const mainContentId = 'main';
+static const mainContentId = "main";
 static const isPrPreview = process.env.PR_PREVIEW;
-
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8">
     <title>${input.title ? input.title + " | Marko" : "Marko"}</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="./favicon.png"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <if(isPrPreview)>
-      <meta name="robots" content="none"/>
+      <meta name="robots" content="none">
     </if>
     <meta
       name="description"
-      content="Marko is a friendly (and fast!) UI library that makes building web apps fun."/>
+      content="Marko is a friendly (and fast!) UI library that makes building web apps fun."
+    >
     <script>
       if (window.self !== window.top) {
         document.documentElement.classList.add("iframe");
+      }
+    </script>
+    <script>
+      const params = new URL(window.location).searchParams;
+      const uwu = params.has("uwu")
+        ? params.get("uwu") !== "false"
+        : localStorage.uwu;
+      if (uwu) {
+        localStorage.uwu = true;
+        document.documentElement.className = "uwu";
+        document.write(
+          "<style>@import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');html.uwu body{font-family:'Varela Round',sans-serif;}</style>",
+        );
+      } else {
+        delete localStorage.uwu;
       }
     </script>
   </head>
@@ -24,7 +39,7 @@ static const isPrPreview = process.env.PR_PREVIEW;
     <skip-link anchor=mainContentId/>
     <layout-header/>
     <layout-sidebar currentDoc=input.currentDoc toc=input.toc/>
-    <main.content id=mainContentId tabindex=-1>
+    <main id=mainContentId tabindex=-1 class="content">
       <${input.renderBody}/>
     </main>
     <if(input.footer !== false)>
