@@ -38,6 +38,14 @@ module.exports = function markodown(source) {
   markedRenderer.blockquote = function(quote) {
     var match = /^<p><strong>(\w+):<\/strong>/.exec(quote);
     var className = match && match[1].toLowerCase();
+
+    if (!className) {
+      match = /\[!([^\]]+)\]\r?\n/.exec(quote);
+      if (match) {
+        className = match[1].toLowerCase();
+        quote = quote.slice(0, match.index) + `<strong>${match[1]}</strong><br>` + quote.slice(match.index + match[0].length);
+      }
+    }
     return `<blockquote class="${className}">${quote}</blockquote>`;
   }
 

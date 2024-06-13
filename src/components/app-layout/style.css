@@ -140,11 +140,11 @@ a:hover {
 }
 
 blockquote {
-  border-left: 3px solid #dbdddf;
   margin: 0;
   margin-left: -3px;
   padding: 1em;
-  background: #f6f8fa;
+  border-left: 3px solid var(--quote-foreground-color, #dbdddf);
+  background: var(--quote-background-color, #f6f8fa);
 }
 
 blockquote p:first-child {
@@ -153,6 +153,35 @@ blockquote p:first-child {
 
 blockquote p:last-child {
   margin-bottom: 0;
+}
+
+blockquote > p:first-child > strong:first-child {
+  color: var(--quote-foreground-color);
+}
+
+blockquote.note {
+  --quote-foreground-color: #1d4ed8;
+  --quote-background-color: #eff6ff;
+}
+
+blockquote.protip, blockquote.tip {
+  --quote-foreground-color: #047857;
+  --quote-background-color: #ecfdf5;
+}
+
+blockquote.important {
+  --quote-foreground-color: #7e22ce;
+  --quote-background-color: #faf5ff;
+}
+
+blockquote.warning {
+  --quote-foreground-color: #b45309;
+  --quote-background-color: #fffbeb;
+}
+
+blockquote.caution {
+  --quote-foreground-color: #b91c1c;
+  --quote-background-color: #fef2f2;
 }
 
 .anchor {
