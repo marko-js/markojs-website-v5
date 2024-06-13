@@ -67,19 +67,23 @@ module.exports = [
 
     config.resolve = {
       ...config.resolve,
+      fallback: {
+        vm: false,
+        os: false,
+        http: false,
+        https: false,
+      },
       alias: {
         "@marko/compiler": path.join(__dirname, "browser-shims/compiler"),
         util: require.resolve("util/"),
         buffer: require.resolve("buffer"),
         assert: require.resolve("assert/"),
         path: require.resolve("path-browserify"),
+        stream: require.resolve("stream-browserify"),
         crypto: require.resolve("crypto-browserify"),
         fs: path.join(__dirname, "browser-shims/fs.js"),
         module: path.join(__dirname, "browser-shims/module.js"),
         process: path.join(__dirname, "browser-shims/process.js"),
-        os: false,
-        stream: false,
-        http: false
       }
     };
 
