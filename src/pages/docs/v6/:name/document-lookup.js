@@ -1,25 +1,20 @@
 import path from "path";
 import structure from "marko/docs/structure.json";
 import importAll from "import-all.macro";
-import formatSlug from "./format-slug";
-import tocRegistry from "./toc-registry";
+import formatSlug from "../../../../utils/format-slug";
+import tocRegistry from "../../../../utils/toc-registry";
 
 const documentLookup = {};
 const docsByRepo = {
-  "marko-js/marko": {
-    trim: "../../node_modules/",
-    prefix: "packages/",
-    docs: importAll.sync("../../node_modules/marko/docs/*.md")
+  "marko-js/website": {
+    trim: "",
+    docs: importAll.sync("../markdown/*.md"),
   },
-  "marko-js/examples": {
-    trim: "../../examples/",
-    docs: importAll.sync("../../examples/examples/color-picker/README.md")
-  }
-}
+};
 
-Object.keys(docsByRepo).forEach(repo => {
+Object.keys(docsByRepo).forEach((repo) => {
   const { trim, prefix = "", docs } = docsByRepo[repo];
-  Object.keys(docs).forEach(filePath => {
+  Object.keys(docs).forEach((filePath) => {
     const slug = fileNameToSlug(filePath);
     const doc = docs[filePath];
     const repoPath = filePath.replace(trim, prefix);
@@ -28,7 +23,7 @@ Object.keys(docsByRepo).forEach(repo => {
       repoPath,
       template: doc.default,
       title: doc.title,
-      toc: tocRegistry.get(filePath)
+      toc: tocRegistry.get(filePath),
     };
   });
 });
@@ -42,16 +37,16 @@ function fileNameToSlug(file) {
   return slug;
 }
 
-structure.forEach(doc => {
+structure.forEach((doc) => {
   addOverviewDoc(doc);
-  
+
   function addOverviewDoc(doc, parentSlug) {
     const { title, docs } = doc;
     const titleSlug = formatSlug(title);
 
-    // If one of the child docs is an object, 
+    // If one of the child docs is an object,
     // it is nested and we need to create an outline for it
-    docs.forEach(childDoc => {
+    docs.forEach((childDoc) => {
       if (typeof childDoc === "object") {
         addOverviewDoc(childDoc, titleSlug);
       }
@@ -68,9 +63,9 @@ structure.forEach(doc => {
     documentLookup[docName] = {
       overview: true,
       title,
-      docs
+      docs,
     };
   }
 });
 
-export default documentLookup
+export default documentLookup;

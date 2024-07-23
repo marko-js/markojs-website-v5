@@ -1,0 +1,16 @@
+[
+  {
+    "title": "Getting Started",
+    "docs": [
+      "Setup",
+      "Language",
+      "JavaScript",
+      "Styles",
+      "Components",
+      "Conditionals",
+      "Lists",
+      "Events",
+      "State"
+    ]
+  }
+]

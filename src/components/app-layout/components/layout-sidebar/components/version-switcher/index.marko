@@ -1,7 +1,14 @@
 import { version } from "marko/package.json";
 
-<select on-change('switchVersion')>
-    <option value="current" selected>${version}</option>
+class {
+    onCreate(input) {
+        this.v6 = input.v6;
+    }
+}
+
+<select key="version" on-change('switchVersion')>
+    <option value="/docs/v6/setup" selected=input.v6>next</option>
+    <option value="/docs/getting-started" selected=!input.v6>${version}</option>
     <option value="http://marko-v4.github.io/docs/">4.x</option>
     <option value="http://v3.markojs.com/docs/">3.x</option>
     <option value="http://marko-v2.github.io/docs/">2.x</option>

@@ -37,8 +37,16 @@ static const isPrPreview = process.env.PR_PREVIEW;
   </head>
   <body class=input.class>
     <skip-link anchor=mainContentId/>
-    <layout-header/>
-    <layout-sidebar currentDoc=input.currentDoc toc=input.toc/>
+    <if(input.v6)>
+      <aside role="doc-notice note" class="unstable-warning">
+        🚨 Marko 6 is in an early pre-release state.
+        <b>
+          Features are missing, bugs are known, optimizations are absent, and behavior may change.
+        </b>
+      </aside>
+    </if>
+    <layout-header v6=input.v6/>
+    <layout-sidebar currentDoc=input.currentDoc toc=input.toc v6=input.v6/>
     <main id=mainContentId tabindex=-1 class="content">
       <${input.renderBody}/>
     </main>

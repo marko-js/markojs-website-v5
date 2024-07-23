@@ -1,4 +1,5 @@
 import structure from 'marko/docs/structure.json';
+import structurev6 from '../../../../pages/docs/v6/markdown/structure.json';
 import formatSlug from '../../../../utils/format-slug';
 import createOverviewTree from '../../../../utils/create-overview-tree';
 
@@ -47,7 +48,7 @@ static function getDocData(currentDoc, section, doc) {
       <for|doc| of=section.docs>
         <li>
           $ let { docTitle, docSlug, selected } = getDocData(input.currentDoc, section, doc);
-          <a class={ selected } href=`/docs/${docSlug}`>
+          <a class={ selected } href=`/docs/${input.v6 ? "v6/" : ""}${docSlug}`>
             ${docTitle}
           </a>
 
@@ -67,6 +68,6 @@ static function getDocData(currentDoc, section, doc) {
 
 <div.doc-sidebar class=input.class key="sidebar">
     <button.close on-click('hide')>&#10005;</button>
-    <h1>Marko <version-switcher/></h1>
-    <sidebar-overview structure=structure />
+    <h1>Marko <version-switcher v6=input.v6/></h1>
+    <sidebar-overview structure=(input.v6 ? structurev6 : structure) />
 </div>

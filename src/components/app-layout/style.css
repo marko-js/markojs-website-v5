@@ -269,3 +269,13 @@ header.solid-color h1 {
     display: none;
   }
 }
+
+.unstable-warning {
+  background-color: #ffee99;
+  width: 100%;
+  text-align: center;
+  font-size: 0.8em;
+  padding: 0.5em;
+  position: relative;
+  z-index: 51;
+}

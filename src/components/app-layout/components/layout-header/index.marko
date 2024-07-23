@@ -14,10 +14,10 @@
         </a>
         <div class="stuff">
             <nav class="site-menu">
-                <a href="/docs/getting-started/">
+                <a href=`/docs/${input.v6 ? "v6/setup" : "getting-started"}/`>
                     Docs
                 </a>
-                <a href="/try-online">
+                <a href=(input.v6 ? "/playground/v6" : "/try-online")>
                     Try Online
                 </a>
                 <a href="https://github.com/marko-js/marko">
