@@ -48,7 +48,7 @@ static function getDocData(currentDoc, section, doc) {
       <for|doc| of=section.docs>
         <li>
           $ let { docTitle, docSlug, selected } = getDocData(input.currentDoc, section, doc);
-          <a class={ selected } href=`/docs/${input.v6 ? "v6/" : ""}${docSlug}`>
+          <a class={ selected } href=`/${input.v6 ? "v6/" : ""}docs/${docSlug}`>
             ${docTitle}
           </a>
 
