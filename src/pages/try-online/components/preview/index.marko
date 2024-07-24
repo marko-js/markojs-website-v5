@@ -1,7 +1,8 @@
 import path from "path"
 import { format } from "prettier/standalone"
-import prettierHTML from "prettier/parser-html"
-import prettierBabel from "prettier/parser-babel"
+import prettierHTML from "prettier/plugins/html"
+import prettierBabel from "prettier/plugins/babel"
+import prettierEstree from "prettier/plugins/estree"
 import highlight from "../../../../utils/highlight"
 import { bundle, compile } from "../../../../utils/compiler"
 
@@ -112,7 +113,7 @@ class {
           } else {
             this.state.result = highlight(
               "html",
-              format(String(renderResult), {
+              await format(String(renderResult), {
                 parser: "html",
                 plugins: [prettierHTML]
               })
@@ -121,14 +122,14 @@ class {
         } else {
           this.state.result = highlight(
             "javascript",
-            format(
+            await format(
               await compile({
                 entry: this.input.selectedFilePath,
                 markoOptions
               }),
               {
                 parser: "babel",
-                plugins: [prettierBabel]
+                plugins: [prettierBabel, prettierEstree]
               }
             )
           );

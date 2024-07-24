@@ -1,7 +1,7 @@
 import path from "path"
 import { format } from "prettier/standalone"
-import prettierHTML from "prettier/parser-html"
-import prettierBabel from "prettier/parser-babel"
+import prettierBabel from "prettier/plugins/babel"
+import prettierEstree from "prettier/plugins/estree"
 import highlight from "../../../utils/highlight"
 import { bundle, compile } from "../../../utils/compiler"
 import fs, { vol } from "memfs"
@@ -186,11 +186,11 @@ import fs, { vol } from "memfs"
         });
         result = highlight(
           "javascript",
-          format(
+          await format(
             code.replaceAll(`${examplePath}/`, ""),
             {
               parser: "babel",
-              plugins: [prettierBabel]
+              plugins: [prettierBabel, prettierEstree]
             }
           )
         );
