@@ -1,6 +1,6 @@
 const fs = require("fs");
 const nodePath = require("path");
-const { format } = require("prettier");
+const { format } = require("@prettier/sync");
 const highlight = require("./highlight");
 const { importDefault } = require("@marko/babel-utils");
 const { getMarkoWebsiteKey } = require("./localstorage");
@@ -39,10 +39,11 @@ module.exports = function (path, t) {
     const codeNodePath = attrs.code;
     const langNodePath = attrs.lang;
 
-    if (!codeNodePath || !(codeNodePath.isStringLiteral() || codeNodePath.isTemplateLiteral())) {
-      throw path.buildCodeFrameError(
-        "<code-block> missing code."
-      );
+    if (
+      !codeNodePath ||
+      !(codeNodePath.isStringLiteral() || codeNodePath.isTemplateLiteral())
+    ) {
+      throw path.buildCodeFrameError("<code-block> missing code.");
     }
 
     if (!langNodePath || !langNodePath.isStringLiteral()) {
@@ -52,7 +53,9 @@ module.exports = function (path, t) {
     }
 
     lang = langNodePath.node.value;
-    code = codeNodePath.isStringLiteral() ? codeNodePath.node.value : codeNodePath.node.quasis[0].value.cooked;
+    code = codeNodePath.isStringLiteral()
+      ? codeNodePath.node.value
+      : codeNodePath.node.quasis[0].value.cooked;
   }
 
   const linesNodePath = attrs.lines;
@@ -136,6 +139,7 @@ module.exports = function (path, t) {
             filepath: `${path.hub.file.opts.filename}.inline-code-block.marko`,
             parser: "marko",
             markoSyntax: "concise",
+            plugins: ["prettier-plugin-marko"],
           }).trim()
         );
       }
@@ -235,7 +239,7 @@ function redent(str) {
   let indent = 1;
   if (match) {
     indent = match[0].length;
-    while (match = indentReg.exec(str)) {
+    while ((match = indentReg.exec(str))) {
       const [{ length }] = match;
       if (length < indent) indent = length;
     }

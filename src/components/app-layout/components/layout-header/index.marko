@@ -1,6 +1,6 @@
 <header key="header" class="site-header">
     <div class="content">
-        <a href="/">
+        <a href=(input.v6 ? "/v6/" : "/")>
             <img
                 src="../../../../logos/marko.svg"
                 alt="Marko Home"
@@ -14,12 +14,25 @@
         </a>
         <div class="stuff">
             <nav class="site-menu">
-                <a href=`/docs/${input.v6 ? "v6/setup" : "getting-started"}/`>
-                    Docs
-                </a>
-                <a href=(input.v6 ? "/playground/v6" : "/try-online")>
-                    Try Online
-                </a>
+                <if(input.v6)>
+                    <a href="/v6/docs/setup">
+                        Docs
+                    </a>
+                    <a href="/v6/examples/counter">
+                        Examples
+                    </a>
+                    <a href="/v6/playground">
+                        Playground
+                    </a>
+                </if>
+                <else>
+                    <a href="/docs/getting-started">
+                        Docs
+                    </a>
+                    <a href="/try-online">
+                        Try Online
+                    </a>
+                </else>
                 <a href="https://github.com/marko-js/marko">
                     GitHub
                 </a>
