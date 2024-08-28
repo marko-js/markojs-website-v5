@@ -2,9 +2,10 @@ const fs = require("fs");
 const path = require("path");
 const cp = require("child_process");
 const { prompt } = require("enquirer");
-const TMP_DIR = path.join(require("os").tmpdir(), "marko-website-publish");
+
+const TMP_DIR = fs.mkdtempSync(path.join(require("os").tmpdir(), "marko-website-publish"));
 const BUILD_DIR = path.join(__dirname, "build");
-const GIT_URL = "git@github.com:marko-js/marko-js.github.io.git";
+const GIT_URL = "https://github.com/marko-js/marko-js.github.io.git";
 const GIT_BRANCH = "master";
 const DOMAIN = "markojs.com";
 
@@ -28,9 +29,6 @@ const DOMAIN = "markojs.com";
 
   // build the static site
   await execLogged(`GITHUB_TOKEN=${token} npm run build`);
-
-  // create publish directory
-  await execLogged(`mkdir ${TMP_DIR}`);
 
   // clone the repo that is the publish target
   await execLogged(
