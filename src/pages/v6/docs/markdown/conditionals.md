@@ -30,7 +30,7 @@ You can also use `<else-if>` for multiple conditional checks:
 </if>
 <else-if=product.backordered>
   <button disabled>Backordered</button>
-<else-if>
+</else-if>
 <else>
   <button disabled>Out of Stock</button>
 </else>

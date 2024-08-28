@@ -22,13 +22,23 @@ taglib.register(
 export default ({ output, optimize, translator = defaultTranslator }) => {
   let cssContent;
   let buildCache;
+  let virtualFiles;
   return {
     name: "babel",
     buildStart(config) {
       buildCache = new Map();
+      virtualFiles = new Set();
       cssContent = config.cssContent;
     },
     buildEnd() {
+      if (virtualFiles) {
+        for (const virtualFile of virtualFiles) {
+          fs.unlinkSync(virtualFile);
+        }
+  
+        virtualFiles = undefined;
+      }
+
       buildCache = undefined;
       taglib.clearCaches();
     },
@@ -45,7 +55,19 @@ export default ({ output, optimize, translator = defaultTranslator }) => {
       ];
 
       if (ext === ".marko") {
-        plugins.push([markoPlugin, { output, optimize, translator, fileSystem: fs, cache: buildCache || new Map() }]);
+        plugins.push([markoPlugin, {
+          output,
+          optimize,
+          translator,
+          fileSystem: fs,
+          cache: buildCache || new Map(),
+          resolveVirtualDependency(from, dep) {
+            const virtualFileName = path.resolve(from, "..", dep.virtualPath);
+            virtualFiles?.add(virtualFileName);
+            fs.writeFileSync(virtualFileName, dep.code);
+            return dep.virtualPath;
+          }
+        }]);
       } else if (ext === ".js") {
         plugins.push(commonjsPlugin);
       } else {

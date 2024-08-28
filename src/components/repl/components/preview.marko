@@ -103,7 +103,7 @@ import fs, { vol } from "memfs"
         </a>
       </if>
     </h1>
-    <div>${error.message}</div>
+    <pre><code>${error.message.replaceAll(examplePath, "")}</code></pre>
     <if=(selectedPath !== error.file)>
       <if=error.codeFrame>
         <pre><code>${error.codeFrame}</code></pre>
