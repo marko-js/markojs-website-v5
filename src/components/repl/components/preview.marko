@@ -4,7 +4,9 @@ import prettierBabel from "prettier/plugins/babel"
 import prettierEstree from "prettier/plugins/estree"
 import highlight from "../../../utils/highlight"
 import { bundle, compile } from "../../../utils/compiler"
-import fs, { vol } from "memfs"
+import { vol } from "memfs"
+
+static const SYNTAX_ERROR_REG = /(.+?)(?:\((\d+),(\d+)\)|:(\d+)): (.*(?=\s+\d+ | ))/;
 
 <attrs/{ type, files, selectedFile, getCompilerOptions, debounce, onSelectError, onSyntaxError }/>
 <id/examplePath/>
@@ -13,7 +15,6 @@ import fs, { vol } from "memfs"
 
 <let/error = null/>
 <let/result = null/>
-<const/SYNTAX_ERROR_REG = /(.+?)(?:\((\d+),(\d+)\)|:(\d+)): (.*(?=\s+\d+ | ))/ />
 
 <style>
   .preview-error,
