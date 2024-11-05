@@ -116,7 +116,7 @@ static const SYNTAX_ERROR_REG = /(.+?)(?:\((\d+),(\d+)\)|:(\d+)): (.*(?=\s+\d+ |
   </if>
 </div>
 <if=(type === "preview")>
-  <div/outputEl class="preview-output"/>
+  <iframe-swap/outputEl class="preview-output"/>
 </if>
 <else>
   <div.preview-compiled>$!{result}</div>
@@ -148,18 +148,22 @@ static const SYNTAX_ERROR_REG = /(.+?)(?:\((\d+),(\d+)\)|:(\d+)): (.*(?=\s+\d+ |
           }
         });
 
-        const template = (0, window.eval)(bundleResult.js);
-        const root = outputEl().attachShadow({ mode: "open" });
-        const style = document.createElement("style");
-        style.innerHTML = bundleResult.css;
-        root.appendChild(style);
+        if (outputEl) {
+          const { contentWindow, contentDocument } = outputEl.next();
+          contentWindow.__INTERNAL_MODULES__ = window.__INTERNAL_MODULES__;
+          const template = (0, contentWindow.eval)(bundleResult.js);
+          const style = contentDocument.createElement("style");
+          style.innerHTML = bundleResult.css;
+          contentDocument.head.appendChild(style);
 
-        if (getCompilerOptions?.().translator) {
-          // new api
-          template.default.mount({}, root);
-        } else {
-          const renderResult = await template.render({});
-          renderResult.appendTo(root);
+          if (getCompilerOptions?.().translator) {
+            // new api
+            template.default.mount({}, contentDocument.body);
+          } else {
+            const renderResult = await template.render({});
+            renderResult.appendTo(contentDocument.body);
+          }
+          outputEl.swap();
         }
         // else {
         //   const template = (0, eval)(bundleResult.js);
