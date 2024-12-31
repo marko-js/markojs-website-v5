@@ -8,10 +8,11 @@ internalModuleLookup.events = () => require("events-light");
 internalModuleLookup.marked = () => require("marked");
 internalModuleLookup.path = () => require("path");
 internalModuleLookup.url = () => require("url");
+internalModuleLookup["marko/translator"] = () => require("marko/translator");
 internalModuleLookup["@marko/runtime-tags/debug/dom"] = () => require("@marko/runtime-tags/debug/dom");
 
 [
-  require.context("@marko/translator-default/dist", true, /\.(js(on)?)$/),
+  require.context("marko/dist/translator", true, /\.(js(on)?)$/),
   require.context("@marko/build/dist/components", true, /\.(js(on)?|marko)$/),
   require.context(
     "../../../node_modules/@marko/tags-api-preview/",

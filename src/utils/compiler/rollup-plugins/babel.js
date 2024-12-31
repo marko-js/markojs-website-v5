@@ -5,19 +5,23 @@ import { transform } from "@babel/core";
 import ConcatMap from "concat-with-sourcemaps";
 import commonjsPlugin from "babel-plugin-transform-commonjs";
 import definePlugin from "babel-plugin-transform-define";
-import * as defaultTranslator from "@marko/translator-default";
+import * as defaultTranslator from "marko/translator";
 import markoPlugin from "@marko/compiler/dist/babel-plugin";
 import * as taglib from "@marko/compiler/dist/taglib";
 
 defaultTranslator.taglibs.push([
-  require.resolve("@marko/tags-api-preview/marko.json"),
+  normalizeResolved(require.resolve("@marko/tags-api-preview/marko.json")),
   require("@marko/tags-api-preview/marko.json")
 ]);
 
 taglib.register(
-  require.resolve("@marko/build/dist/components/marko.json"),
+  normalizeResolved(require.resolve("@marko/build/dist/components/marko.json")),
   require("@marko/build/dist/components/marko.json")
 );
+
+function normalizeResolved(id) {
+  return id.replace(/^[./]+\/node_modules\//, "/node_modules/");
+}
 
 export default ({ output, optimize, translator = defaultTranslator }) => {
   let cssContent;

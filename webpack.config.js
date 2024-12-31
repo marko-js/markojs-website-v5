@@ -12,7 +12,7 @@ const { getServerConfig, getBrowserConfigs } = configBuilder({
 const prPreview = process.env.PR_PREVIEW;
 
 configure({
-  translator: require("@marko/translator-default"),
+  translator: require("marko/translator"),
 });
 
 // globally register <code-block> so it can be used by the markdown files

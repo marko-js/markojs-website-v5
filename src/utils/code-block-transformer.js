@@ -2,7 +2,7 @@ const fs = require("fs");
 const nodePath = require("path");
 const { format } = require("@prettier/sync");
 const highlight = require("./highlight");
-const { importDefault } = require("@marko/babel-utils");
+const { importDefault } = require("@marko/compiler/babel-utils");
 const { getMarkoWebsiteKey } = require("./localstorage");
 const ADDED_SYNTAX_SWITCH_SCRIPT = new WeakSet();
 
