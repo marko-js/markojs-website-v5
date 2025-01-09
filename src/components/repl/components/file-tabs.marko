@@ -1,4 +1,4 @@
-<attrs/{ files: externalFiles, selectedIndex: externalSelected }/>
+<attrs/{ base, files: externalFiles, selectedIndex: externalSelected }/>
 
 <let/files := externalFiles/>
 <let/selectedIndex := externalSelected/>
@@ -64,7 +64,7 @@
     </div>
   </for>
   <button.new-file onClick() { 
-    const newFile = { name:`Component${nextId}.marko`, path:`/components/Component${nextId}.marko`, content:"" };
+    const newFile = { name:`Tag${nextId}.marko`, path:`/${base}/Tag${nextId}.marko`, content:"" };
     const newIndex = files.length;
     files = files.concat(newFile);
     selectedIndex = newIndex;

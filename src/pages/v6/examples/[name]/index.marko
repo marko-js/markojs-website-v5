@@ -4,7 +4,7 @@ static const examples = {
     "description": "A simple counter",
     files: [{ 
       name:"index.marko", 
-      path:"/components/index.marko", 
+      path:"/tags/index.marko", 
       content:"<let/count=0/>\n<button onClick() { count++ }>\n  ${count}\n</button>"
     }]
   },
@@ -13,7 +13,7 @@ static const examples = {
     "description": "A simple hello world example",
     files: [{ 
       name:"index.marko", 
-      path:"/components/index.marko", 
+      path:"/tags/index.marko", 
       content:"<h1>Hello World</h1>"
     }]
   },
@@ -22,7 +22,7 @@ static const examples = {
     "description": "A simple loop example",
     files: [{ 
       name:"index.marko",
-      path:"/components/index.marko",
+      path:"/tags/index.marko",
       content:"<let/list=[0,1,2,3]/>\n<ul>\n  <for|item| of=list>\n    <li>${item}</li>\n  </for>\n</ul>\n<button onClick() { list = list.concat(list.length); }>Add</button>"
     }]
   }

@@ -15,7 +15,7 @@
   <@left class="editor-container">
     <pane>
       <@actions>
-        <file-tabs files:=files selectedIndex:=selectedIndex/>
+        <file-tabs base=getCompilerOptions?.()?.translator ? "tags" : "components" files:=files selectedIndex:=selectedIndex/>
       </@actions>
       <@body>
         <let/activeEditor = null/>
