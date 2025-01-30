@@ -2,11 +2,11 @@
   "name": "@marko/website",
   "description": "https://markojs.com",
   "devDependencies": {
-    "@babel/core": "^7.26.0",
-    "@marko-tags/subscribe": "^0.5.1",
+    "@babel/core": "^7.26.7",
+    "@marko-tags/subscribe": "^0.5.2",
     "@marko/build": "^4.3.2",
-    "@marko/compiler": "^5.39.10",
-    "@marko/runtime-tags": "^0.3.18",
+    "@marko/compiler": "^5.39.11",
+    "@marko/runtime-tags": "^0.3.26",
     "@marko/serve": "^4.2.9",
     "@marko/tags-api-preview": "^0.8.0",
     "@prettier/sync": "^0.5.2",
@@ -23,7 +23,7 @@
     "import-all.macro": "^3.1.0",
     "magic-string": "^0.30.17",
     "marked": "^4.0.18",
-    "marko": "^5.37.10",
+    "marko": "^5.37.12",
     "md5": "^2.3.0",
     "memfs": "^3.4.7",
     "monaco-editor": "^0.31.1",
@@ -49,8 +49,8 @@
     "publish": "node ./publish"
   },
   "dependencies": {
-    "@docsearch/css": "^3.8.2",
-    "@docsearch/js": "^3.8.2",
+    "@docsearch/css": "^3.8.3",
+    "@docsearch/js": "^3.8.3",
     "lz-string": "^1.5.0",
     "resolve": "^1.22.10",
     "resolve.exports": "^1.1.0"
