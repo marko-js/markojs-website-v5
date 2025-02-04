@@ -6,7 +6,7 @@
     "@marko-tags/subscribe": "^0.5.2",
     "@marko/build": "^4.3.2",
     "@marko/compiler": "^5.39.12",
-    "@marko/runtime-tags": "^0.3.29",
+    "@marko/runtime-tags": "^0.3.31",
     "@marko/serve": "^4.2.9",
     "@marko/tags-api-preview": "^0.8.0",
     "@prettier/sync": "^0.5.2",
