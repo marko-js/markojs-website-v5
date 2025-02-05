@@ -84,6 +84,7 @@ export default ({ output, optimize, translator = defaultTranslator }) => {
         comments: false,
         babelrc: false,
         compact: false,
+        filenameRelative: id,
         sourceFileName: id,
         filename: id,
         plugins
