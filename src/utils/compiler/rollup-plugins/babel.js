@@ -81,7 +81,7 @@ export default ({ output, optimize, translator = defaultTranslator }) => {
       let { code, map, metadata } = transform(source, {
         configFile: false,
         sourceMaps: true,
-        comments: false,
+        comments: true,
         babelrc: false,
         compact: false,
         filenameRelative: id,
