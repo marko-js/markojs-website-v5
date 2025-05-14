@@ -2,31 +2,33 @@
   color-scheme: light dark;
   --color-black: #202124;
   --color-white: #ffffff;
-  --color-red-dark: oklch(0.52354 0.250698 358.815);
-  --color-red-light: oklch(0.736305 0.237623 20.415);
-  --color-red-pale-dark: oklch(0.345607 0.0521963 20.415);
-  --color-red-pale-light: oklch(0.947256 0.0475644 20.415);
-  --color-yellow-dark: oklch(0.672384 0.240601 57.12);
-  --color-yellow-light: oklch(0.88201 0.204727 92.355);
-  --color-yellow-pale-dark: oklch(0.374748 0.0456171 92.355);
-  --color-yellow-pale-light: oklch(0.976397 0.0409853 92.355);
-  --color-green-dark: oklch(0.643244 0.1995 162.855);
-  --color-green-light: oklch(0.850336 0.204173 140.15);
-  --color-green-pale-dark: oklch(0.368413 0.0455063 140.15);
-  --color-green-pale-light: oklch(0.970062 0.0408745 140.15);
-  --color-blue-dark: oklch(0.536703 0.204912 242.05);
-  --color-blue-light: oklch(0.779357 0.163263 217.3);
-  --color-blue-pale-dark: oklch(0.354217 0.0373244 217.3);
-  --color-blue-pale-light: oklch(0.955866 0.0326925 217.3);
-  --color-purple-dark: oklch(0.463457 0.15346 290);
-  --color-purple-light: oklch(0.756829 0.126986 310);
-  --color-purple-pale-dark: oklch(0.349712 0.0300688 310);
-  --color-purple-pale-light: oklch(0.951361 0.025437 310);
-  --color-background: light-dark(var(--color-white), var(--color-black));
-  --color-foreground: light-dark(var(--color-black), var(--color-white));
+  --color-black: #202124;
+  --color-white: #ffffff;
+  --color-blue-dark: #0073D8;
+  --color-blue-light: #00CFFB;
+  --color-blue-pale-dark: #244148;
+  --color-blue-pale-light: #D9F6FF;
+  --color-green-dark: #00B068;
+  --color-green-light: #7CED64;
+  --color-green-pale-dark: #32452E;
+  --color-green-pale-light: #E7FDE3;
+  --color-yellow-dark: #FC5C00;
+  --color-yellow-light: #FFD100;
+  --color-yellow-pale-dark: #494024;
+  --color-yellow-pale-light: #FFF7D9;
+  --color-red-dark: #CC0067;
+  --color-red-light: #FF5467;
+  --color-red-pale-dark: #512E2E;
+  --color-red-pale-light: #FFE2E0;
+  --color-purple-dark: #5b43a7;
+  --color-purple-light: #c999ec;
+  --color-purple-pale-dark: #3f3646;
+  --color-purple-pale-light: #f4ebfc;
   --color-selection-background: var(--color-red-secondary);
   --color-selection-foreground: var(--color-red-primary);
 
+  --color-background: light-dark(var(--color-white), var(--color-black));
+  --color-foreground: light-dark(var(--color-black), var(--color-white));
   @each $color in "red", "yellow", "green", "blue", "purple" {
     --color-#{$color}-primary: light-dark(
       var(--color-#{$color}-dark),
