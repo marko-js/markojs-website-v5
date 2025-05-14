@@ -1,0 +1,30 @@
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import text from "../../text-styles.module.css";
+import styles from "./style.module.scss";
+
+h1
+  -- The${" "}
+  strong.${text.yellow} -- Markup
+  -- ${" "}
+  strong.${text.green} -- Language
+  -- ${" "}that${" "}
+  strong.${text.red} -- Scales
+
+section.${styles.section}
+  a.${styles.primaryLink} href="docs/tutorial/getting-started/"
+    -- Get Started
+  a.${styles.secondaryLink} [
+    href="https://github.com/marko-js/marko"
+    target="_blank"
+  ]
+    fa-icon=faGithub
+    --  GitHub
+    span
+      let/stars=null as number | null
+      script --
+        stars = (
+          await (
+            await fetch("https://api.github.com/repos/marko-js/marko")
+          ).json()
+        ).stargazers_count?.toLocaleString();
+      -- ${stars} ⭐️

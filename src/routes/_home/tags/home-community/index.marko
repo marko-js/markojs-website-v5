@@ -1,0 +1,48 @@
+import {
+  faDiscord,
+  faGithub,
+  faStackOverflow,
+  faXTwitter,
+} from "@fortawesome/free-brands-svg-icons";
+
+import text from "../../text-styles.module.css";
+import styles from "./style.module.scss";
+
+section.${styles.section}
+  h2
+    span.${text.green} -- Join the Community
+
+  p -- Need help? Want to Contribute?
+  p
+    strong -- Get involved in the Marko Community!
+
+  .${styles.cards}
+    .${styles.stackoverflow}
+      a.${styles.logo} href="https://stackoverflow.com/questions/tagged/marko"
+        fa-icon=faStackOverflow
+      span
+        -- Ask & answer StackOverflow questions with the
+        a href="https://stackoverflow.com/questions/tagged/marko" -- marko tag
+    .${styles.discord}
+      a href="https://discord.gg/marko" class=styles.logo
+        fa-icon=faDiscord
+      span
+        -- Hang out in our
+        a href="https://discord.gg/marko" -- Discord server
+        --  , ask questions, & discuss project direction
+    .${styles.twitter}
+      a.${styles.logo} href="https://twitter.com/search?q=%23markojs%20OR%20%40markodevteam&f=live"
+        fa-icon=faXTwitter
+      span
+        -- Tweet to
+        a href="https://twitter.com/MarkoDevTeam" -- @MarkoDevTeam
+        --  or with the
+        a href="https://twitter.com/search?q=%23markojs%20OR%20%40markodevteam&f=live"
+          -- #markojs
+        --  hashtag
+    .${styles.github}
+      a.${styles.logo} href="https://github.com/marko-js/marko"
+        fa-icon=faGithub
+      span
+        -- Browse the code, open issues, & make pull requests on the
+        a href="https://github.com/marko-js/marko" -- GitHub repo

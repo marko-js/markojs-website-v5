@@ -1,0 +1,111 @@
+.section {
+  display: flex;
+  align-items: center;
+  margin: 3rem auto;
+  gap: 2rem;
+  padding: 3rem 2rem;
+  border: 3px solid transparent;
+  border-radius: 2rem;
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  background-image:
+  linear-gradient(var(--color-background), var(--color-background)),
+  linear-gradient(
+    -30deg,
+    var(--color-section-primary),
+    var(--color-section-secondary)
+  );
+  @media (prefers-color-scheme: light) {
+    & {
+      background-image: linear-gradient(
+        120deg,
+        var(--color-section-primary),
+        var(--color-section-secondary)
+      );
+      color: var(--color-background);
+    }
+
+    > article > h2 {
+      color: white;
+    }
+    .cta {
+      background: var(--color-section-secondary);
+    }
+  }
+  @media (min-width: 86rem) {
+    & {
+      margin: auto -3rem;
+    }
+  }
+  @media (max-width: 45rem) {
+    & {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  > article {
+    > h2 {
+      text-align: left;
+    }
+  }
+
+  > figure {
+    margin: 0;
+    align-self: end;
+    @media (max-width: 45rem) {
+      & {
+        align-self: stretch;
+      }
+    }
+
+    > div {
+      transform: translateY(4rem);
+      margin-top: -4rem;
+    }
+  }
+
+  > div {
+    margin-left: -3rem;
+  }
+}
+@each $color in "red", "yellow", "green", "blue", "purple" {
+  .#{$color}Section {
+    composes: section;
+    --color-section-primary: var(--color-#{$color}-primary);
+    --color-section-secondary: var(--color-#{$color}-secondary);
+  }
+}
+
+.cta {
+  border-radius: 2rem;
+  padding: 0.5rem 1rem;
+  background-image: linear-gradient(
+    30deg,
+    var(--color-section-primary),
+    var(--color-section-secondary)
+  );
+  color: white;
+  text-decoration: none;
+  align-self: flex-start;
+}
+
+.example {
+  box-shadow: 0 0 1rem var(--color-foreground);
+  border-radius: 1rem;
+  overflow: clip;
+  position: relative;
+  background-color: var(--color-background);
+
+  pre {
+    padding: 3rem 1rem;
+    margin: 0;
+    display: flex;
+  }
+
+  > div {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+  }
+}

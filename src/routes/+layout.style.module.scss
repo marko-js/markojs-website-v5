@@ -1,0 +1,148 @@
+:root {
+  color-scheme: light dark;
+  --color-black: #202124;
+  --color-white: #ffffff;
+  --color-red-dark: oklch(0.52354 0.250698 358.815);
+  --color-red-light: oklch(0.736305 0.237623 20.415);
+  --color-red-pale-dark: oklch(0.345607 0.0521963 20.415);
+  --color-red-pale-light: oklch(0.947256 0.0475644 20.415);
+  --color-yellow-dark: oklch(0.672384 0.240601 57.12);
+  --color-yellow-light: oklch(0.88201 0.204727 92.355);
+  --color-yellow-pale-dark: oklch(0.374748 0.0456171 92.355);
+  --color-yellow-pale-light: oklch(0.976397 0.0409853 92.355);
+  --color-green-dark: oklch(0.643244 0.1995 162.855);
+  --color-green-light: oklch(0.850336 0.204173 140.15);
+  --color-green-pale-dark: oklch(0.368413 0.0455063 140.15);
+  --color-green-pale-light: oklch(0.970062 0.0408745 140.15);
+  --color-blue-dark: oklch(0.536703 0.204912 242.05);
+  --color-blue-light: oklch(0.779357 0.163263 217.3);
+  --color-blue-pale-dark: oklch(0.354217 0.0373244 217.3);
+  --color-blue-pale-light: oklch(0.955866 0.0326925 217.3);
+  --color-purple-dark: oklch(0.463457 0.15346 290);
+  --color-purple-light: oklch(0.756829 0.126986 310);
+  --color-purple-pale-dark: oklch(0.349712 0.0300688 310);
+  --color-purple-pale-light: oklch(0.951361 0.025437 310);
+  --color-background: light-dark(var(--color-white), var(--color-black));
+  --color-foreground: light-dark(var(--color-black), var(--color-white));
+  --color-selection-background: var(--color-red-secondary);
+  --color-selection-foreground: var(--color-red-primary);
+
+  @each $color in "red", "yellow", "green", "blue", "purple" {
+    --color-#{$color}-primary: light-dark(
+      var(--color-#{$color}-dark),
+      var(--color-#{$color}-light)
+    );
+    --color-#{$color}-secondary: light-dark(
+      var(--color-#{$color}-light),
+      var(--color-#{$color}-dark)
+    );
+    --color-#{$color}-pale-primary: light-dark(
+      var(--color-#{$color}-pale-dark),
+      var(--color-#{$color}-pale-light)
+    );
+    --color-#{$color}-pale-secondary: light-dark(
+      var(--color-#{$color}-pale-light),
+      var(--color-#{$color}-pale-dark)
+    );
+  }
+
+  --section-color-dark: var(--color-red-dark);
+  --section-color-light: var(--color-red-light);
+  --section-color-pale-dark: var(--color-red-pale-dark);
+  --section-color-pale-light: var(--color-red-pale-light);
+  --section-color-primary: var(--color-red-light);
+  --section-color-secondary: var(--color-red-dark);
+  --section-color-pale-primary: var(--color-red-pale-primary);
+  --section-color-pale-secondary: var(--color-red-pale-secondary);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+  text-wrap: balance;
+}
+
+p {
+  overflow-wrap: break-word;
+  text-wrap: pretty;
+}
+
+::selection {
+  background-color: var(--color-selection-background);
+  color: var(--color-selection-foreground);
+  filter: contrast(200%);
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  -webkit-font-smoothing: antialiased;
+  font-family:
+    Ubuntu,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Cantarell,
+    "Open Sans",
+    "Helvetica Neue",
+    sans-serif;
+}
+
+a {
+  display: inline-block;
+  color: var(--section-color-primary);
+  text-decoration: none;
+  &:hover {
+    box-shadow: 0 2px 0 0 var(--section-color-primary);
+  }
+}
+
+pre {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 2px solid var(--section-color-primary);
+  overflow-x: scroll;
+}
+
+code {
+  display: inline-block;
+  font-family:
+    "Ubuntu Mono",
+    monaco,
+    Consolas,
+    Lucida Console,
+    monospace;
+
+  :not(pre) > & {
+    color: var(--section-color-foreground);
+    background-color: var(--section-color-pale-secondary);
+    border-radius: 1rem;
+    padding: 0rem 0.4rem;
+  }
+}
+
+.root {
+  margin: 0 auto;
+  padding: 0 9rem;
+  max-width: 90rem;
+
+  @media (max-width: 70rem) {
+    padding: 0 2.5rem;
+  }
+}

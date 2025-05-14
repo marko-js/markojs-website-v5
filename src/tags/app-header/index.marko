@@ -1,0 +1,26 @@
+client import "@docsearch/css";
+client import docsearch from "@docsearch/js";
+import styles from "./style.module.scss";
+
+header#${styles.header}
+  nav
+    ul
+      li.${styles.logo}
+        a title="Home" href="/"
+          img src="./logo.svg?no-inline" alt="Marko Logo" width=230 height=46
+      li
+        a href="/docs/" -- Docs
+      li
+        a href="/playground/" -- Playground
+      li
+        a href="https://github.com/marko-js/marko" -- GitHub
+      li.${styles.docsearch}
+        button disabled
+        script --
+          docsearch({
+            container: `.${styles.docsearch}`,
+            indexName: "markojs",
+            placeholder: "",
+            appId: "GB0QQV5RQM",
+            apiKey: "82f1b630f11e1afa4767f051af953a28",
+          });

@@ -1,0 +1,269 @@
+.doc {
+  display: grid;
+  gap: 2.5rem;
+  grid-template-columns: 12rem 1fr 12rem;
+  grid-template-areas: "left main right";
+}
+
+main {
+  grid-area: main;
+}
+
+.docNav,
+.tocNav {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  font-size: 0.9rem;
+
+  > ul {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  ul {
+    list-style-type: none;
+
+    & ul ul {
+      padding-left: 1rem;
+    }
+  }
+
+  a {
+    font-weight: 400;
+    color: var(--color-foreground);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-decoration: none;
+
+    &[aria-current="true"] {
+      position: relative;
+      padding-left: 0.5rem;
+      &::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 2px;
+        bottom: 2px;
+        width: 2px;
+        background: var(--color-red-light);
+        ul & {
+          left: -1rem;
+          ul & {
+            left: -1rem;
+          }
+        }
+      }
+    }
+  }
+
+  strong {
+    font-weight: 500;
+    text-transform: uppercase;
+    color: var(--color-red-light);
+  }
+}
+
+.docNav {
+  grid-area: left;
+
+  .docNavControls {
+    display: flex;
+    gap: 0.5rem;
+    flex-direction: column;
+
+    strong {
+      color: var(--color-green-primary);
+    }
+  }
+}
+
+.tocNav {
+  display: none;
+  grid-area: right;
+  @media (min-width: 80rem) {
+    display: block;
+  }
+}
+
+h1 {
+  $i: 0;
+  @each $color in "red", "yellow", "green", "blue", "purple" {
+    & ~ section:nth-of-type(5n + #{$i}) {
+      --section-color-dark: var(--color-#{$color}-dark);
+      --section-color-light: var(--color-#{$color}-light);
+      --section-color-pale-dark: var(--color-#{$color}-pale-dark);
+      --section-color-pale-light: var(--color-#{$color}-pale-light);
+      @if $color == "red" {
+        --section-color-primary: var(--color-red-light);
+        --section-color-secondary: var(--color-red-dark);
+      } @else {
+        --section-color-primary: var(--color-#{$color}-primary);
+        --section-color-secondary: var(--color-#{$color}-secondary);
+      }
+
+      --section-color-pale-primary: var(--color-#{$color}-pale-primary);
+      --section-color-pale-secondary: var(--color-#{$color}-pale-secondary);
+    }
+    $i: $i + 1;
+  }
+}
+
+:global(.marko-codespan__tag) {
+  &::before {
+    content: "<";
+  }
+
+  &::after {
+    content: ">";
+  }
+}
+
+:global(.marko-codespan__attribute) {
+  &::after {
+    content: "=";
+  }
+}
+
+section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  position: relative;
+  color: var(--section-color-primary);
+  font-weight: 500;
+  line-height: 100%;
+
+  & > a:last-child {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    translate: -100% -50%;
+    width: 2rem;
+    height: 2rem;
+    text-align: center;
+    line-height: 2rem;
+    font-size: large;
+    opacity: 0;
+    text-decoration: none;
+    box-shadow: none;
+
+    @media (pointer: coarse) {
+      opacity: 0.25;
+    }
+  }
+
+  &:hover,
+  &:focus-within {
+    > a:last-child {
+      opacity: 0.25;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+h1 {
+  font-size: 4.5rem;
+  margin-top: -0.5rem;
+}
+
+h2 {
+  font-size: 2.8rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+/* Alerts */
+
+:global(.markdown-alert) {
+  border-left: 4px solid var(--section-color-primary);
+  padding: 0 1rem;
+}
+
+:global(.markdown-alert-title) {
+  color: var(--section-color-primary);
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+
+  svg {
+    fill: currentColor;
+  }
+}
+
+:global(.markdown-alert-caution) {
+  --section-color-primary: var(--color-red-light);
+}
+
+:global(.markdown-alert-note) {
+  --section-color-primary: var(--color-blue-primary);
+}
+
+:global(.markdown-alert-tip) {
+  --section-color-primary: var(--color-yellow-primary);
+}
+
+:global(.markdown-alert-important) {
+  --section-color-primary: var(--color-green-primary);
+}
+
+:global(.markdown-alert-warning) {
+  --section-color-primary: var(--color-purple-primary);
+}
+
+/* Contributors */
+
+hr {
+  border-color: #888;
+  margin: 3rem 0;
+}
+
+#contributors ul {
+  display: flex;
+  list-style-type: none;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0;
+}
+
+#contributors ul > li > a {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  color: var(--color-foreground);
+  font-size: x-small;
+}
+
+#contributors ul > li > a > :first-child {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  border: 2px solid var(--section-color-primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  svg {
+    height: 2rem;
+
+    path {
+      fill: var(--section-color-primary);
+    }
+  }
+}

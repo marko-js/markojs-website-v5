@@ -1,0 +1,57 @@
+.code-block-mode-toggle {
+  position: relative;
+
+  .concise {
+    display: none;
+  }
+}
+
+[data-concise-mode] .code-block-mode-toggle {
+  .html {
+    display: none;
+  }
+  .concise {
+    display: block;
+  }
+}
+
+.filename {
+  color: var(--section-color-primary);
+  font-family: monospace;
+  margin-bottom: -0.75rem;
+  margin-left: 0.5rem;
+}
+
+.code-block-action {
+  position: absolute;
+  width: 2rem;
+  height: 2rem;
+  right: 0.25rem;
+  top: 0.25rem;
+  background: none;
+  border-radius: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+
+  &:hover {
+    opacity: 1;
+    box-shadow: none;
+  }
+
+  svg {
+    width: 70%;
+    path {
+      fill: currentColor;
+    }
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .shiki,
+  .shiki span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+  }
+}

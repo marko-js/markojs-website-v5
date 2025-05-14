@@ -1,0 +1,70 @@
+main
+  home-cta
+  home-features
+  home-language
+
+  figure-section title="Progressive Rendering" color="blue" reverse
+    @figure
+      let/progress=0
+      div.demo-pages
+        demo-page [
+          label="a blank white screen for 1 second, followed by a generic e-commerce page loaded all at once"
+          title="buffered"
+          progress=progress
+          buffered
+        ]
+        demo-page [
+          label="a generic e-commerce page rendered progressively while the buffered example shows a white screen"
+          title="streamed"
+          progress=progress
+        ]
+      script
+        --
+        const id = setTimeout(() => (progress = (progress + 0.01) % 1.5), 20);
+        $signal.onabort = () => clearTimeout(id);
+        --
+    @cta href="/docs/explanation/streaming" -- Learn More
+    --
+    Marko streams content to your users as soon as it's ready. No waiting for client side JavaScript bundles or data requests to start rendering. HTML, assets, and images are loaded as soon as possible with asynchronous data loading in as it completes.
+    --
+
+  figure-section title="Code Elimination" color="yellow"
+    @figure
+      div.demo-pages
+        demo-page [
+          label="a visual indication that every component on a webpage is recalculated with JavaScript"
+          title="full-page"
+          progress=1
+          hydrateAll
+        ]
+        demo-page [
+          label="a visual indication that only interactive parts of a webpage are recalculated with JavaScript"
+          title="targeted"
+          progress=1
+          hydratePartial
+        ]
+    @cta href="/docs/explanation/optimizing-performance" -- Learn More
+    --
+    Marko only sends the code for interactive parts to the browser. Its compiler automatically detects which components only need to be rendered on the server. This means less to download and less to execute. Your users can enjoy top tier performance regardless of their devices or networks.
+    --
+
+  home-testimonies
+  home-community
+
+style --
+  .demo-pages {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-around;
+
+    > * {
+      box-shadow: 0 0 0.5rem var(--color-foreground);
+    }
+
+    > :first-child {
+      translate: 0 1rem;
+    }
+    > :last-child {
+      translate: 0 -1rem;
+    }
+  }

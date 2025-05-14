@@ -1,107 +1,129 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import styles from "./+layout.style.module.scss";
 export interface Input {
   content: Marko.Body;
 }
 
-define/Outline|input: { page: string; content: Marko.Renderable }|
-  if=$global.url.href.endsWith(input.page) || $global.url.href.endsWith(input.page + "/")
-    strong
-      ${input.content}
-    nav.table-of-contents aria-label="On this Page"
-      strong -- On this Page
-      ul
-        toc-tree=$global.meta.headings[0].children
-  else
-    a href=`/docs/${input.page}/`
-      ${input.content}
-
 local-let/syntaxMode="html" key="syntax-mode"
 let/isConciseMode=syntaxMode === "concise" valueChange(v) { syntaxMode = v ? "concise" : "html" }
+const/ariaCurrent(page: string) {
+  if ($global.url.pathname === page) {
+    return "true";
+  }
+}
 
-div.sidebar
-  nav.pages
+.${styles.doc}
+  nav.${styles.docNav}
     ul
       li
-        h3 -- Tutorials
+        strong -- Tutorials
         ul
           li
-            Outline page="tutorial/getting-started" -- Getting Started
+            const/page = "/docs/tutorial/getting-started/"
+            a href=page aria-current=ariaCurrent(page) -- Getting Started
       li
-        h3 -- Guides
+        strong -- Guides
         ul
           li
-            Outline page="guide/existing-project" -- Adding to an Existing Project
+            const/page = "/docs/guide/existing-project/"
+            a href=page aria-current=ariaCurrent(page) -- Existing Project
           li
-            Outline page="guide/styling" -- Styling
+            const/page = "/docs/guide/styling/"
+            a href=page aria-current=ariaCurrent(page) -- Styling
           li
-            Outline page="guide/low-level-apis" -- Low-Level APIs
+            const/page = "/docs/guide/low-level-apis/"
+            a href=page aria-current=ariaCurrent(page) -- Low-Level APIs
           li
-            Outline page="guide/publishing-components" -- Publishing Components
+            const/page = "/docs/guide/publishing-components/"
+            a href=page aria-current=ariaCurrent(page) -- Publishing Components
           li
-            Outline page="guide/library-integration" -- Library Integration
+            const/page = "/docs/guide/library-integration/"
+            a href=page aria-current=ariaCurrent(page) -- Library Integration
           li
-            Outline page="guide/csp" -- Content-Security Policy
+            const/page = "/docs/guide/csp/"
+            a href=page aria-current=ariaCurrent(page) -- Content-Security Policy
       li
-        h3 -- Explanation
+        strong -- Explanation
         ul
           li
-            Outline page="explanation/why-marko" -- Why Marko?
+            const/page = "/docs/explanation/why-marko/"
+            a href=page aria-current=ariaCurrent(page) -- Why Marko?
           li
-            Outline page="explanation/let-vs-const" -- <code>&lt;let&gt;</code> vs <code>&lt;const&gt;</code>
+            const/page = "/docs/explanation/let-vs-const/"
+            a href=page aria-current=ariaCurrent(page) -- <code>&lt;let&gt;</code> vs <code>&lt;const&gt;</code>
           li
-            Outline page="explanation/streaming" -- Streaming
+            const/page = "/docs/explanation/streaming/"
+            a href=page aria-current=ariaCurrent(page) -- Streaming
           li
-            Outline page="explanation/forms" -- Working With Forms
+            const/page = "/docs/explanation/forms/"
+            a href=page aria-current=ariaCurrent(page) -- Working With Forms
           li
-            Outline page="explanation/nested-reactivity" -- Nested Reactivity
+            const/page = "/docs/explanation/nested-reactivity/"
+            a href=page aria-current=ariaCurrent(page) -- Nested Reactivity
           li
-            Outline page="explanation/optimizing-performance" -- Optimizing Performance
+            const/page = "/docs/explanation/optimizing-performance/"
+            a href=page aria-current=ariaCurrent(page) -- Optimizing Performance
       li
-        h3 -- Reference
+        strong -- Reference
         ul
           li
-            Outline page="reference/language" -- Language
+            const/page = "/docs/reference/language/"
+            a href=page aria-current=ariaCurrent(page) -- Language
           li
-            Outline page="reference/custom-tag" -- Custom Tags
+            const/page = "/docs/reference/custom-tag/"
+            a href=page aria-current=ariaCurrent(page) -- Custom Tags
           li
-            Outline page="reference/reactivity" -- Reactivity
+            const/page = "/docs/reference/reactivity/"
+            a href=page aria-current=ariaCurrent(page) -- Reactivity
           li
-            Outline page="reference/core-tag" -- Core Tags
+            const/page = "/docs/reference/core-tag/"
+            a href=page aria-current=ariaCurrent(page) -- Core Tags
           li
-            Outline page="reference/native-tag" -- Native Tags
+            const/page = "/docs/reference/native-tag/"
+            a href=page aria-current=ariaCurrent(page) -- Native Tags
           li
-            Outline page="reference/concise-syntax" -- Concise Syntax
+            const/page = "/docs/reference/concise-syntax/"
+            a href=page aria-current=ariaCurrent(page) -- Concise Syntax
           li
-            Outline page="reference/template" -- Template API
+            const/page = "/docs/reference/template/"
+            a href=page aria-current=ariaCurrent(page) -- Template API
           li
-            Outline page="reference/typescript" -- TypeScript
-  div.controls
-    id/modeId
-    strong id=modeId -- Syntax Mode
-    switch aria-labelledby=modeId checked:=isConciseMode off="HTML" on="Concise"
+            const/page = "/docs/reference/typescript/"
+            a href=page aria-current=ariaCurrent(page) -- TypeScript
+    .${styles.docNavControls}
+      id/modeId
+      strong id=modeId -- Syntax Mode
+      switch aria-labelledby=modeId checked:=isConciseMode off="HTML" on="Concise"
 
-main data-concise-mode=isConciseMode
-  ${input.content}
 
-  hr
+  main data-concise-mode=isConciseMode
+    ${input.content}
 
-  section#contributors
-    h2
-      -- Contributors
-      a href="#contributors" -- #
-    p -- Helpful? You can thank these awesome people! You can also edit this doc if you see any issues or want to improve it.
-    await|contributors|=$global.contributors
-      ul
-        for|contributor| of=contributors
+    hr
+
+    section#${styles.contributors}
+      h2
+        -- Contributors
+        a href="#contributors" -- #
+      p -- Helpful? You can thank these awesome people! You can also edit this doc if you see any issues or want to improve it.
+      await|contributors|=$global.contributors
+        ul
+          for|contributor| of=contributors
+            li
+              a href=contributor.url
+                img src=contributor.photo alt=""
+                -- ${contributor.username}
           li
-            a href=contributor.url
-              img src=contributor.photo alt=""
-              -- ${contributor.username}
-        li
-          a href=`https://github.com/marko-js/website/blob/master/src/routes/docs/${$global.url.pathname.substring(
-              "/docs/".length,
-              $global.url.pathname.length - 1,
-            )}.md`
-            div
-              fa-icon=faPlus
-            -- You?
+            a href=`https://github.com/marko-js/website/blob/master/src/routes/docs/${$global.url.pathname.substring(
+                "/docs/".length,
+                $global.url.pathname.length - 1,
+              )}.md`
+              div
+                fa-icon=faPlus
+              -- You?
+
+  id/tocLabelId
+  nav.${styles.tocNav} aria-labelledby=tocLabelId
+    strong#${tocLabelId} -- On this Page
+    ul
+      toc-tree=$global.meta.headings[0].children

@@ -6,22 +6,21 @@ The language makes HTML more strict while extending it with control flow and rea
 
 ## Syntax Legend
 
-<pre class="html-code-block">
+<div class="code-block-mode-toggle">
+<pre class="html">
 <a href="#statements">import "...";</a>
-
 &lt;<a href="#tags">tag-name</a>|<a href="#tag-parameters">tag, parameters</a>|/<a href="#tag-variables">tagVariable</a> ...<a href="#attributes">attributes</a>&gt;
   <a href="#tag-content">content</a> with <a href="#dynamic-text">&#36;{dynamic text}</a>
   &lt;<a href="#attribute-tags">@attribute-tags</a>/&gt;
 &lt;/&gt;
 </pre>
-
-<pre class="concise-code-block">
+<pre class="concise">
 <a href="#statements">import "...";</a>
-
 <a href="#tags">tag-name</a>|<a href="#tag-parameters">tag, parameters</a>|/<a href="#tag-variables">tagVariable</a> ...<a href="#attributes">attributes</a>
   -- <a href="#tag-content">content</a> with <a href="#dynamic-text">&#36;{dynamic text}</a>
   <a href="#attribute-tags">@attribute-tags</a>
 </pre>
+</div>
 
 > [!TIP]
 > Jump to the section for a syntax by clicking on it.

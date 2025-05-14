@@ -1,59 +1,4 @@
-import docsearch from "@docsearch/js";
-import "@docsearch/css";
-import markoLogo from "./logo.svg";
-import { faBars, faLaptopCode } from "@fortawesome/free-solid-svg-icons";
-export interface Input {
-  content: Marko.Body;
-}
-static interface LayoutMeta {
-  pageTitle?: string;
-}
-static declare global {
-  namespace Marko {
-    namespace CSS {
-      interface Properties {
-        "--color-selection-background"?: string;
-        "--header-offset"?: string;
-      }
-    }
-  }
-}
-static const HIGHLIGHT_COLORS = ["red", "yellow", "green", "blue", "purple"];
-static function hasPageTitle(
-  meta: unknown,
-): meta is LayoutMeta & { pageTitle: string } {
-  return typeof (meta as LayoutMeta).pageTitle === "string";
-}
-
-let/mobileNav=false
-let/highlightColorIndex=0
-
-script --
-  let lastScrollY = window.scrollY;
-  let headerOffset = 0;
-  const headerHeight = header().offsetHeight;
-  window.addEventListener(
-    "scroll",
-    () => {
-      headerOffset = Math.max(
-        0,
-        Math.min(headerHeight, headerOffset - lastScrollY + window.scrollY),
-      );
-      lastScrollY = window.scrollY;
-      document.body.style.setProperty("--header-offset", `-${headerOffset}px`);
-    },
-    {
-      signal: $signal,
-    },
-  );
-script --
-  window.addEventListener(
-    "selectstart",
-    () => {
-      highlightColorIndex = (highlightColorIndex + 1) % HIGHLIGHT_COLORS.length;
-    },
-    { signal: $signal },
-  );
+import styles from "./+layout.style.module.scss"
 <!DOCTYPE html>
 html lang="en"
   head
@@ -64,39 +9,41 @@ html lang="en"
       if=hasPageTitle($global.meta) -- ${$global.meta.pageTitle} | 
       -- Marko
 
-    link rel="icon" sizes="32x32" href="./fav.ico"
-    // Duplicate the SVG icon with a `media` to ensure chrome swaps it on media change.
+    link rel="icon" sizes="32x32" href="./fav.png?no-inline"
     link rel="icon" type="image/svg+xml" href="./fav.svg?no-inline"
-    link rel="icon" type="image/svg+xml" href="./fav.svg?no-inline" media="(prefers-color-scheme:dark)"
-
     link rel="preconnect" href="https://GB0QQV5RQM-dsn.algolia.net" crossorigin
+    link rel="preconnect" href="https://fonts.googleapis.com"
+    link rel="preconnect" href="https://fonts.gstatic.com" crossorigin
+    link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500"
+
+  body
     themed-svg-gradients
+    .${styles.root}
+      app-header
+      ${input.content}
 
-  body data-mobile-nav=mobileNav style={
-    "--color-selection-background": `var(--color-${HIGHLIGHT_COLORS[highlightColorIndex]}-secondary)`,
-    "--header-offset": `0px`,
-  }
-    header/header
-      a href="/"
-        img.logo src=markoLogo alt="Marko Logo - Go to Homepage"
+    script --
+      const selectionColors = ["red", "yellow", "green", "blue", "purple"];
+      let highlightColorIndex = 0;
+      window.addEventListener(
+        "selectstart",
+        () => {
+          const color = selectionColors[highlightColorIndex];
+          document.body.style.setProperty(
+            "--color-selection-background",
+            `var(--color-${color}-secondary)`
+          );
+          document.body.style.setProperty(
+            "--color-selection-foreground",
+            `var(--color-${color}-primary)`
+          );
+          highlightColorIndex = (highlightColorIndex + 1) % selectionColors.length;
+        },
+        { signal: $signal },
+      );
 
-      div#docsearch
-      script
-        --
-        docsearch({
-          container: "#docsearch",
-          indexName: "markojs",
-          appId: "GB0QQV5RQM",
-          apiKey: "82f1b630f11e1afa4767f051af953a28",
-        });
-        --
-
-      a href="/playground/" title="playground"
-        fa-icon=faLaptopCode
-
-      social-links
-
-      button.mobile-nav-toggle onClick() { mobileNav = !mobileNav } aria-label="Show Navigation"
-        fa-icon=faBars
-
-    ${input.content}
+static function hasPageTitle(
+  meta: unknown,
+): meta is { pageTitle: string } {
+  return typeof (meta as any).pageTitle === "string";
+}

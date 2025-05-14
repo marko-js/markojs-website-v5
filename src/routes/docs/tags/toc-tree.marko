@@ -2,32 +2,10 @@ import type { HeadingList } from "../../../types";
 export interface Input {
   value: HeadingList;
 }
-static interface VisibilityChangeEventDetail {
-  isIntersecting: boolean;
-}
-client const observer = new IntersectionObserver(
-  (entries) => {
-    for (const entry of entries) {
-      entry.target.dispatchEvent(
-        new CustomEvent<VisibilityChangeEventDetail>("visibility-change", {
-          detail: { isIntersecting: entry.isIntersecting },
-        }),
-      );
-    }
-  },
-);
 
 <for|heading| of=input.value>
   <li>
-    <let/visible=false/>
-    <let/current=false/>
-    <a
-      href=`#${heading.id}`
-      class={
-        visible,
-      }
-      aria-current=(current && "true")
-    >
+    <a href=`#${heading.id}`>
       ${heading.title}
     </a>
     <if=(heading.children.length)>
@@ -35,31 +13,5 @@ client const observer = new IntersectionObserver(
         <toc-tree=heading.children/>
       </ul>
     </if>
-    <script>
-      const section = document.getElementById(heading.id);
-      if (section) {
-        observer.observe(section);
-        section.addEventListener(
-          "visibility-change",
-          (e: CustomEventInit<VisibilityChangeEventDetail>) => {
-            visible = !!e.detail?.isIntersecting;
-          },
-          {
-            signal: $signal,
-          },
-        );
-        $signal.onabort = () => observer.unobserve(section);
-      }
-      current = window.location.hash === `#${heading.id}`;
-      window.addEventListener(
-        "hashchange",
-        (e) => {
-          current = new URL(e.newURL).hash === `#${heading.id}`;
-        },
-        {
-          signal: $signal,
-        },
-      );
-    </script>
   </li>
 </for>

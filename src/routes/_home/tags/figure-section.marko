@@ -16,7 +16,7 @@ export interface Input {
   "--color-section-secondary": `var(--color-${input.color}-secondary)`,
 } class=[styles.figureSection, input.fullWidth && styles.background, input.reverse && styles.flexReverse]>
   <article>
-    <h2 class=[text.gradient, text[input.color]]>${input.title}</h2>
+    <h2.${text[input.color]}>${input.title}</h2>
     <${input.content}/>
     <if=input.cta>
       <a ...input.cta class=[input.cta.class, styles.cta]>

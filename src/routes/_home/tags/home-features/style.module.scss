@@ -1,0 +1,17 @@
+.section {
+  display: flex;
+  flex-wrap: wrap;
+  text-align: center;
+  gap: 1rem;
+  justify-content: space-evenly;
+
+  article {
+    display: flex;
+    flex-direction: column;
+    max-width: 10rem;
+  }
+
+  p {
+    font-size: small;
+  }
+}

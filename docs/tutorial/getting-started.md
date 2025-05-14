@@ -1,4 +1,4 @@
-# Getting Started with Marko
+# Getting Started
 
 New to Marko? Choose the path that's right for you:
 

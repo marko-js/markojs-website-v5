@@ -21,9 +21,6 @@
   display: flex;
   align-items: center;
   margin: 3rem auto;
-  flex-direction: var(--figure-section-flex-direction);
-  max-width: 60rem;
-  box-sizing: border-box;
   gap: 2rem;
 }
 
@@ -37,6 +34,12 @@
   border-radius: 2rem;
   background-origin: border-box;
   background-clip: padding-box, border-box;
+}
+
+@media (min-width: 86rem) {
+  .background {
+    margin: auto -3rem;
+  }
 }
 
 .figureSection > article > h2 {

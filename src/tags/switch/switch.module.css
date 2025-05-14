@@ -21,6 +21,7 @@
 }
 
 .label {
+  user-select: none;
   display: inline-flex;
   gap: 0.5rem;
 }

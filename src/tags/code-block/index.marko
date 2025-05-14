@@ -1,6 +1,6 @@
 server import { createHighlighter } from "shiki";
 server import { markoDark, markoLight } from "./theme"
-import { faCode } from "@fortawesome/free-solid-svg-icons";
+import { faUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { compress } from "../../routes/playground/tags/hasher";
 
 import type { PlaygroundFile } from "../playground/playground.marko";
@@ -38,57 +38,8 @@ if=input.concise
   div.code-block-mode-toggle
     await|hash|=compress(JSON.stringify([{ path: "index.marko", content: input.text } as PlaygroundFile]))
       a.code-block-action href=`/playground/#${hash}` title="View in playground"
-        fa-icon=faCode
+        fa-icon=faUpRightFromSquare
     div.html -- $!{highlightedText}
     div.concise -- $!{highlightedConcise}
 else
   -- $!{highlightedText}
-
-style
-  --
-  .code-block-mode-toggle {
-    position: relative;
-
-    .concise {
-      display: none;
-    }
-  }
-
-  [data-concise-mode] .code-block-mode-toggle {
-    .html {
-      display: none;
-    }
-    .concise {
-      display: block;
-    }
-  }
-
-  .filename {
-    color: var(--color-section);
-    font-family: monospace;
-    margin-bottom: -0.75rem;
-    margin-left: 0.5rem;
-  }
-
-  .code-block-action {
-    position: absolute;
-    width: 2rem;
-    height: 2rem;
-    right: 0.25rem;
-    top: 0.25rem;
-    border: 2px solid var(--color-section);
-    background: none;
-    border-radius: 0.25rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-
-    svg {
-      width: 70%;
-      path {
-        fill: var(--color-section);
-      }
-    }
-  }
-  --
