@@ -1,10 +1,14 @@
 .doc {
   display: grid;
-
-  @media (min-width: 70rem) {
-    display: flex;
+  
+  @media (min-width: 48rem) {
     gap: 2.5rem;
-    grid-template-columns: 12rem 1fr 12rem;
+    grid-template-columns: 12rem minmax(0, 1fr);
+    grid-template-areas: "left main";
+  }
+
+  @media (min-width: 64rem) {
+    grid-template-columns: 12rem minmax(0, 1fr) 12rem;
     grid-template-areas: "left main right";
   }
 }
@@ -16,52 +20,29 @@ main {
 .docNav,
 .tocNav {
   flex-direction: column;
-  gap: 1rem;
   font-size: 0.9rem;
   display: none;
-  @media (min-width: 70rem) {
-    display: flex;
-  }
 
-  > ul {
+  ul {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-  }
-  ul {
     list-style-type: none;
-
-    & ul ul {
-      padding-left: 1rem;
-    }
   }
 
-  a {
-    font-weight: 400;
-    color: var(--color-foreground);
+  li {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    text-decoration: none;
+  }
+
+  a {
+    color: var(--color-foreground);
+    font-weight: 400;
+    line-height: 1.6;
 
     &[aria-current="true"] {
-      position: relative;
       padding-left: 0.5rem;
-      &::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        top: 2px;
-        bottom: 2px;
-        width: 2px;
-        background: var(--color-red-light);
-        ul & {
-          left: -1rem;
-          ul & {
-            left: -1rem;
-          }
-        }
-      }
+      border-left: 2px solid var(--color-red-light);
     }
   }
 
@@ -74,6 +55,14 @@ main {
 
 .docNav {
   grid-area: left;
+  gap: 1rem;
+  @media (min-width: 48rem) {
+    display: flex;
+  }
+
+  > ul {
+    gap: 1rem;
+  }
 
   .docNavControls {
     display: flex;
@@ -81,18 +70,26 @@ main {
     flex-direction: column;
 
     strong {
-      color: var(--color-green-primary);
+      color: var(--color-foreground);
+      font-weight: 700;
     }
   }
 }
 
 .tocNav {
   grid-area: right;
+  @media (min-width: 64rem) {
+    display: flex;
+  }
+
+  & ul ul {
+    padding-left: 1rem;
+  }
 }
 
 h1 {
   $i: 0;
-  @each $color in "red", "yellow", "green", "blue", "purple" {
+  @each $color in "red", "blue", "yellow", "green" {
     & ~ section:nth-of-type(5n + #{$i}) {
       --section-color-dark: var(--color-#{$color}-dark);
       --section-color-light: var(--color-#{$color}-light);
@@ -154,8 +151,6 @@ h6 {
     line-height: 2rem;
     font-size: large;
     opacity: 0;
-    text-decoration: none;
-    box-shadow: none;
 
     @media (pointer: coarse) {
       opacity: 0.25;

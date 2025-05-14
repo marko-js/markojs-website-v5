@@ -1,24 +1,21 @@
 #header {
   padding: 2.5rem 0;
-  margin-bottom: 2.5rem;;
+  margin-bottom: 2.5rem;
+  --section-color-primary: var(--color-foreground);
 
   nav ul {
     display: flex;
     list-style-type: none;
-    gap: 3.75rem;
+    gap: 2rem;
     align-items: center;
     font-weight: medium;
-
-    @media (max-width: 70rem) {
-      gap: 2rem;
-    }
-
-    a {
-      --section-color-primary: var(--color-foreground);
+    
+    @media (min-width: 64rem) {
+      gap: 3.75rem;
     }
 
     .logo a {
-      box-shadow: none;
+      text-decoration: none;
     }
   }
 }
@@ -28,11 +25,9 @@
 }
 
 .docsearch {
-  flex-grow: 1;
-  min-width: 2.5rem;
-  max-width: 13.5rem;
-  @media (max-width: 70rem) {
-    max-width: 2.5rem;
+  width: 2.5rem;
+  @media (min-width: 64rem) {
+    width: 12.75rem;
   }
 
   button {
@@ -74,12 +69,12 @@
   display: none;
 }
 :global(.DocSearch-Modal) {
-  border: 2px solid var(--color-red-secondary);
-  border-radius: 35px;
-
-  @media (max-width: 768px) {
-    border-color: transparent;
-    border-radius: 0;
+  border: 2px solid transparent;
+  border-radius: 0;
+  
+  @media (min-width: 48rem) {
+    border-color: var(--color-red-secondary);
+    border-radius: 35px;
   }
 }
 :global(.DocSearch-Container) {

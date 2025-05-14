@@ -83,22 +83,22 @@ h6 {
 h1 {
   font-size: 2.8rem;
   margin-top: -0.25rem;
-  @media (min-width: 70rem) {
+  @media (min-width: 90rem) {
     font-size: 4.5rem;
-    margin-top: -0.5rem;
+    margin-top: -0.4rem;
   }
 }
 
 h2 {
   font-size: 1.5rem;
-  @media (min-width: 70rem) {
+  @media (min-width: 90rem) {
     font-size: 2.8rem;
   }
 }
 
 h3 {
   font-size: 1.1rem;
-  @media (min-width: 70rem) {
+  @media (min-width: 90rem) {
     font-size: 1.5rem;
   }
 }
@@ -134,11 +134,11 @@ body {
 }
 
 a {
-  display: inline-block;
   color: var(--section-color-primary);
-  text-decoration: none;
+  text-decoration: none var(--section-color-primary) solid 2px;
+  text-underline-offset: 4px;
   &:hover {
-    box-shadow: 0 2px 0 0 var(--section-color-primary);
+    text-decoration-line: underline;
   }
 }
 
@@ -146,11 +146,10 @@ pre {
   padding: 1rem;
   border-radius: 0.5rem;
   border: 2px solid var(--section-color-primary);
-  overflow-x: scroll;
+  overflow-x: auto;
 }
 
 code {
-  display: inline-block;
   font-family:
     "Ubuntu Mono",
     monaco,
@@ -162,16 +161,12 @@ code {
     color: var(--section-color-foreground);
     background-color: var(--section-color-pale-secondary);
     border-radius: 1rem;
-    padding: 0rem 0.4rem;
+    padding: 0.2rem 0.4rem;
   }
 }
 
 .root {
   margin: 0 auto;
-  padding: 0 8rem;
+  padding: 0 2rem;
   max-width: 90rem;
-
-  @media (max-width: 80rem) {
-    padding: 0 2.5rem;
-  }
 }
