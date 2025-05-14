@@ -1,8 +1,12 @@
 .doc {
   display: grid;
-  gap: 2.5rem;
-  grid-template-columns: 12rem 1fr 12rem;
-  grid-template-areas: "left main right";
+
+  @media (min-width: 70rem) {
+    display: flex;
+    gap: 2.5rem;
+    grid-template-columns: 12rem 1fr 12rem;
+    grid-template-areas: "left main right";
+  }
 }
 
 main {
@@ -11,10 +15,13 @@ main {
 
 .docNav,
 .tocNav {
-  display: flex;
   flex-direction: column;
   gap: 1rem;
   font-size: 0.9rem;
+  display: none;
+  @media (min-width: 70rem) {
+    display: flex;
+  }
 
   > ul {
     display: flex;
@@ -80,11 +87,7 @@ main {
 }
 
 .tocNav {
-  display: none;
   grid-area: right;
-  @media (min-width: 80rem) {
-    display: block;
-  }
 }
 
 h1 {
@@ -138,10 +141,7 @@ h3,
 h4,
 h5,
 h6 {
-  position: relative;
   color: var(--section-color-primary);
-  font-weight: 500;
-  line-height: 100%;
 
   & > a:last-child {
     position: absolute;
@@ -172,19 +172,6 @@ h6 {
       }
     }
   }
-}
-
-h1 {
-  font-size: 4.5rem;
-  margin-top: -0.5rem;
-}
-
-h2 {
-  font-size: 2.8rem;
-}
-
-h3 {
-  font-size: 1.5rem;
 }
 
 /* Alerts */

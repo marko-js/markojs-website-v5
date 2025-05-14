@@ -73,8 +73,34 @@ h3,
 h4,
 h5,
 h6 {
+  position: relative;
+  font-weight: 500;
+  line-height: 100%;
   overflow-wrap: break-word;
   text-wrap: balance;
+}
+
+h1 {
+  font-size: 2.8rem;
+  margin-top: -0.25rem;
+  @media (min-width: 70rem) {
+    font-size: 4.5rem;
+    margin-top: -0.5rem;
+  }
+}
+
+h2 {
+  font-size: 1.5rem;
+  @media (min-width: 70rem) {
+    font-size: 2.8rem;
+  }
+}
+
+h3 {
+  font-size: 1.1rem;
+  @media (min-width: 70rem) {
+    font-size: 1.5rem;
+  }
 }
 
 p {
@@ -92,6 +118,7 @@ body {
   background-color: var(--color-background);
   color: var(--color-foreground);
   -webkit-font-smoothing: antialiased;
+  max-width: 100%;
   font-family:
     Ubuntu,
     system-ui,
@@ -141,10 +168,10 @@ code {
 
 .root {
   margin: 0 auto;
-  padding: 0 9rem;
+  padding: 0 8rem;
   max-width: 90rem;
 
-  @media (max-width: 70rem) {
+  @media (max-width: 80rem) {
     padding: 0 2.5rem;
   }
 }
