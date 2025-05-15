@@ -16,8 +16,66 @@
 main {
   grid-area: main;
 
-  ul, ol {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--section-color-primary);
+    margin-bottom: 1.3rem;
+
+    & > a:last-child {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      translate: -100% -50%;
+      width: 2rem;
+      height: 2rem;
+      text-align: center;
+      line-height: 2rem;
+      font-size: large;
+      opacity: 0;
+
+      @media (pointer: coarse) {
+        opacity: 0.25;
+      }
+    }
+
+    &:hover,
+    &:focus-within {
+      > a:last-child {
+        opacity: 0.25;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+  }
+  h2 {
+    margin-top: 3rem;
+  }
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin-top: 2rem;
+  }
+
+  p {
+    margin-bottom: 1.3rem;
+  }
+
+  ul,
+  ol {
+    margin-bottom: 1.3rem;
     padding-left: 1rem;
+  }
+
+  pre,
+  code {
+    margin: 2rem 0;
   }
 }
 
@@ -128,62 +186,6 @@ h1 {
   &::after {
     content: "=";
   }
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: var(--section-color-primary);
-  margin-bottom: 1.3rem;
-
-  & > a:last-child {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    translate: -100% -50%;
-    width: 2rem;
-    height: 2rem;
-    text-align: center;
-    line-height: 2rem;
-    font-size: large;
-    opacity: 0;
-
-    @media (pointer: coarse) {
-      opacity: 0.25;
-    }
-  }
-
-  &:hover,
-  &:focus-within {
-    > a:last-child {
-      opacity: 0.25;
-
-      &:hover {
-        opacity: 1;
-      }
-    }
-  }
-}
-h2 {
-  margin-top: 3rem;
-}
-h3,
-h4,
-h5,
-h6 {
-  margin-top: 2rem;
-}
-
-p, ul, ol {
-  margin-bottom: 1.3rem;
-}
-
-pre,
-code {
-  margin: 2rem 0;
 }
 
 /* Alerts */
