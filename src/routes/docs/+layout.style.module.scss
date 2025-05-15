@@ -1,6 +1,6 @@
 .doc {
   display: grid;
-  
+
   @media (min-width: 48rem) {
     gap: 2.5rem;
     grid-template-columns: 12rem minmax(0, 1fr);
@@ -15,6 +15,10 @@
 
 main {
   grid-area: main;
+
+  ul, ol {
+    padding-left: 1rem;
+  }
 }
 
 .docNav,
@@ -126,12 +130,6 @@ h1 {
   }
 }
 
-section {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
 h1,
 h2,
 h3,
@@ -139,6 +137,7 @@ h4,
 h5,
 h6 {
   color: var(--section-color-primary);
+  margin-bottom: 1.3rem;
 
   & > a:last-child {
     position: absolute;
@@ -168,10 +167,29 @@ h6 {
     }
   }
 }
+h2 {
+  margin-top: 3rem;
+}
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 2rem;
+}
+
+p, ul, ol {
+  margin-bottom: 1.3rem;
+}
+
+pre,
+code {
+  margin: 2rem 0;
+}
 
 /* Alerts */
 
 :global(.markdown-alert) {
+  margin: 2rem 0;
   border-left: 4px solid var(--section-color-primary);
   padding: 0 1rem;
 }

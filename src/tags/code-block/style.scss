@@ -18,8 +18,10 @@
 .filename {
   color: var(--section-color-primary);
   font-family: monospace;
-  margin-bottom: -0.75rem;
-  margin-left: 0.5rem;
+
+  & + div pre {
+    margin-top: 0.5rem;
+  }
 }
 
 .code-block-action {

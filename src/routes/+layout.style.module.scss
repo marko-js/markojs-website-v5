@@ -81,7 +81,7 @@ h6 {
 }
 
 h1 {
-  font-size: 2.8rem;
+  font-size: 3rem;
   margin-top: -0.25rem;
   @media (min-width: 90rem) {
     font-size: 4.5rem;
@@ -90,16 +90,23 @@ h1 {
 }
 
 h2 {
-  font-size: 1.5rem;
+  font-size: 2.2rem;
   @media (min-width: 90rem) {
     font-size: 2.8rem;
   }
 }
 
 h3 {
-  font-size: 1.1rem;
+  font-size: 1.8rem;
   @media (min-width: 90rem) {
-    font-size: 1.5rem;
+    font-size: 2rem;
+  }
+}
+
+h4 {
+  font-size: 1.2rem;
+  @media (min-width: 90rem) {
+    font-size: 1.6rem;
   }
 }
 
