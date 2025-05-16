@@ -1,3 +1,20 @@
+@mixin section-colors($color) {
+  --section-color-dark: var(--color-#{$color}-dark);
+  --section-color-light: var(--color-#{$color}-light);
+  --section-color-pale-dark: var(--color-#{$color}-pale-dark);
+  --section-color-pale-light: var(--color-#{$color}-pale-light);
+  --section-color-pale-primary: var(--color-#{$color}-pale-primary);
+  --section-color-pale-secondary: var(--color-#{$color}-pale-secondary);
+
+  @if $color == "red" {
+    --section-color-primary: var(--color-red-light);
+    --section-color-secondary: var(--color-red-dark);
+  } @else {
+    --section-color-primary: var(--color-#{$color}-primary);
+    --section-color-secondary: var(--color-#{$color}-secondary);
+  }
+}
+
 .doc {
   display: grid;
 
@@ -24,32 +41,25 @@ main {
   h6 {
     color: var(--section-color-primary);
     margin-bottom: 1.3rem;
-
-    & > a:last-child {
-      position: absolute;
-      top: 50%;
-      left: 0;
-      translate: -100% -50%;
-      width: 2rem;
-      height: 2rem;
-      text-align: center;
-      line-height: 2rem;
-      font-size: large;
-      opacity: 0;
-
-      @media (pointer: coarse) {
-        opacity: 0.25;
+    & > a {
+      &:hover {
+        text-decoration: none;
+      }
+      &::before {
+        content: "#";
+        position: absolute;
+        left: 0;
+        opacity: 0;
+        translate: -100%;
+        padding-right: 0.3rem;
+        color: var(--section-color-pale-secondary);
       }
     }
 
     &:hover,
     &:focus-within {
-      > a:last-child {
-        opacity: 0.25;
-
-        &:hover {
-          opacity: 1;
-        }
+      & > a::before {
+        opacity: 1;
       }
     }
   }
@@ -150,23 +160,10 @@ main {
 }
 
 h1 {
-  $i: 0;
-  @each $color in "red", "blue", "yellow", "green" {
+  $i: 1;
+  @each $color in "red", "blue", "yellow", "green", "purple" {
     & ~ section:nth-of-type(5n + #{$i}) {
-      --section-color-dark: var(--color-#{$color}-dark);
-      --section-color-light: var(--color-#{$color}-light);
-      --section-color-pale-dark: var(--color-#{$color}-pale-dark);
-      --section-color-pale-light: var(--color-#{$color}-pale-light);
-      @if $color == "red" {
-        --section-color-primary: var(--color-red-light);
-        --section-color-secondary: var(--color-red-dark);
-      } @else {
-        --section-color-primary: var(--color-#{$color}-primary);
-        --section-color-secondary: var(--color-#{$color}-secondary);
-      }
-
-      --section-color-pale-primary: var(--color-#{$color}-pale-primary);
-      --section-color-pale-secondary: var(--color-#{$color}-pale-secondary);
+      @include section-colors($color);
     }
     $i: $i + 1;
   }
@@ -207,24 +204,17 @@ h1 {
   }
 }
 
-:global(.markdown-alert-caution) {
-  --section-color-primary: var(--color-red-light);
-}
 
-:global(.markdown-alert-note) {
-  --section-color-primary: var(--color-blue-primary);
-}
-
-:global(.markdown-alert-tip) {
-  --section-color-primary: var(--color-yellow-primary);
-}
-
-:global(.markdown-alert-important) {
-  --section-color-primary: var(--color-green-primary);
-}
-
-:global(.markdown-alert-warning) {
-  --section-color-primary: var(--color-purple-primary);
+@each $name, $color in (
+  "caution": "red",
+  "note": "blue",
+  "tip": "yellow",
+  "important": "green",
+  "warning": "purple"
+) {
+  :global(.markdown-alert-#{$name}) {
+    @include section-colors($color);
+  }
 }
 
 /* Contributors */

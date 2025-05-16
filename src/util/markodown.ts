@@ -200,7 +200,7 @@ function headingSections(headings: HeadingList): MarkedExtension {
 
         const slug = githubSlugger.slug(text);
 
-        result += `<section id="${slug}"><h${depth}>${this.parser.parseInline(tokens)}<a href="#${slug}">#</a></h${depth}>`;
+        result += `<section id="${slug}"><h${depth}><a href="#${slug}">${this.parser.parseInline(tokens)}</a></h${depth}>`;
 
         lastSectionDepth = depth;
 

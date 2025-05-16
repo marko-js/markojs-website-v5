@@ -6,24 +6,24 @@
   --color-white: #ffffff;
   --color-blue-dark: #0073D8;
   --color-blue-light: #00CFFB;
-  --color-blue-pale-dark: #244148;
-  --color-blue-pale-light: #D9F6FF;
+  --color-blue-pale-dark: #184D5A;
+  --color-blue-pale-light: #D9EAF9;
   --color-green-dark: #00B068;
   --color-green-light: #7CED64;
-  --color-green-pale-dark: #32452E;
-  --color-green-pale-light: #E7FDE3;
+  --color-green-pale-dark: #375434;
+  --color-green-pale-light: #D9F3E8;
   --color-yellow-dark: #FC5C00;
   --color-yellow-light: #FFD100;
-  --color-yellow-pale-dark: #494024;
-  --color-yellow-pale-light: #FFF7D9;
+  --color-yellow-pale-dark: #584D1B;
+  --color-yellow-pale-light: #FFE7D9;
   --color-red-dark: #CC0067;
   --color-red-light: #FF5467;
-  --color-red-pale-dark: #512E2E;
-  --color-red-pale-light: #FFE2E0;
+  --color-red-pale-dark: #582E35;
+  --color-red-pale-light: #F7D9E8;
   --color-purple-dark: #5b43a7;
   --color-purple-light: #c999ec;
-  --color-purple-pale-dark: #3f3646;
-  --color-purple-pale-light: #f4ebfc;
+  --color-purple-pale-dark: #4A3F56;
+  --color-purple-pale-light: #E6E3F2;
   --color-selection-background: var(--color-red-secondary);
   --color-selection-foreground: var(--color-red-primary);
 
@@ -143,7 +143,7 @@ body {
 a {
   color: var(--section-color-primary);
   text-decoration: none var(--section-color-primary) solid 2px;
-  text-underline-offset: 4px;
+  text-underline-offset: 25%;
   &:hover {
     text-decoration-line: underline;
   }
