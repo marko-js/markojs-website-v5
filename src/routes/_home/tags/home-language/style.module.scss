@@ -12,15 +12,15 @@
   linear-gradient(var(--color-background), var(--color-background)),
   linear-gradient(
     -30deg,
-    var(--color-section-primary),
-    var(--color-section-secondary)
+    var(--color-section),
+    var(--color-section-alt)
   );
   @media (prefers-color-scheme: light) {
     & {
       background-image: linear-gradient(
         120deg,
-        var(--color-section-primary),
-        var(--color-section-secondary)
+        var(--color-section),
+        var(--color-section-alt)
       );
       color: var(--color-background);
     }
@@ -29,7 +29,7 @@
       color: white;
     }
     .cta {
-      background: var(--color-section-secondary);
+      background: var(--color-section-alt);
     }
   }
   @media (min-width: 86rem) {
@@ -69,11 +69,11 @@
     margin-left: -3rem;
   }
 }
-@each $color in "red", "yellow", "green", "blue", "purple" {
+@each $color in "red", "yellow", "green", "blue" {
   .#{$color}Section {
     composes: section;
-    --color-section-primary: var(--color-#{$color}-primary);
-    --color-section-secondary: var(--color-#{$color}-secondary);
+    --color-section: var(--color-#{$color});
+    --color-section-alt: var(--color-#{$color}-alt);
   }
 }
 
@@ -82,8 +82,8 @@
   padding: 0.5rem 1rem;
   background-image: linear-gradient(
     30deg,
-    var(--color-section-primary),
-    var(--color-section-secondary)
+    var(--color-section),
+    var(--color-section-alt)
   );
   color: white;
   text-decoration: none;

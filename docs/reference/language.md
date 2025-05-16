@@ -6,7 +6,7 @@ The language makes HTML more strict while extending it with control flow and rea
 
 ## Syntax Legend
 
-<div class="code-block-mode-toggle">
+<div class="code-block">
 <pre class="html">
 <a href="#statements">import "...";</a>
 &lt;<a href="#tags">tag-name</a>|<a href="#tag-parameters">tag, parameters</a>|/<a href="#tag-variables">tagVariable</a> ...<a href="#attributes">attributes</a>&gt;
@@ -341,7 +341,8 @@ Attributes can be terminated with a comma. This is useful in [concise mode](./co
 <my-tag a=1, b=2/>
 ```
 
-> [!CAUTION] > [Comma operators / sequence expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Comma_operator) must be wrapped in parentheses
+> [!CAUTION]
+> [Comma operators / sequence expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Comma_operator) must be wrapped in parentheses
 >
 > ```marko
 > <my-tag a=(console.log(foo), foo)/>

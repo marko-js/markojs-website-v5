@@ -6,14 +6,14 @@ export interface Input {
   content: Marko.Body;
   cta: Marko.AttrTag<Marko.HTML.A>;
   figure: Marko.AttrTag<Marko.HTML.Div>;
-  color: "red" | "blue" | "green" | "yellow" | "purple";
+  color: "red" | "blue" | "green" | "yellow";
   reverse?: boolean;
   fullWidth?: boolean;
 }
 
 <section style={
-  "--color-section-primary": `var(--color-${input.color}-primary)`,
-  "--color-section-secondary": `var(--color-${input.color}-secondary)`,
+  "--color-section": `var(--color-${input.color})`,
+  "--color-section-alt": `var(--color-${input.color}-alt)`,
 } class=[styles.figureSection, input.fullWidth && styles.background, input.reverse && styles.flexReverse]>
   <article>
     <h2.${text[input.color]}>${input.title}</h2>
@@ -35,8 +35,8 @@ static declare global {
   namespace Marko {
     namespace CSS {
       interface Properties {
-        "--color-section-primary"?: string;
-        "--color-section-secondary"?: string;
+        "--color-section"?: string;
+        "--color-section-alt"?: string;
       }
     }
   }

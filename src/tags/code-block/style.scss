@@ -1,4 +1,4 @@
-.code-block-mode-toggle {
+.code-block {
   position: relative;
 
   .concise {
@@ -6,7 +6,7 @@
   }
 }
 
-[data-concise-mode] .code-block-mode-toggle {
+[data-concise-mode] .code-block {
   .html {
     display: none;
   }
@@ -16,44 +16,22 @@
 }
 
 .filename {
-  color: var(--section-color-primary);
+  color: var(--section-color);
   font-family: monospace;
 
-  & + div pre {
+  & ~ * pre {
     margin-top: 0.5rem;
   }
 }
 
-.code-block-action {
-  position: absolute;
-  width: 2rem;
-  height: 2rem;
-  right: 0.25rem;
-  top: 0.25rem;
-  background: none;
-  border-radius: 0.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.6;
-
-  &:hover {
-    opacity: 1;
-    text-decoration: none;
-  }
-
-  svg {
-    width: 70%;
-    path {
-      fill: currentColor;
-    }
-  }
+.code-block pre {
+  max-width: fit-content;
 }
 
 @media (prefers-color-scheme: dark) {
   .shiki,
   .shiki span {
     color: var(--shiki-dark) !important;
-    background-color: var(--shiki-dark-bg) !important;
+    background-color: transparent !important;
   }
 }

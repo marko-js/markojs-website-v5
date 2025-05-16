@@ -1,68 +1,74 @@
+@use "../vars" as *;
+
 :root {
   color-scheme: light dark;
-  --color-black: #202124;
-  --color-white: #ffffff;
-  --color-black: #202124;
-  --color-white: #ffffff;
-  --color-blue-dark: #0073D8;
-  --color-blue-light: #00CFFB;
-  --color-blue-pale-dark: #184D5A;
-  --color-blue-pale-light: #D9EAF9;
-  --color-green-dark: #00B068;
-  --color-green-light: #7CED64;
-  --color-green-pale-dark: #375434;
-  --color-green-pale-light: #D9F3E8;
-  --color-yellow-dark: #FC5C00;
-  --color-yellow-light: #FFD100;
-  --color-yellow-pale-dark: #584D1B;
-  --color-yellow-pale-light: #FFE7D9;
-  --color-red-dark: #CC0067;
-  --color-red-light: #FF5467;
-  --color-red-pale-dark: #582E35;
-  --color-red-pale-light: #F7D9E8;
-  --color-purple-dark: #5b43a7;
-  --color-purple-light: #c999ec;
-  --color-purple-pale-dark: #4A3F56;
-  --color-purple-pale-light: #E6E3F2;
-  --color-selection-background: var(--color-red-secondary);
-  --color-selection-foreground: var(--color-red-primary);
+
+  --color-black: #{$color-black};
+  --color-white: #{$color-white};
+  --color-blue-dark: #{$color-blue-dark};
+  --color-blue-light: #{$color-blue-light};
+  --color-green-dark: #{$color-green-dark};
+  --color-green-light: #{$color-green-light};
+  --color-yellow-dark: #{$color-yellow-dark};
+  --color-yellow-light: #{$color-yellow-light};
+  --color-red-dark: #{$color-red-dark};
+  --color-red-light: #{$color-red-light};
+
+  --color-blue-dark-shade: #{$color-blue-dark-shade};
+  --color-blue-dark-tint: #{$color-blue-dark-tint};
+  --color-blue-light-shade: #{$color-blue-light-shade};
+  --color-blue-light-tint: #{$color-blue-light-tint};
+  --color-green-dark-shade: #{$color-green-dark-shade};
+  --color-green-dark-tint: #{$color-green-dark-tint};
+  --color-green-light-shade: #{$color-green-light-shade};
+  --color-green-light-tint: #{$color-green-light-tint};
+  --color-yellow-dark-shade: #{$color-yellow-dark-shade};
+  --color-yellow-dark-tint: #{$color-yellow-dark-tint};
+  --color-yellow-light-shade: #{$color-yellow-light-shade};
+  --color-yellow-light-tint: #{$color-yellow-light-tint};
+  --color-red-dark-shade: #{$color-red-dark-shade};
+  --color-red-dark-tint: #{$color-red-dark-tint};
+  --color-red-light-shade: #{$color-red-light-shade};
+  --color-red-light-tint: #{$color-red-light-tint};
+
+  --color-selection-background: var(--color-red-alt);
+  --color-selection-foreground: var(--color-red);
 
   --color-background: light-dark(var(--color-white), var(--color-black));
   --color-foreground: light-dark(var(--color-black), var(--color-white));
-  @each $color in "red", "yellow", "green", "blue", "purple" {
-    --color-#{$color}-primary: light-dark(
+  @each $color in "red", "yellow", "green", "blue" {
+    --color-#{$color}: light-dark(
       var(--color-#{$color}-dark),
       var(--color-#{$color}-light)
     );
-    --color-#{$color}-secondary: light-dark(
+    --color-#{$color}-alt: light-dark(
       var(--color-#{$color}-light),
       var(--color-#{$color}-dark)
     );
-    --color-#{$color}-pale-primary: light-dark(
-      var(--color-#{$color}-pale-dark),
-      var(--color-#{$color}-pale-light)
+    --color-#{$color}-dim: light-dark(
+      var(--color-#{$color}-dark-tint),
+      var(--color-#{$color}-light-shade)
     );
-    --color-#{$color}-pale-secondary: light-dark(
-      var(--color-#{$color}-pale-light),
-      var(--color-#{$color}-pale-dark)
+    --color-#{$color}-dim-alt: light-dark(
+      var(--color-#{$color}-light-shade),
+      var(--color-#{$color}-dark-tint)
+    );
+
+    --color-#{$color}-alt-dim: light-dark(
+      var(--color-#{$color}-light-tint),
+      var(--color-#{$color}-dark-shade)
+    );
+    --color-#{$color}-alt-dim-alt: light-dark(
+      var(--color-#{$color}-dark-shade),
+      var(--color-#{$color}-light-tint)
     );
   }
-
-  --section-color-dark: var(--color-red-dark);
-  --section-color-light: var(--color-red-light);
-  --section-color-pale-dark: var(--color-red-pale-dark);
-  --section-color-pale-light: var(--color-red-pale-light);
-  --section-color-primary: var(--color-red-light);
-  --section-color-secondary: var(--color-red-dark);
-  --section-color-pale-primary: var(--color-red-pale-primary);
-  --section-color-pale-secondary: var(--color-red-pale-secondary);
 }
 
 *,
 *::before,
 *::after {
   box-sizing: border-box;
-  line-height: 1.5;
   margin: 0;
   padding: 0;
 }
@@ -75,17 +81,16 @@ h5,
 h6 {
   position: relative;
   font-weight: 500;
-  line-height: 100%;
   overflow-wrap: break-word;
   text-wrap: balance;
 }
 
 h1 {
   font-size: 3rem;
-  margin-top: -0.25rem;
+  margin-top: -0.5rem;
   @media (min-width: 90rem) {
     font-size: 4.5rem;
-    margin-top: -0.4rem;
+    margin-top: -1rem;
   }
 }
 
@@ -141,19 +146,26 @@ body {
 }
 
 a {
-  color: var(--section-color-primary);
-  text-decoration: none var(--section-color-primary) solid 2px;
+  color: var(--section-color);
+  text-decoration: underline var(--section-color) solid 1px;
   text-underline-offset: 25%;
   &:hover {
+    text-underline-offset: calc(25% - 1px);
+    text-decoration-thickness: 2px;
     text-decoration-line: underline;
   }
 }
 
+nav, h1, h2, h3, h4, h5, h5 {
+  a {
+    text-decoration-line: none;
+  }
+}
+
 pre {
-  padding: 1rem;
-  border-radius: 0.5rem;
-  border: 2px solid var(--section-color-primary);
+  padding: 0 1rem;
   overflow-x: auto;
+  border-left: 4px solid var(--section-color-dim);
 }
 
 code {
@@ -163,12 +175,19 @@ code {
     Consolas,
     Lucida Console,
     monospace;
+  line-height: 1.5;
+  text-wrap: nowrap;
 
   :not(pre) > & {
-    color: var(--section-color-foreground);
-    background-color: var(--section-color-pale-secondary);
+    color: var(--section-color);
+    background-color: var(--section-color-dim);
     border-radius: 1rem;
-    padding: 0.2rem 0.4rem;
+    padding: 0.2rem 0rem;
+
+    &::before, &::after {
+      content: " ";
+      white-space: pre;
+    }
   }
 }
 

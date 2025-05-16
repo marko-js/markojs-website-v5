@@ -23,7 +23,7 @@ html lang="en"
       ${input.content}
 
     script --
-      const selectionColors = ["red", "yellow", "green", "blue", "purple"];
+      const selectionColors = ["red", "yellow", "green", "blue"];
       let highlightColorIndex = 0;
       window.addEventListener(
         "selectstart",
@@ -31,11 +31,11 @@ html lang="en"
           const color = selectionColors[highlightColorIndex];
           document.body.style.setProperty(
             "--color-selection-background",
-            `var(--color-${color}-secondary)`
+            `var(--color-${color}-alt)`
           );
           document.body.style.setProperty(
             "--color-selection-foreground",
-            `var(--color-${color}-primary)`
+            `var(--color-${color})`
           );
           highlightColorIndex = (highlightColorIndex + 1) % selectionColors.length;
         },

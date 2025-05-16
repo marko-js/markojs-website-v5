@@ -55,7 +55,30 @@ export default function markodownPlugin(): PluginOption {
 async function mdToMarko(source: string) {
   const headings: HeadingList = [];
   const markoCode = await new Marked()
-    .use(markedAlert(), headingSections(headings), markoDocs())
+    .use(markedAlert({
+      variants: [
+        {
+          type: "note",
+          icon: "",
+        },
+        {
+          type: "tip",
+          icon: "",
+        },
+        {
+          type: "important",
+          icon: "",
+        },
+        {
+          type: "warning",
+          icon: "",
+        },
+        {
+          type: "caution",
+          icon: "",
+        },
+      ]
+    }), headingSections(headings), markoDocs())
     .parse(
       // remove zero-width spaces (recommended from marked docs)
       source.replace(/^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/, ""),
@@ -199,8 +222,12 @@ function headingSections(headings: HeadingList): MarkedExtension {
         }
 
         const slug = githubSlugger.slug(text);
+        let headingHTML = this.parser.parseInline(tokens);
+        if (depth > 1) {
+          headingHTML = `<a href="#${slug}">${headingHTML}</a>`
+        }
 
-        result += `<section id="${slug}"><h${depth}><a href="#${slug}">${this.parser.parseInline(tokens)}</a></h${depth}>`;
+        result += `<section id="${slug}"><h${depth}>${headingHTML}</h${depth}>`;
 
         lastSectionDepth = depth;
 

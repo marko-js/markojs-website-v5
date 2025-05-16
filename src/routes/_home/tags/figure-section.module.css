@@ -3,8 +3,8 @@
   padding: 0.5rem 1rem;
   background-image: linear-gradient(
     30deg,
-    var(--color-section-primary),
-    var(--color-section-secondary)
+    var(--color-section),
+    var(--color-section-alt)
   );
   color: white;
   text-decoration: none;
@@ -103,8 +103,8 @@ figure.background > div {
   .background {
     background-image: linear-gradient(
       120deg,
-      var(--color-section-primary),
-      var(--color-section-secondary)
+      var(--color-section),
+      var(--color-section-alt)
     );
     color: var(--color-background);
   }
@@ -112,7 +112,7 @@ figure.background > div {
     color: white;
   }
   .figureSection.background .cta {
-    background: var(--color-section-secondary);
+    background: var(--color-section-alt);
   }
 }
 
@@ -122,8 +122,8 @@ figure.background > div {
       linear-gradient(var(--color-background), var(--color-background)),
       linear-gradient(
         -30deg,
-        var(--color-section-primary),
-        var(--color-section-secondary)
+        var(--color-section),
+        var(--color-section-alt)
       );
   }
 }

@@ -1,17 +1,34 @@
-@mixin section-colors($color) {
+@mixin section-colors($color, $dark: false) {
   --section-color-dark: var(--color-#{$color}-dark);
   --section-color-light: var(--color-#{$color}-light);
-  --section-color-pale-dark: var(--color-#{$color}-pale-dark);
-  --section-color-pale-light: var(--color-#{$color}-pale-light);
-  --section-color-pale-primary: var(--color-#{$color}-pale-primary);
-  --section-color-pale-secondary: var(--color-#{$color}-pale-secondary);
 
-  @if $color == "red" {
-    --section-color-primary: var(--color-red-light);
-    --section-color-secondary: var(--color-red-dark);
+  @if $dark and $color != "blue" {
+    --section-color-dim: light-dark(
+      var(--color-#{$color}-dark-tint),
+      var(--color-#{$color}-dark-shade)
+    );
+    --section-color-dim-alt: light-dark(
+      var(--color-#{$color}-dark-shade),
+      var(--color-#{$color}-dark-tint)
+    );
+    --section-color-alt-dim: light-dark(
+      var(--color-#{$color}-light-tint),
+      var(--color-#{$color}-light-shade)
+    );
+    --section-color-alt-dim-alt: light-dark(
+      var(--color-#{$color}-light-shade),
+      var(--color-#{$color}-light-tint)
+    );
+
+    --section-color: var(--color-#{$color}-dark);
+    --section-color-alt: var(--color-#{$color}-light);
   } @else {
-    --section-color-primary: var(--color-#{$color}-primary);
-    --section-color-secondary: var(--color-#{$color}-secondary);
+    --section-color-dim: var(--color-#{$color}-dim);
+    --section-color-dim-alt: var(--color-#{$color}-dim-alt);
+    --section-color-alt-dim: var(--color-#{$color}-alt-dim);
+    --section-color-alt-dim-alt: var(--color-#{$color}-alt-dim-alt);
+    --section-color: var(--color-#{$color});
+    --section-color-alt: var(--color-#{$color}-alt);
   }
 }
 
@@ -33,44 +50,59 @@
 main {
   grid-area: main;
 
-  h1,
+  > section {
+    @include section-colors("red");
+
+    $i: 1;
+    @each $color in "blue", "yellow", "green" {
+      & > section:nth-of-type(4n + #{$i}) {
+        @include section-colors($color);
+      }
+      $i: $i + 1;
+    }
+  }
+
+  h1 {
+    color: var(--color-red-light);
+    margin-bottom: 1.3rem;
+  }
+
   h2,
   h3,
   h4,
   h5,
   h6 {
-    color: var(--section-color-primary);
+    color: var(--section-color);
     margin-bottom: 1.3rem;
-    & > a {
-      &:hover {
-        text-decoration: none;
-      }
-      &::before {
-        content: "#";
-        position: absolute;
-        left: 0;
-        opacity: 0;
-        translate: -100%;
-        padding-right: 0.3rem;
-        color: var(--section-color-pale-secondary);
-      }
-    }
+  }
 
-    &:hover,
-    &:focus-within {
-      & > a::before {
-        opacity: 1;
-      }
-    }
-  }
-  h2 {
-    margin-top: 3rem;
-  }
+  h2,
   h3,
   h4,
   h5,
   h6 {
-    margin-top: 2rem;
+    margin-top: 2em;
+
+    a {
+      &:hover {
+        text-decoration: none;
+
+        &::before {
+          color: var(--section-color);
+        }
+      }
+
+      &::before {
+        content: "#";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        padding-right: 0.5rem;
+        translate: -100% -50%;
+        color: var(--section-color-dim);
+        font-size: 0.75em;
+      }
+    }
   }
 
   p {
@@ -86,6 +118,11 @@ main {
   pre,
   code {
     margin: 2rem 0;
+  }
+
+  hr {
+    border: 1px solid var(--section-color-dim-alt);
+    margin: 3rem 0;
   }
 }
 
@@ -140,6 +177,10 @@ main {
     display: flex;
     gap: 0.5rem;
     flex-direction: column;
+    position: sticky;
+    bottom: 1rem;
+    margin-top: auto;
+    background-color: var(--color-background);
 
     strong {
       color: var(--color-foreground);
@@ -156,16 +197,6 @@ main {
 
   & ul ul {
     padding-left: 1rem;
-  }
-}
-
-h1 {
-  $i: 1;
-  @each $color in "red", "blue", "yellow", "green", "purple" {
-    & ~ section:nth-of-type(5n + #{$i}) {
-      @include section-colors($color);
-    }
-    $i: $i + 1;
   }
 }
 
@@ -189,40 +220,46 @@ h1 {
 
 :global(.markdown-alert) {
   margin: 2rem 0;
-  border-left: 4px solid var(--section-color-primary);
+  border: 1px solid var(--section-color);
   padding: 0 1rem;
+  padding-top: 1rem;
+  border-radius: 1rem;
+
+  pre,
+  code {
+    margin: 1.3rem 0;
+  }
 }
 
 :global(.markdown-alert-title) {
-  color: var(--section-color-primary);
+  color: var(--section-color);
   display: flex;
   gap: 0.5rem;
   align-items: center;
+  text-transform: uppercase;
+  font-weight: 700;
 
   svg {
     fill: currentColor;
   }
 }
 
-
-@each $name, $color in (
-  "caution": "red",
-  "note": "blue",
-  "tip": "yellow",
-  "important": "green",
-  "warning": "purple"
-) {
+@each $name,
+  $color
+    in (
+      "caution": "red",
+      "note": "blue",
+      "tip": "yellow",
+      "important": "green",
+      "warning": "gray"
+    )
+{
   :global(.markdown-alert-#{$name}) {
-    @include section-colors($color);
+    @include section-colors($color, true);
   }
 }
 
 /* Contributors */
-
-hr {
-  border-color: #888;
-  margin: 3rem 0;
-}
 
 #contributors ul {
   display: flex;
@@ -246,7 +283,7 @@ hr {
   width: 5rem;
   height: 5rem;
   border-radius: 50%;
-  border: 2px solid var(--section-color-primary);
+  border: 2px solid var(--section-color);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -255,7 +292,7 @@ hr {
     height: 2rem;
 
     path {
-      fill: var(--section-color-primary);
+      fill: var(--section-color);
     }
   }
 }

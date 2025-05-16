@@ -1,9 +1,5 @@
 server import { createHighlighter } from "shiki";
 server import { markoDark, markoLight } from "./theme"
-import { faUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
-import { compress } from "../../routes/playground/tags/hasher";
-
-import type { PlaygroundFile } from "../playground/playground.marko";
 export interface Input {
   lang: string;
   text: string;
@@ -32,14 +28,11 @@ const/highlightedConcise=input.concise &&
     }
   })
 
-if=input.filename
-  div.filename -- ${input.filename}
-if=input.concise
-  div.code-block-mode-toggle
-    await|hash|=compress(JSON.stringify([{ path: "index.marko", content: input.text } as PlaygroundFile]))
-      a.code-block-action href=`/playground/#${hash}` title="View in playground"
-        fa-icon=faUpRightFromSquare
-    div.html -- $!{highlightedText}
-    div.concise -- $!{highlightedConcise}
-else
-  -- $!{highlightedText}
+.code-block
+  if=input.filename
+    .filename -- ${input.filename}
+  if=input.concise
+    .html -- $!{highlightedText}
+    .concise -- $!{highlightedConcise}
+  else
+    -- $!{highlightedText}
