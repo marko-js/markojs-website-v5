@@ -34,6 +34,8 @@
 
 .doc {
   display: grid;
+  grid-template-areas: "main";
+  grid-template-columns: minmax(0, 1fr);
 
   @media (min-width: 48rem) {
     gap: 2.5rem;
@@ -62,6 +64,10 @@ main {
     }
   }
 
+  section > *:last-child {
+    margin-bottom: 0;
+  }
+
   h1 {
     color: var(--color-red-light);
     margin-bottom: 1.3rem;
@@ -81,7 +87,7 @@ main {
   h4,
   h5,
   h6 {
-    margin-top: 2em;
+    margin-top: 1.5em;
 
     a {
       &:hover {
@@ -219,11 +225,30 @@ main {
 /* Alerts */
 
 :global(.markdown-alert) {
+  position: relative;
   margin: 2rem 0;
   border: 1px solid var(--section-color);
-  padding: 0 1rem;
-  padding-top: 1rem;
+  background-color: var(--color-background);
+  padding: 1rem;
+  padding-bottom: 0;
   border-radius: 1rem;
+  
+  &::before {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    transform-origin: bottom;
+    transform: scale(0.9, 0.7);
+    content: "";
+    background-color: var(--section-color-dim-alt);
+    filter: blur(50px);
+    opacity: 0.2;
+  }
+  
+  @media (min-width: 48rem) {
+    padding: 1.5rem;
+    padding-bottom: 1rem;
+  }
 
   pre,
   code {
@@ -238,6 +263,7 @@ main {
   align-items: center;
   text-transform: uppercase;
   font-weight: 700;
+  margin-bottom: 0.7rem;
 
   svg {
     fill: currentColor;
@@ -295,4 +321,14 @@ main {
       fill: var(--section-color);
     }
   }
+}
+
+:global(#syntax-legend) pre {
+    border: none;
+    font-size: 1.3rem;
+    background-color: var(--section-color-dim);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 100% !important;
 }

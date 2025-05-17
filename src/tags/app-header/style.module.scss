@@ -9,9 +9,16 @@
     gap: 2rem;
     align-items: center;
     font-weight: medium;
-    
+
+    li:not(.logo, .docsearch) {
+      display: none;
+    }
+
     @media (min-width: 64rem) {
       gap: 3.75rem;
+      li:not(.logo, .docsearch) {
+        display: block;
+      }
     }
 
     .logo a {
@@ -71,7 +78,7 @@
 :global(.DocSearch-Modal) {
   border: 2px solid transparent;
   border-radius: 0;
-  
+
   @media (min-width: 48rem) {
     border-color: var(--color-red-alt);
     border-radius: 35px;
@@ -110,11 +117,11 @@
   --docsearch-icon-stroke-width: 1.4;
   --docsearch-highlight-color: var(--color-red-alt);
   --docsearch-muted-color: #888;
-  --docsearch-container-background: light-dark(#FFE0E344, #4D2F3444);
+  --docsearch-container-background: light-dark(#ffe0e344, #4d2f3444);
   --docsearch-logo-color: var(--color-red-alt);
   --docsearch-modal-width: 50rem;
   --docsearch-modal-background: var(--color-background);
-  --docsearch-modal-shadow: 0 .5rem 5rem .5rem light-dark(#FFE0E3, #4D2F34);
+  --docsearch-modal-shadow: 0 0.5rem 5rem 0.5rem light-dark(#ffe0e3, #4d2f34);
   --docsearch-searchbox-background: transparent;
   --docsearch-searchbox-focus-background: transparent;
   --docsearch-searchbox-shadow: transparent;

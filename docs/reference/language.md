@@ -7,28 +7,22 @@ The language makes HTML more strict while extending it with control flow and rea
 ## Syntax Legend
 
 <div class="code-block">
-<pre class="html">
-<a href="#statements">import "...";</a>
-&lt;<a href="#tags">tag-name</a>|<a href="#tag-parameters">tag, parameters</a>|/<a href="#tag-variables">tagVariable</a> ...<a href="#attributes">attributes</a>&gt;
-  <a href="#tag-content">content</a> with <a href="#dynamic-text">&#36;{dynamic text}</a>
-  &lt;<a href="#attribute-tags">@attribute-tags</a>/&gt;
-&lt;/&gt;
-</pre>
-<pre class="concise">
-<a href="#statements">import "...";</a>
-<a href="#tags">tag-name</a>|<a href="#tag-parameters">tag, parameters</a>|/<a href="#tag-variables">tagVariable</a> ...<a href="#attributes">attributes</a>
-  -- <a href="#tag-content">content</a> with <a href="#dynamic-text">&#36;{dynamic text}</a>
-  <a href="#attribute-tags">@attribute-tags</a>
-</pre>
+<pre class="html"><code><a href="#statements">import "...";</a>
+&lt;<a href="#tags">tag</a>|...<a href="#tag-parameters">params</a>|/<a href="#tag-variables">var</a> ...<a href="#attributes">attrs</a>&gt;
+  <a href="#tag-content">content</a> with <a href="#dynamic-text">&#36;{placeholders}</a>
+  &lt;<a href="#attribute-tags">@attr-tags</a>/&gt;
+&lt;/&gt;</code></pre>
+<pre class="concise"><code><a href="#statements">import "...";</a>
+<a href="#tags">tag</a>|...<a href="#tag-parameters">params</a>|/<a href="#tag-variables">var</a> ...<a href="#attributes">attrs</a>
+  -- <a href="#tag-content">content</a> with <a href="#dynamic-text">&#36;{placeholders}</a>
+  <a href="#attribute-tags">@attr-tag</a></code></pre>
 </div>
-
-> [!TIP]
-> Jump to the section for a syntax by clicking on it.
 
 <!--  -->
 
 > [!NOTE]
-> The legend above is not comprehensive. See also:
+> Jump to the section for a syntax by clicking on it.
+> The legend is not comprehensive, for more see:
 >
 > - [`<${dynamic}/>` tag](#dynamic-tags)
 > - [Attributes](#attributes) for various attribute shorthands

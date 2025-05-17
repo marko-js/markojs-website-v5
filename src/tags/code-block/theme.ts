@@ -418,7 +418,7 @@ export const markoLight = {
       settings: {
         background: "#D91880",
         fontStyle: "",
-        foreground: "#FFFFFF",
+        foreground: "#202124",
       },
     },
     {
@@ -426,7 +426,7 @@ export const markoLight = {
       scope: "invalid.deprecated",
       settings: {
         background: "#7C4DFF",
-        foreground: "#FFFFFF",
+        foreground: "#202124",
       },
     },
     {
