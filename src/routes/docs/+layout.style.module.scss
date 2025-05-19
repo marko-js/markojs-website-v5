@@ -121,6 +121,15 @@ main {
     padding-left: 1rem;
   }
 
+  li::marker {
+    color: var(--section-color);
+    font-size: 1.2rem;
+  }
+
+  li + li {
+    margin-top: 0.8rem;
+  }
+
   pre,
   code {
     margin: 2rem 0;
@@ -154,6 +163,8 @@ main {
     color: var(--color-foreground);
     font-weight: 400;
     line-height: 1.6;
+    text-decoration-thickness: 2px;
+    text-underline-offset: calc(25% - 2px);
 
     &[aria-current="true"] {
       padding-left: 0.5rem;

@@ -148,15 +148,21 @@ body {
 a {
   color: var(--section-color);
   text-decoration: underline var(--section-color) solid 1px;
-  text-underline-offset: 25%;
+  text-underline-offset: 40%;
   &:hover {
-    text-underline-offset: calc(25% - 1px);
-    text-decoration-thickness: 2px;
+    text-underline-offset: calc(40% - 2px);
+    text-decoration-thickness: 3px;
     text-decoration-line: underline;
   }
 }
 
-nav, h1, h2, h3, h4, h5, h5 {
+nav,
+h1,
+h2,
+h3,
+h4,
+h5,
+h5 {
   a {
     text-decoration-line: none;
   }
@@ -184,7 +190,8 @@ code {
     border-radius: 1rem;
     padding: 0.2rem 0rem;
 
-    &::before, &::after {
+    &::before,
+    &::after {
       content: " ";
       white-space: pre;
     }
