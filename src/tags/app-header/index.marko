@@ -1,20 +1,22 @@
 client import "@docsearch/css";
 client import docsearch from "@docsearch/js";
 import styles from "./style.module.scss";
+import type { HeadingList } from "../../types";
+const/ariaCurrent(page: string) {
+  if ($global.url.pathname === page) {
+    return "true";
+  }
+}
 
-header#${styles.header}
-  nav
-    ul
-      li.${styles.logo}
-        a title="Home" href="/"
-          img src="./logo-text.svg?no-inline" alt="Marko Logo" width=230 height=46
-      li
-        a href="/docs/" -- Docs
-      li
-        a href="/playground/" -- Playground
-      li
-        a href="https://github.com/marko-js/marko" -- GitHub
-      li.${styles.docsearch}
+.${styles.stickyWrap}
+  .${styles.stickyContent}
+    header.${styles.header}/$header
+      a.${styles.logo} title="Home" href="/"
+        img src="./logo-text.svg?no-inline" alt="Marko Logo" width=240 height=48
+      a href="/docs/" -- Docs
+      a href="/playground/" -- Playground
+      a href="https://github.com/marko-js/marko" -- GitHub
+      .${styles.docsearch}
         button disabled
         script --
           docsearch({
@@ -24,3 +26,128 @@ header#${styles.header}
             appId: "GB0QQV5RQM",
             apiKey: "82f1b630f11e1afa4767f051af953a28",
           });
+
+    const/headings = ($global.meta as any).headings?.[0].children as HeadingList | undefined
+    if=headings
+      local-let/syntaxMode="html" key="syntax-mode"
+      let/isConciseMode=syntaxMode === "concise" valueChange(v) { syntaxMode = v ? "concise" : "html" }
+      script --
+        document.body.classList.toggle("concise-mode", isConciseMode);
+
+      nav.${styles.siteNav}
+        ul
+          li
+            strong -- Tutorials
+            ul
+              li
+                const/page = "/docs/tutorial/getting-started/"
+                a href=page aria-current=ariaCurrent(page) -- Getting Started
+              li
+                const/page = "/docs/tutorial/fundamentals/"
+                a href=page aria-current=ariaCurrent(page) -- Fundamentals
+              li
+                const/page = "/docs/tutorial/app-from-scratch/"
+                a href=page aria-current=ariaCurrent(page) -- App from Scratch
+              li
+                const/page = "/docs/tutorial/components-and-reactivity/"
+                a href=page aria-current=ariaCurrent(page) -- Components and Reactivity
+              li
+                const/page = "/docs/tutorial/experienced-developers/"
+                a href=page aria-current=ariaCurrent(page) -- Experienced Developers
+          li
+            strong -- Guides
+            ul
+              li
+                const/page = "/docs/guide/existing-project/"
+                a href=page aria-current=ariaCurrent(page) -- Existing Project
+              li
+                const/page = "/docs/guide/styling/"
+                a href=page aria-current=ariaCurrent(page) -- Styling
+              li
+                const/page = "/docs/guide/low-level-apis/"
+                a href=page aria-current=ariaCurrent(page) -- Low-Level APIs
+              li
+                const/page = "/docs/guide/publishing-components/"
+                a href=page aria-current=ariaCurrent(page) -- Publishing Components
+              li
+                const/page = "/docs/guide/library-integration/"
+                a href=page aria-current=ariaCurrent(page) -- Library Integration
+              li
+                const/page = "/docs/guide/csp/"
+                a href=page aria-current=ariaCurrent(page) -- Content-Security Policy
+          li
+            strong -- Explanation
+            ul
+              li
+                const/page = "/docs/explanation/why-marko/"
+                a href=page aria-current=ariaCurrent(page) -- Why Marko?
+              li
+                const/page = "/docs/explanation/streaming/"
+                a href=page aria-current=ariaCurrent(page) -- Streaming
+              li
+                const/page = "/docs/explanation/forms/"
+                a href=page aria-current=ariaCurrent(page) -- Working With Forms
+              li
+                const/page = "/docs/explanation/nested-reactivity/"
+                a href=page aria-current=ariaCurrent(page) -- Nested Reactivity
+              li
+                const/page = "/docs/explanation/optimizing-performance/"
+                a href=page aria-current=ariaCurrent(page) -- Optimizing Performance
+          li
+            strong -- Reference
+            ul
+              li
+                const/page = "/docs/reference/language/"
+                a href=page aria-current=ariaCurrent(page) -- Language
+              li
+                const/page = "/docs/reference/custom-tag/"
+                a href=page aria-current=ariaCurrent(page) -- Custom Tags
+              li
+                const/page = "/docs/reference/reactivity/"
+                a href=page aria-current=ariaCurrent(page) -- Reactivity
+              li
+                const/page = "/docs/reference/core-tag/"
+                a href=page aria-current=ariaCurrent(page) -- Core Tags
+              li
+                const/page = "/docs/reference/native-tag/"
+                a href=page aria-current=ariaCurrent(page) -- Native Tags
+              li
+                const/page = "/docs/reference/concise-syntax/"
+                a href=page aria-current=ariaCurrent(page) -- Concise Syntax
+              li
+                const/page = "/docs/reference/template/"
+                a href=page aria-current=ariaCurrent(page) -- Template API
+              li
+                const/page = "/docs/reference/typescript/"
+                a href=page aria-current=ariaCurrent(page) -- TypeScript
+        .${styles.siteNavControls}
+          id/modeId
+          strong id=modeId -- Syntax Mode
+          app-switch aria-labelledby=modeId checked:=isConciseMode off="HTML" on="Concise"
+
+      id/tocLabelId
+      nav.${styles.pageNav} aria-labelledby=tocLabelId
+        strong#${tocLabelId} -- On this Page
+        ul
+          toc-tree=headings
+
+script --
+  const vp = window.visualViewport!;
+  let top = 0;
+  let prevY = window.scrollY;
+  let prevUp: boolean | undefined;
+  window.addEventListener("scroll", check, { passive: true });
+  function check() {
+    const y = vp.pageTop;
+    const up = y < prevY;
+    if (prevUp !== up) {
+      top = up
+        ? Math.max(top, y - $header().offsetHeight)
+        : Math.min(top, y);
+      document.body.classList.toggle(styles.scrollUp, up);
+      document.body.style.setProperty("--scroll-top", `${up ? top + vp.height : top}px`);
+    }
+
+    prevY = y;
+    prevUp = up;
+  }

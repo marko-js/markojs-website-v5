@@ -4,135 +4,26 @@ export interface Input {
   content: Marko.Body;
 }
 
-local-let/syntaxMode="html" key="syntax-mode"
-let/isConciseMode=syntaxMode === "concise" valueChange(v) { syntaxMode = v ? "concise" : "html" }
-const/ariaCurrent(page: string) {
-  if ($global.url.pathname === page) {
-    return "true";
-  }
-}
-
-.${styles.doc}
-  nav.${styles.docNav}
-    ul
-      li
-        strong -- Tutorials
-        ul
+main
+  ${input.content}
+  hr
+  section#${styles.contributors}
+    h2
+      -- Contributors
+      a href="#contributors" -- #
+    p -- Helpful? You can thank these awesome people! You can also edit this doc if you see any issues or want to improve it.
+    await|contributors|=$global.contributors
+      ul
+        for|contributor| of=contributors
           li
-            const/page = "/docs/tutorial/getting-started/"
-            a href=page aria-current=ariaCurrent(page) -- Getting Started
-          li
-            const/page = "/docs/tutorial/fundamentals/"
-            a href=page aria-current=ariaCurrent(page) -- Fundamentals
-          li
-            const/page = "/docs/tutorial/app-from-scratch/"
-            a href=page aria-current=ariaCurrent(page) -- App from Scratch
-          li
-            const/page = "/docs/tutorial/components-and-reactivity/"
-            a href=page aria-current=ariaCurrent(page) -- Components and Reactivity
-          li
-            const/page = "/docs/tutorial/experienced-developers/"
-            a href=page aria-current=ariaCurrent(page) -- Experienced Developers
-      li
-        strong -- Guides
-        ul
-          li
-            const/page = "/docs/guide/existing-project/"
-            a href=page aria-current=ariaCurrent(page) -- Existing Project
-          li
-            const/page = "/docs/guide/styling/"
-            a href=page aria-current=ariaCurrent(page) -- Styling
-          li
-            const/page = "/docs/guide/low-level-apis/"
-            a href=page aria-current=ariaCurrent(page) -- Low-Level APIs
-          li
-            const/page = "/docs/guide/publishing-components/"
-            a href=page aria-current=ariaCurrent(page) -- Publishing Components
-          li
-            const/page = "/docs/guide/library-integration/"
-            a href=page aria-current=ariaCurrent(page) -- Library Integration
-          li
-            const/page = "/docs/guide/csp/"
-            a href=page aria-current=ariaCurrent(page) -- Content-Security Policy
-      li
-        strong -- Explanation
-        ul
-          li
-            const/page = "/docs/explanation/why-marko/"
-            a href=page aria-current=ariaCurrent(page) -- Why Marko?
-          li
-            const/page = "/docs/explanation/streaming/"
-            a href=page aria-current=ariaCurrent(page) -- Streaming
-          li
-            const/page = "/docs/explanation/forms/"
-            a href=page aria-current=ariaCurrent(page) -- Working With Forms
-          li
-            const/page = "/docs/explanation/nested-reactivity/"
-            a href=page aria-current=ariaCurrent(page) -- Nested Reactivity
-          li
-            const/page = "/docs/explanation/optimizing-performance/"
-            a href=page aria-current=ariaCurrent(page) -- Optimizing Performance
-      li
-        strong -- Reference
-        ul
-          li
-            const/page = "/docs/reference/language/"
-            a href=page aria-current=ariaCurrent(page) -- Language
-          li
-            const/page = "/docs/reference/custom-tag/"
-            a href=page aria-current=ariaCurrent(page) -- Custom Tags
-          li
-            const/page = "/docs/reference/reactivity/"
-            a href=page aria-current=ariaCurrent(page) -- Reactivity
-          li
-            const/page = "/docs/reference/core-tag/"
-            a href=page aria-current=ariaCurrent(page) -- Core Tags
-          li
-            const/page = "/docs/reference/native-tag/"
-            a href=page aria-current=ariaCurrent(page) -- Native Tags
-          li
-            const/page = "/docs/reference/concise-syntax/"
-            a href=page aria-current=ariaCurrent(page) -- Concise Syntax
-          li
-            const/page = "/docs/reference/template/"
-            a href=page aria-current=ariaCurrent(page) -- Template API
-          li
-            const/page = "/docs/reference/typescript/"
-            a href=page aria-current=ariaCurrent(page) -- TypeScript
-    .${styles.docNavControls}
-      id/modeId
-      strong id=modeId -- Syntax Mode
-      switch aria-labelledby=modeId checked:=isConciseMode off="HTML" on="Concise"
-
-
-  main data-concise-mode=isConciseMode
-    ${input.content}
-
-    hr
-
-    section#${styles.contributors}
-      h2
-        -- Contributors
-        a href="#contributors" -- #
-      p -- Helpful? You can thank these awesome people! You can also edit this doc if you see any issues or want to improve it.
-      await|contributors|=$global.contributors
-        ul
-          for|contributor| of=contributors
-            li
-              a href=contributor.url
-                img src=contributor.photo alt=""
-                -- ${contributor.username}
-          li
-            a href=`https://github.com/marko-js/website/blob/master/src/routes/docs/${$global.url.pathname.substring(
-                "/docs/".length,
-                $global.url.pathname.length - 1,
-              )}.md`
-              div
-                fa-icon=faPlus
-              -- You?
-
-  id/tocLabelId
-  nav.${styles.tocNav} aria-labelledby=tocLabelId
-    strong#${tocLabelId} -- On this Page
-    ul
-      toc-tree=$global.meta.headings[0].children
+            a href=contributor.url
+              img src=contributor.photo alt=""
+              -- ${contributor.username}
+        li
+          a href=`https://github.com/marko-js/website/blob/master/src/routes/docs/${$global.url.pathname.substring(
+              "/docs/".length,
+              $global.url.pathname.length - 1,
+            )}.md`
+            div
+              fa-icon=faPlus
+            -- You?
