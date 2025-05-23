@@ -126,11 +126,6 @@ p {
   filter: contrast(200%);
 }
 
-html,
-body {
-  min-height: 100%;
-}
-
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);
@@ -203,42 +198,28 @@ code {
   }
 }
 
-.grid {
-  display: grid;
-  grid-template-areas:
-    "top"
-    "main";
-  grid-template-rows: var(--header-height) auto;
-  grid-template-columns: minmax(0, 1fr);
-  padding: 0 1rem;
-  column-gap: 1.5rem;
-
-  @media (min-width: 48rem) {
-    grid-template-areas:
-      "top top"
-      "left main";
-    grid-template-columns: 12rem minmax(0, 1fr);
-  }
-
-  @media (min-width: 64rem) {
-    grid-template-areas:
-      "top top top"
-      "left main right";
-    column-gap: 2.5rem;
-    padding: 0 2.5rem;
-    grid-template-columns: 12rem minmax(0, 1fr) 12rem;
-  }
-}
-
-.root {
+#root {
   position: relative;
-  max-width: 90rem;
+  display: flex;
+  flex-direction: column;
   margin: 0 auto;
-  composes: grid;
+  padding: 0 1rem;
+  max-width: 90rem;
+  min-height: 100vh;
+  @container style(--stick-top) {
+    timeline-scope: --stick-subject;
+    &::after {
+      content: "";
+      position: absolute;
+      top: var(--stick-top, 0px);
+      height: $header-height;
+      view-timeline: --stick-subject block;
+    }
+  }
 }
 
-main {
-  padding-top: 2.5rem;
-  grid-column: 1 / -1;
-  grid-row: 2 / 3;
+#main {
+  display: flex;
+  column-gap: 1.5rem;
+  flex: 1 0 auto;
 }

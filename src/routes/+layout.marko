@@ -14,13 +14,15 @@ html lang="en"
     link rel="preconnect" href="https://GB0QQV5RQM-dsn.algolia.net" crossorigin
     link rel="preconnect" href="https://fonts.googleapis.com"
     link rel="preconnect" href="https://fonts.gstatic.com" crossorigin
-    link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500"
+    link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap"
 
   body
     themed-svg-gradients
-    .${styles.root}
+    #${styles.root}
       app-header
-      ${input.content}
+      main#${styles.main}
+        ${input.content}
+      app-footer
 
     script --
       const selectionColors = ["red", "yellow", "green", "blue"];

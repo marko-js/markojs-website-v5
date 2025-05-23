@@ -1,3 +1,4 @@
+@use "../../vars" as *;
 @mixin section-colors($color, $dark: false) {
   --section-color-dark: var(--color-#{$color}-dark);
   --section-color-light: var(--color-#{$color}-light);
@@ -32,29 +33,151 @@
   }
 }
 
-main {
-  grid-area: main;
-  line-height: 1.5;
-
-  > section {
-    @include section-colors("red");
-
-    $i: 1;
-    @each $color in "blue", "yellow", "green" {
-      & > section:nth-of-type(4n + #{$i}) {
-        @include section-colors($color);
+#left,
+#right {
+  position: sticky;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 12rem;
+  top: 0;
+  max-height: 100dvh;
+  display: none;
+  @container style(--stick-top) {
+    animation: sticky linear both;
+    animation-timeline: --stick-subject;
+    animation-range: exit 0% exit 100%;
+    margin-top: calc(-1 * $header-height);
+    transform-origin: top;
+    transform: translateY($header-height) scaleY(var(--stick-scale));
+    will-change: transform;
+    @keyframes sticky {
+      to {
+        transform: translateY(0) scaleY(1);
       }
-      $i: $i + 1;
+    }
+
+    > * {
+      animation: sticky linear both;
+      animation-timeline: --stick-subject;
+      animation-range: exit 0% exit 100%;
+      transform-origin: top;
+      transform: scaleY(calc(1 / var(--stick-scale)));
+      will-change: transform;
+    }
+  }
+}
+#left {
+  @media (min-width: 48rem) {
+    display: flex;
+  }
+}
+#right {
+  @media (min-width: 64rem) {
+    display: flex;
+  }
+}
+
+#siteNav,
+#pageNav {
+  padding: 2.5rem 0;
+  font-size: 0.9rem;
+  flex: 1;
+  overflow-y: auto;
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    list-style-type: none;
+  }
+
+  li {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  a {
+    color: var(--color-foreground);
+    font-weight: 400;
+    line-height: 1.6;
+    text-decoration-thickness: 2px;
+    text-underline-offset: calc(25% - 2px);
+
+    &[aria-current="true"] {
+      padding-left: 0.5rem;
+      border-left: 2px solid var(--color-red-light);
     }
   }
 
-  section > *:last-child {
-    margin-bottom: 0;
+  strong {
+    font-weight: 500;
+    text-transform: uppercase;
+    color: var(--color-red-light);
+  }
+}
+
+#siteNav {
+  > ul {
+    gap: 1rem;
+  }
+}
+
+#pageNav {
+  & ul ul {
+    padding-left: 1rem;
+  }
+}
+
+#controls {
+  display: flex;
+  gap: 0.5rem;
+  flex-direction: column;
+  padding: 1.5rem 0;
+  margin-top: auto;
+  background-color: var(--color-background);
+  &::before {
+    content: "";
+    z-index: -1;
+    pointer-events: none;
+    position: absolute;
+    top: -2rem;
+    left: 0;
+    width: 100%;
+    height: 2rem;
+    background: linear-gradient(to top, var(--color-background), transparent);
+  }
+  strong {
+    color: var(--color-foreground);
+    font-weight: 700;
+  }
+}
+
+#article {
+  flex: 1;
+  padding: 2.5rem 0;
+  line-height: 1.5;
+
+  @include section-colors("red");
+
+  $i: 1;
+  @each $color in "blue", "yellow", "green" {
+    & > section:nth-of-type(4n + #{$i}) {
+      @include section-colors($color);
+    }
+    $i: $i + 1;
+  }
+
+  section {
+    scroll-margin-top: $header-height;
+    & > *:last-child {
+      margin-bottom: 0;
+    }
   }
 
   h1 {
     color: var(--color-red-light);
     margin-bottom: 1.3rem;
+    line-height: 100%;
   }
 
   h2,
@@ -120,129 +243,65 @@ main {
   }
 
   hr {
-    border: 1px solid var(--section-color-dim-alt);
+    border: 1px solid var(--section-color-dim);
     margin: 3rem 0;
   }
 }
 
-:global(.marko-codespan__tag) {
-  &::before {
-    content: "<";
-  }
+#contributors {
+  ul {
+    display: flex;
+    list-style-type: none;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 0;
 
-  &::after {
-    content: ">";
-  }
-}
+    & > li > a {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-decoration: none;
+      color: var(--color-foreground);
+      font-size: x-small;
 
-:global(.marko-codespan__attribute) {
-  &::after {
-    content: "=";
-  }
-}
+      & > :first-child {
+        width: 5rem;
+        height: 5rem;
+        border-radius: 50%;
+        border: 2px solid var(--section-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
-/* Alerts */
+        svg {
+          height: 2rem;
 
-:global(.markdown-alert) {
-  position: relative;
-  margin: 2rem 0;
-  border: 1px solid var(--section-color);
-  background-color: var(--color-background);
-  padding: 1rem;
-  padding-bottom: 0;
-  border-radius: 1rem;
-  
-  &::before {
-    position: absolute;
-    z-index: -1;
-    inset: 0;
-    transform-origin: bottom;
-    transform: scale(0.9, 0.7);
-    content: "";
-    background-color: var(--section-color-dim-alt);
-    filter: blur(50px);
-    opacity: 0.2;
-  }
-  
-  @media (min-width: 48rem) {
-    padding: 1.5rem;
-    padding-bottom: 1rem;
-  }
-
-  pre,
-  code {
-    margin: 1.3rem 0;
-  }
-}
-
-:global(.markdown-alert-title) {
-  color: var(--section-color);
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  text-transform: uppercase;
-  font-weight: 700;
-  margin-bottom: 0.7rem;
-
-  svg {
-    fill: currentColor;
-  }
-}
-
-@each $name,
-  $color
-    in (
-      "caution": "red",
-      "note": "blue",
-      "tip": "yellow",
-      "important": "green",
-      "warning": "gray"
-    )
-{
-  :global(.markdown-alert-#{$name}) {
-    @include section-colors($color, true);
-  }
-}
-
-/* Contributors */
-
-#contributors ul {
-  display: flex;
-  list-style-type: none;
-  flex-wrap: wrap;
-  gap: 1rem;
-  padding: 0;
-}
-
-#contributors ul > li > a {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-decoration: none;
-  color: var(--color-foreground);
-  font-size: x-small;
-}
-
-#contributors ul > li > a > :first-child {
-  width: 5rem;
-  height: 5rem;
-  border-radius: 50%;
-  border: 2px solid var(--section-color);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  svg {
-    height: 2rem;
-
-    path {
-      fill: var(--section-color);
+          path {
+            fill: var(--section-color);
+          }
+        }
+      }
     }
   }
 }
 
-:global(#syntax-legend) pre {
+:global {
+  .marko-codespan__tag {
+    &::before {
+      content: "<";
+    }
+
+    &::after {
+      content: ">";
+    }
+  }
+
+  .marko-codespan__attribute::after {
+    content: "=";
+  }
+
+  #syntax-legend pre {
     border: none;
     font-size: 1.3rem;
     background-color: var(--section-color-dim);
@@ -250,4 +309,66 @@ main {
     padding: 1.5rem;
     width: 100%;
     max-width: 100% !important;
+  }
+
+  .markdown-alert {
+    position: relative;
+    margin: 2rem 0;
+    border: 1px solid var(--section-color);
+    background-color: var(--color-background);
+    padding: 1rem;
+    padding-bottom: 0;
+    border-radius: 1rem;
+
+    &::before {
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+      transform-origin: bottom;
+      transform: scale(0.9, 0.7);
+      content: "";
+      background-color: var(--section-color-dim-alt);
+      filter: blur(50px);
+      opacity: 0.2;
+    }
+
+    @media (min-width: 48rem) {
+      padding: 1.5rem;
+      padding-bottom: 1rem;
+    }
+
+    pre,
+    code {
+      margin: 1.3rem 0;
+    }
+  }
+
+  .markdown-alert-title {
+    color: var(--section-color);
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 0.7rem;
+
+    svg {
+      fill: currentColor;
+    }
+  }
+
+  @each $name,
+    $color
+      in (
+        "caution": "red",
+        "note": "blue",
+        "tip": "yellow",
+        "important": "green",
+        "warning": "gray"
+      )
+  {
+    .markdown-alert-#{$name} {
+      @include section-colors($color, true);
+    }
+  }
 }

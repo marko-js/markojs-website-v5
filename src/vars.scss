@@ -29,3 +29,5 @@ $color-red-dark-shade: color.mix($color-red-dark, $color-black, $weight: $color-
 $color-red-dark-tint: color.mix($color-red-dark, $color-white, $weight: $color-tint-amount);
 $color-red-light-shade: color.mix($color-red-light, $color-black, $weight: $color-shade-amount);
 $color-red-light-tint: color.mix($color-red-light, $color-white, $weight: $color-tint-amount);
+
+$header-height: calc(48px + 4rem);

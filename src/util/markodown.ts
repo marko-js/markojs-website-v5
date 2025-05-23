@@ -44,7 +44,10 @@ export default function markodownPlugin(): PluginOption {
           );
           await fs.writeFile(
             path.join(docsPages, file.replace(".md", "+meta.json")),
-            `{ "pageTitle": "${headings[0].title}", "headings": ${JSON.stringify(headings)} }`,
+            JSON.stringify({
+              pageTitle: headings[0].title,
+              headings: headings[0].children,
+            }),
           );
         }),
       );
@@ -55,30 +58,34 @@ export default function markodownPlugin(): PluginOption {
 async function mdToMarko(source: string) {
   const headings: HeadingList = [];
   const markoCode = await new Marked()
-    .use(markedAlert({
-      variants: [
-        {
-          type: "note",
-          icon: "",
-        },
-        {
-          type: "tip",
-          icon: "",
-        },
-        {
-          type: "important",
-          icon: "",
-        },
-        {
-          type: "warning",
-          icon: "",
-        },
-        {
-          type: "caution",
-          icon: "",
-        },
-      ]
-    }), headingSections(headings), markoDocs())
+    .use(
+      markedAlert({
+        variants: [
+          {
+            type: "note",
+            icon: "",
+          },
+          {
+            type: "tip",
+            icon: "",
+          },
+          {
+            type: "important",
+            icon: "",
+          },
+          {
+            type: "warning",
+            icon: "",
+          },
+          {
+            type: "caution",
+            icon: "",
+          },
+        ],
+      }),
+      headingSections(headings),
+      markoDocs(),
+    )
     .parse(
       // remove zero-width spaces (recommended from marked docs)
       source.replace(/^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/, ""),
@@ -222,14 +229,14 @@ function headingSections(headings: HeadingList): MarkedExtension {
         }
 
         const slug = githubSlugger.slug(text);
-        let headingHTML = this.parser.parseInline(tokens);
-        if (depth > 1) {
-          headingHTML = `<a href="#${slug}">${headingHTML}</a>`
-        }
-
-        result += `<section id="${slug}"><h${depth}>${headingHTML}</h${depth}>`;
-
+        const headingHTML = this.parser.parseInline(tokens);
         lastSectionDepth = depth;
+
+        if (depth === 1) {
+          result += `<h1 id="${slug}">${headingHTML}</h1>`;
+        } else {
+          result += `<section id="${slug}"><h${depth}><a href="#${slug}">${headingHTML}</a></h${depth}>`;
+        }
 
         let headingList = headings;
         for (let i = 1; i < depth; i++) {
@@ -249,7 +256,9 @@ function headingSections(headings: HeadingList): MarkedExtension {
       {
         name: "close-sections",
         renderer() {
-          return "</section>".repeat(lastSectionDepth);
+          if (lastSectionDepth > 1) {
+            return "</section>".repeat(lastSectionDepth - 1);
+          }
         },
       },
     ],

@@ -1,16 +1,115 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import headerStyles from "../../tags/app-header/app-header.style.module.scss";
+import footerStyles from "../../tags/app-footer/app-footer.style.module.scss";
 import styles from "./+layout.style.module.scss";
+import type { HeadingList } from "../../types";
 export interface Input {
   content: Marko.Body;
 }
 
-main
+local-let/syntaxMode="html" key="syntax-mode"
+let/isConciseMode=syntaxMode === "concise" valueChange(v) { syntaxMode = v ? "concise" : "html" }
+const/ariaCurrent = (page: string) => $global.url.pathname === page && "true";
+script -- document.body.classList.toggle("concise-mode", isConciseMode);
+
+#${styles.left}
+  nav#${styles.siteNav}
+    ul
+      li
+        strong -- Tutorials
+        ul
+          li
+            const/page = "/docs/tutorial/getting-started/"
+            a href=page aria-current=ariaCurrent(page) -- Getting Started
+          li
+            const/page = "/docs/tutorial/fundamentals/"
+            a href=page aria-current=ariaCurrent(page) -- Fundamentals
+          li
+            const/page = "/docs/tutorial/app-from-scratch/"
+            a href=page aria-current=ariaCurrent(page) -- App from Scratch
+          li
+            const/page = "/docs/tutorial/components-and-reactivity/"
+            a href=page aria-current=ariaCurrent(page) -- Components and Reactivity
+          li
+            const/page = "/docs/tutorial/experienced-developers/"
+            a href=page aria-current=ariaCurrent(page) -- Experienced Developers
+      li
+        strong -- Guides
+        ul
+          li
+            const/page = "/docs/guide/existing-project/"
+            a href=page aria-current=ariaCurrent(page) -- Existing Project
+          li
+            const/page = "/docs/guide/styling/"
+            a href=page aria-current=ariaCurrent(page) -- Styling
+          li
+            const/page = "/docs/guide/low-level-apis/"
+            a href=page aria-current=ariaCurrent(page) -- Low-Level APIs
+          li
+            const/page = "/docs/guide/publishing-components/"
+            a href=page aria-current=ariaCurrent(page) -- Publishing Components
+          li
+            const/page = "/docs/guide/library-integration/"
+            a href=page aria-current=ariaCurrent(page) -- Library Integration
+          li
+            const/page = "/docs/guide/csp/"
+            a href=page aria-current=ariaCurrent(page) -- Content-Security Policy
+      li
+        strong -- Explanation
+        ul
+          li
+            const/page = "/docs/explanation/why-marko/"
+            a href=page aria-current=ariaCurrent(page) -- Why Marko?
+          li
+            const/page = "/docs/explanation/streaming/"
+            a href=page aria-current=ariaCurrent(page) -- Streaming
+          li
+            const/page = "/docs/explanation/forms/"
+            a href=page aria-current=ariaCurrent(page) -- Working With Forms
+          li
+            const/page = "/docs/explanation/nested-reactivity/"
+            a href=page aria-current=ariaCurrent(page) -- Nested Reactivity
+          li
+            const/page = "/docs/explanation/optimizing-performance/"
+            a href=page aria-current=ariaCurrent(page) -- Optimizing Performance
+      li
+        strong -- Reference
+        ul
+          li
+            const/page = "/docs/reference/language/"
+            a href=page aria-current=ariaCurrent(page) -- Language
+          li
+            const/page = "/docs/reference/custom-tag/"
+            a href=page aria-current=ariaCurrent(page) -- Custom Tags
+          li
+            const/page = "/docs/reference/reactivity/"
+            a href=page aria-current=ariaCurrent(page) -- Reactivity
+          li
+            const/page = "/docs/reference/core-tag/"
+            a href=page aria-current=ariaCurrent(page) -- Core Tags
+          li
+            const/page = "/docs/reference/native-tag/"
+            a href=page aria-current=ariaCurrent(page) -- Native Tags
+          li
+            const/page = "/docs/reference/concise-syntax/"
+            a href=page aria-current=ariaCurrent(page) -- Concise Syntax
+          li
+            const/page = "/docs/reference/template/"
+            a href=page aria-current=ariaCurrent(page) -- Template API
+          li
+            const/page = "/docs/reference/typescript/"
+            a href=page aria-current=ariaCurrent(page) -- TypeScript
+  #${styles.controls}
+    id/modeId
+    strong id=modeId -- Syntax Mode
+    app-switch aria-labelledby=modeId checked:=isConciseMode off="HTML" on="Concise"
+
+article#${styles.article}
   ${input.content}
   hr
   section#${styles.contributors}
-    h2
-      -- Contributors
-      a href="#contributors" -- #
+    h2 id="contributors"
+      a href="#contributors" -- Contributors
     p -- Helpful? You can thank these awesome people! You can also edit this doc if you see any issues or want to improve it.
     await|contributors|=$global.contributors
       ul
@@ -27,3 +126,46 @@ main
             div
               fa-icon=faPlus
             -- You?
+
+define/TocTree|input: { headings: HeadingList }|
+  ul
+    for|heading| of=input.headings
+      li
+        a href=`#${heading.id}` -- ${heading.title}
+      if=heading.children.length
+        TocTree headings=heading.children
+id/tocLabelId
+#${styles.right}
+  nav#${styles.pageNav} aria-labelledby=tocLabelId
+    strong#${tocLabelId} -- On this Page
+    TocTree headings=($global.meta as any).headings
+
+static declare const ViewTimeline: unknown;
+script --
+  if (typeof ViewTimeline !== "undefined") {
+    const vp = visualViewport!;
+    const html = document.documentElement;
+    const header = document.getElementById(headerStyles.header)!;
+    const footer = document.getElementById(footerStyles.footer)!;
+    let up: boolean | undefined;
+    let top: number | undefined;
+    let stick = 0;
+    window.addEventListener("scroll", setTop, { passive: true });
+    window.addEventListener("resize", setScale, { passive: true });
+    setScale();
+    function setTop() {
+      const prevTop = top;
+      top = vp.pageTop;
+      if (prevTop == null) return;
+      const isUp = top < prevTop;
+      if (up === isUp) return;
+      if (up == null && !isUp) return;
+      up = isUp;
+      stick = up ? Math.max(stick, top - header.offsetHeight) : Math.min(stick, top);
+      stick = Math.min(stick, html.scrollHeight - vp.height - header.offsetHeight - footer.offsetHeight);
+      html.style.setProperty("--stick-top", `${stick}px`);
+    }
+    function setScale() {
+      html.style.setProperty("--stick-scale", `${1 - header.offsetHeight / vp.height}`);
+    }
+  }

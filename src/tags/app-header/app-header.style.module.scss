@@ -1,45 +1,17 @@
-.stickyWrap {
+@use "../../vars" as *;
+
+#header {
   z-index: 1;
-  position: absolute;
-  top: var(--scroll-top, 0);
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  pointer-events: none;
-
-  .scrollUp & {
-    top: 0;
-    height: var(--scroll-top);
-  }
-}
-
-.stickyContent {
-  position: sticky;
-  top: calc(-1 * var(--header-height));
-  height: 100vh;
-  composes: grid from "../../routes/+layout.style.module.scss";
-  .scrollUp & {
-    top: 0;
-    bottom: 0;
-  }
-  & > * {
-    pointer-events: auto;
-  }
-}
-
-.header {
   position: relative;
-  grid-area: top;
   display: flex;
-  height: 100%;
-  gap: 2rem;
+  height: $header-height;
   align-items: center;
-  font-weight: medium;
+  gap: 2rem;
+  font-weight: 500;
   --section-color: var(--color-foreground);
-
   &::before {
     z-index: -1;
+    pointer-events: none;
     position: absolute;
     content: "";
     left: 50%;
@@ -50,7 +22,24 @@
     background: linear-gradient(var(--color-background) 90%, transparent);
   }
 
-  > :not(.logo, .docsearch) {
+  @container style(--stick-top) {
+    & {
+      position: sticky;
+      top: 0;
+      animation: sticky linear both;
+      animation-timeline: --stick-subject;
+      animation-range: exit 0% exit 100%;
+      transform: translateY(0);
+      will-change: transform;
+      @keyframes sticky {
+        to {
+          transform: translateY(-100%);
+        }
+      }
+    }
+  }
+
+  > :not(#logo, #docsearch) {
     display: none;
     @media (min-width: 64rem) {
       display: block;
@@ -60,94 +49,17 @@
   a {
     text-decoration: none;
     &:hover {
+      text-decoration-line: underline;
       text-decoration-thickness: 2px;
     }
   }
 }
 
-.logo {
+#logo {
   margin-right: auto;
 }
 
-.siteNav, .pageNav {
-  flex-direction: column;
-  font-size: 0.9rem;
-  display: none;
-  padding: 2.5rem 0;
-
-  ul {
-    display: flex;
-    flex-direction: column;
-    list-style-type: none;
-  }
-
-  li {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  a {
-    color: var(--color-foreground);
-    font-weight: 400;
-    line-height: 1.6;
-    text-decoration-thickness: 2px;
-    text-underline-offset: calc(25% - 2px);
-
-    &[aria-current="true"] {
-      padding-left: 0.5rem;
-      border-left: 2px solid var(--color-red-light);
-    }
-  }
-
-  strong {
-    font-weight: 500;
-    text-transform: uppercase;
-    color: var(--color-red-light);
-  }
-}
-
-.siteNav {
-  grid-area: left;
-  flex-direction: column;
-  display: none;
-  gap: 1rem;
-  @media (min-width: 48rem) {
-    display: flex;
-  }
-
-  > ul {
-    gap: 1rem;
-  }
-}
-.siteNavControls {
-  display: flex;
-  gap: 0.5rem;
-  flex-direction: column;
-  padding: 1rem 0;
-  margin-top: auto;
-  background-color: var(--color-background);
-
-  strong {
-    color: var(--color-foreground);
-    font-weight: 700;
-  }
-}
-
-.pageNav {
-  grid-area: right;
-  flex-direction: column;
-  display: none;
-  @media (min-width: 64rem) {
-    display: flex;
-  }
-
-  & ul ul {
-    padding-left: 1rem;
-  }
-}
-
-.docsearch {
+#docsearch {
   width: 2.5rem;
   @media (min-width: 64rem) {
     width: 12.75rem;
@@ -236,8 +148,6 @@
 }
 
 :root {
-  --header-height: calc(48px + 4rem);
-
   // docsearch
   --docsearch-primary-color: var(--color-red-alt);
   --docsearch-text-color: currentColor;
