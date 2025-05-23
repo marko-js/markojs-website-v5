@@ -7,7 +7,7 @@ const/{ first, second }=input
 
 let/editorSize=0.5
 
-match-media/isVertical="(max-aspect-ratio: 1/1)"
+let-match-media/isVertical="(max-aspect-ratio: 1/1)"
 
 div.panes/container
   div ...first style=[first.style, { "flex-grow": editorSize }]

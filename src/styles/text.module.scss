@@ -1,4 +1,4 @@
-.gradient {
+.red, .blue, .green, .yellow {
   background-clip: text;
   color: transparent;
   background-image: linear-gradient(
@@ -9,22 +9,18 @@
 }
 
 .red {
-  composes: gradient;
   --text-gradient-start: var(--color-red);
   --text-gradient-end: var(--color-red-alt);
 }
 .blue {
-  composes: gradient;
   --text-gradient-start: var(--color-blue);
   --text-gradient-end: var(--color-blue-alt);
 }
 .green {
-  composes: gradient;
   --text-gradient-start: var(--color-green);
   --text-gradient-end: var(--color-green-alt);
 }
 .yellow {
-  composes: gradient;
   --text-gradient-start: var(--color-yellow);
   --text-gradient-end: var(--color-yellow-alt);
 }

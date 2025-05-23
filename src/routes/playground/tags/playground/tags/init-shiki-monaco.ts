@@ -3,7 +3,7 @@ import * as monaco from "monaco-editor-core";
 import { createHighlighterCore } from "shiki/core";
 import { createOnigurumaEngine } from "shiki/engine/oniguruma";
 
-import { markoDark, markoLight } from "../../code-block/theme";
+import { markoDark, markoLight } from "app/util/syntax-highlight-theme";
 
 import markoLang from "@shikijs/langs/marko";
 import javascriptLang from "@shikijs/langs/javascript";

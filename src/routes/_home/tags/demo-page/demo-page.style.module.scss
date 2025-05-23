@@ -1,0 +1,159 @@
+.wrapper {
+  width: 12rem;
+  height: 15rem;
+  position: relative;
+  pointer-events: none;
+  line-height: 1.6;
+  color: black;
+  border-radius: 1rem;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #fff;
+  width: calc(12rem * 8);
+  height: calc(15rem * 8);
+  border-radius: 8rem;
+  font-size: 3rem;
+  transform-origin: top left;
+  transform: scale(0.125);
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+}
+.progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 0.5em;
+  background: linear-gradient(90deg, #25dbd2, #33d5f4, #039fea);
+  transform-origin: 0 0;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1em;
+}
+.logo {
+  font-size: 2em;
+  font-weight: 800;
+}
+.cart {
+  background: #1d1924;
+  color: #fff;
+  padding: 0.5em 1em;
+}
+.product {
+  display: flex;
+  justify-content: space-between;
+  padding: 1em;
+}
+.image {
+  flex: 1;
+}
+.description {
+  flex: 1;
+
+  &Title {
+    font-size: 1.2em;
+    font-weight: 600;
+    display: block;
+  }
+  &Price {
+    font-size: 1.2em;
+    font-weight: 600;
+    display: block;
+  }
+  &Button {
+    background: #1d1924;
+    color: #fff;
+    padding: 0.5em 1em;
+    display: inline-block;
+    margin: 0.25em 0;
+  }
+  &Text {
+    font-size: 0.8em;
+    display: block;
+  }
+}
+
+.review {
+  padding: 1em;
+}
+.rating {
+  color: #fec703;
+}
+.footer {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 1em;
+  background: #f4f2f4;
+}
+.footer > div {
+  font-size: 0.8em;
+}
+.loading {
+  opacity: 0;
+}
+.lowRes {
+  filter: blur(1em) grayscale(0.6);
+  opacity: 0.3;
+}
+.hydratePartial .hydrated,
+.hydrateAll div {
+  animation-name: pulse-red;
+  animation-iteration-count: infinite;
+  animation-duration: 2s;
+}
+
+@for $i from 1 through 17 {
+  .delay#{$i} {
+    animation-delay: #{100ms * $i};
+  }
+}
+
+@media (prefers-reduced-motion) {
+  .hydratePartial .hydrated,
+  .hydrateAll div {
+    animation: none;
+    box-shadow: 0 0 0 15px rgba(255, 50, 82, 0.7);
+  }
+}
+
+@keyframes pulse-red {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 50, 82, 0.9);
+  }
+
+  100% {
+    box-shadow: 0 0 0px 90px rgba(255, 50, 82, 0);
+  }
+}
+
+.title {
+  position: absolute;
+  bottom: -1em;
+  left: 50%;
+  translate: -50% 0;
+  height: 2em;
+  width: 8em;
+  border-radius: 1em;
+  background: #fff;
+  box-shadow:
+    0 0 0.75em #000,
+    0 0 0.75em #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title > img {
+  height: 50%;
+}
+
+.titleMarko {
+  border: 2px solid var(--color-section);
+}

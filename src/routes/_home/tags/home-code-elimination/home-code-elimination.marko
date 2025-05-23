@@ -1,0 +1,28 @@
+import text from "app/styles/text.module.scss";
+import figure from "app/routes/_home/styles/section.module.scss";
+import styles from "./home-code-elimination.style.module.scss";
+
+let/progress=0
+section.${styles.section}
+  article
+    h2.${text.yellow} -- Progressive Rendering
+    -- Marko only sends the code for interactive parts to the browser. Its compiler automatically detects which components only need to be rendered on the server. This means less to download and less to execute. Your users can enjoy top tier performance regardless of their devices or networks.
+    a.${figure.cta} href="/docs/explanation/optimizing-performance" -- Learn More
+  figure.${figure.background}
+    .demo-pages
+      demo-page [
+        label="a visual indication that every component on a webpage is recalculated with JavaScript"
+        title="full-page"
+        progress=1
+        hydrateAll
+      ]
+      demo-page [
+        label="a visual indication that only interactive parts of a webpage are recalculated with JavaScript"
+        title="targeted"
+        progress=1
+        hydratePartial
+      ]
+
+script --
+  const id = setTimeout(() => (progress = (progress + 0.01) % 1.5), 20);
+  $signal.onabort = () => clearTimeout(id);

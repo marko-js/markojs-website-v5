@@ -1,0 +1,5 @@
+.section {
+  composes: figureSection from "app/routes/_home/styles/section.module.scss";
+  --color-section: var(--color-yellow);
+  --color-section-alt: var(--color-yellow-alt);
+}

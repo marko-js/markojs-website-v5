@@ -1,3 +1,4 @@
+import styles from "./demo-page.style.module.scss";
 export interface Input {
   progress: number;
   buffered?: boolean;
@@ -8,336 +9,59 @@ export interface Input {
   title: string;
 }
 
-<style>
-  .demo-page-wrapper {
-    width: 12rem;
-    height: 15rem;
-    position: relative;
-    pointer-events: none;
-    line-height: 1.6;
-    color: black;
-    border-radius: 1rem;
-  }
-  .demo-page-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    background: #fff;
-    width: calc(12rem * 8);
-    height: calc(15rem * 8);
-    border-radius: 8rem;
-    font-size: 3rem;
-    transform-origin: top left;
-    transform: scale(0.125);
-    position: relative;
-    overflow: hidden;
-    user-select: none;
-  }
-  .demo-page-progress {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 0.5em;
-    background: linear-gradient(90deg, #25dbd2, #33d5f4, #039fea);
-    transform-origin: 0 0;
-  }
-  .demo-page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1em;
-  }
-  .demo-page-logo {
-    font-size: 2em;
-    font-weight: 800;
-  }
-  .demo-page-cart {
-    background: #1d1924;
-    color: #fff;
-    padding: 0.5em 1em;
-  }
-  .demo-page-product {
-    display: flex;
-    justify-content: space-between;
-    padding: 1em;
-  }
-  .demo-page-image {
-    flex: 1;
-  }
-  .demo-page-description {
-    flex: 1;
-  }
-  .demo-page-description-title {
-    font-size: 1.2em;
-    font-weight: 600;
-    display: block;
-  }
-  .demo-page-description-price {
-    font-size: 1.2em;
-    font-weight: 600;
-    display: block;
-  }
-  .demo-page-description-button {
-    background: #1d1924;
-    color: #fff;
-    padding: 0.5em 1em;
-    display: inline-block;
-    margin: 0.25em 0;
-  }
-  .demo-page-description-text {
-    font-size: 0.8em;
-    display: block;
-  }
-  .demo-page-review {
-    padding: 1em;
-  }
-  .demo-page-rating {
-    color: #fec703;
-  }
-  .demo-page-footer {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 1em;
-    background: #f4f2f4;
-  }
-  .demo-page-footer > div {
-    font-size: 0.8em;
-  }
-  .demo-page-loading {
-    opacity: 0;
-  }
-  .demo-page-low-res {
-    filter: blur(1em) grayscale(0.6);
-    opacity: 0.3;
-  }
-  .demo-page-hydrate-partial .demo-page-hydrated,
-  .demo-page-hydrate-all div {
-    animation-name: pulse-red;
-    animation-iteration-count: infinite;
-    animation-duration: 2s;
-  }
-  .demo-page-delay-1 {
-    animation-delay: 100ms;
-  }
-  .demo-page-delay-2 {
-    animation-delay: 200ms;
-  }
-  .demo-page-delay-3 {
-    animation-delay: 300ms;
-  }
-  .demo-page-delay-4 {
-    animation-delay: 400ms;
-  }
-  .demo-page-delay-5 {
-    animation-delay: 500ms;
-  }
-  .demo-page-delay-6 {
-    animation-delay: 600ms;
-  }
-  .demo-page-delay-7 {
-    animation-delay: 700ms;
-  }
-  .demo-page-delay-8 {
-    animation-delay: 800ms;
-  }
-  .demo-page-delay-9 {
-    animation-delay: 900ms;
-  }
-  .demo-page-delay-10 {
-    animation-delay: 1000ms;
-  }
-  .demo-page-delay-11 {
-    animation-delay: 1100ms;
-  }
-  .demo-page-delay-12 {
-    animation-delay: 1200ms;
-  }
-  .demo-page-delay-13 {
-    animation-delay: 1300ms;
-  }
-  .demo-page-delay-14 {
-    animation-delay: 1400ms;
-  }
-  .demo-page-delay-15 {
-    animation-delay: 1500ms;
-  }
-  .demo-page-delay-16 {
-    animation-delay: 1600ms;
-  }
-  .demo-page-delay-17 {
-    animation-delay: 1700ms;
-  }
-
-  @media (prefers-reduced-motion) {
-    .demo-page-hydrate-partial .demo-page-hydrated,
-    .demo-page-hydrate-all div {
-      animation: none;
-      box-shadow: 0 0 0 15px rgba(255, 50, 82, 0.7);
-    }
-  }
-
-  @keyframes pulse-red {
-    0% {
-      box-shadow: 0 0 0 0 rgba(255, 50, 82, 0.9);
-    }
-
-    100% {
-      box-shadow: 0 0 0px 90px rgba(255, 50, 82, 0);
-    }
-  }
-
-  .demo-page-title {
-    position: absolute;
-    bottom: -1em;
-    left: 50%;
-    translate: -50% 0;
-    height: 2em;
-    width: 8em;
-    border-radius: 1em;
-    background: #fff;
-    box-shadow: 0 0 0.75em #000,0 0 0.75em #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .demo-page-title > img {
-    height: 50%;
-  }
-
-  .demo-page-title--marko {
-    border: 2px solid var(--color-section);
-  }
-</style>
-
-<const/progress = (
+const/progress=(
   input.buffered ? Math.floor(input.progress / 0.9) : input.progress / 0.9
-)>
+)
 
-<div class=["demo-page-wrapper", input.class] role="img" aria-label=input.label>
-  <div
-    aria-hidden="true"
-    class=[
-      "demo-page-container",
-      {
-        "demo-page-hydrate-all": input.hydrateAll,
-        "demo-page-hydrate-partial": input.hydratePartial,
-      },
+.${styles.wrapper} role="img" aria-label=input.label
+  .${styles.container} aria-hidden="true" class={
+    [styles.hydrateAll]: input.hydrateAll,
+    [styles.hydratePartial]: input.hydratePartial,
+  }
+    if=input.progress >= 0
+      .${styles.progress} style={
+        transform: `scaleX(${Math.min(1, input.progress * (input.buffered ? 1 : 1 / 0.9))})`,
+      }
+    .${styles.header} class=[
+      styles.delay1,
+      { [styles.loading]: progress < 0.1 },
     ]
-  >
-    <if=(input.progress >= 0)>
-      <div
-        style={
-          transform: `scaleX(${Math.min(1, input.progress * (input.buffered ? 1 : 1 / 0.9))})`,
-        }
-        class="demo-page-progress"
-      />
-    </if>
-    <div class=[
-      "demo-page-header demo-page-delay-1",
-      {
-        "demo-page-loading": progress < 0.1,
-      },
-    ]>
-      <div class="demo-page-link demo-page-delay-2">
-        All Products
-      </div>
-      <div class="demo-page-logo demo-page-delay-3">
-        BuyItNow
-      </div>
-      <div class="demo-page-cart demo-page-delay-4 demo-page-hydrated">
-        Cart (0)
-      </div>
-    </div>
-    <div class=[
-      "demo-page-product demo-page-delay-5",
-      {
-        "demo-page-loading": progress < 0.4,
-      },
-    ]>
-      <img
-        class=[
-          "demo-page-image",
-          {
-            "demo-page-low-res":
-              progress < 0.6 || (input.buffered && input.progress < 1),
-          },
-        ]
-        src="./product.png"
-        alt=""
-      >
-      <div class="demo-page-description demo-page-delay-6">
-        <span class="demo-page-description-title">
-          Google Home - $79
-        </span>
-        <div class="demo-page-description-button demo-page-delay-7 demo-page-hydrated">
-          Add to Cart
-        </div>
-        <span class="demo-page-description-text">
+      .${styles.link}.${styles.delay2} -- All Products
+      .${styles.logo}.${styles.delay3} -- BuyItNow
+      .${styles.cart}.${styles.delay4}.${styles.hydrated} -- Cart (0)
+    .${styles.product}.${styles.delay5} class={ [styles.loading]: progress < 0.14 }
+      img.${styles.image} alt="" src="./product.png" class={
+        [styles.lowRes]: progress < 0.6 || (input.buffered && input.progress < 1)
+      }
+      .${styles.description}.${styles.delay6}
+        span.${styles.descriptionTitle} -- Google Home - $79
+        .${styles.descriptionButton}.${styles.delay7}.${styles.hydrated}
+          -- Add to Cart
+        span.${styles.descriptionText} --
           Hands-free help around the house. Google Home is a smart speaker with the Google Assistant built in. So whenever you need help, it's by your side
-        </span>
-      </div>
-    </div>
-    <div class=[
-      "demo-page-review demo-page-delay-8",
-      {
-        "demo-page-loading": progress < 0.8,
-      },
-    ]>
-      <div class="demo-page-rating demo-page-delay-9">
-        ★★★★☆
-      </div>
-      <span class="demo-page-description-text">
-        <strong>Cool gadget</strong>
-        Google has created a nice device that provides music and information by voice control. The microphone is very good and will usually pick up commands from across the room. The speakers sound surprisingly good for such a small device. I wish it had tone control though.
-      </span>
-    </div>
-    <div class=[
-      "demo-page-review demo-page-delay-10",
-      {
-        "demo-page-loading": progress < 1,
-      },
-    ]>
-      <div class="demo-page-rating demo-page-delay-11">
-        ★★★★★
-      </div>
-      <span class="demo-page-description-text">
-        <strong>Incredible sound profile!</strong>
-        Easy setup, great sound for any room size. Adjustable bass and treble. Currently have two paired up for better whole house sound.
-      </span>
-    </div>
-    <div class=[
-      "demo-page-footer demo-page-delay-12",
-      {
-        "demo-page-loading": progress < 0.1,
-      },
-    ]>
-      <div class="demo-page-delay-13">
-        About
-      </div>
-      <div class="demo-page-delay-14">
-        Security
-      </div>
-      <div class="demo-page-delay-15">
-        Policies
-      </div>
-      <div class="demo-page-delay-16">
-        Help
-      </div>
-      <div class="demo-page-delay-17">
-        Sitemap
-      </div>
-    </div>
-  </div>
-  <if=input.buffered || input.hydrateAll>
-    <div class="demo-page-title">
-      ${input.title}
-    </div>
-  </if>
-  <else>
-    <div class="demo-page-title demo-page-title--marko">
-      <img src="./logo.svg" alt=""> ${input.title}
-    </div>
-  </else>
-</div>
+    .${styles.review}.${styles.delay8} class={ [styles.loading]: progress < 0.8 }
+      .${styles.rating}.${styles.delay9} -- ★★★★☆
+      span.${styles.descriptionText}
+        strong -- Cool gadget
+        --
+        ${" "}Google has created a nice device that provides music and information by voice control. The microphone is very good and will usually pick up commands from across the room. The speakers sound surprisingly good for such a small device. I wish it had tone control though.
+        --
+    .${styles.review}.${styles.delay10} class={ [styles.loading]: progress < 1 }
+      .${styles.rating}.${styles.delay11} -- ★★★★★
+      span.${styles.descriptionText}
+        strong -- Incredible sound profile!
+        --
+        ${" "}Easy setup, great sound for any room size. Adjustable bass and treble. Currently have two paired up for better whole house sound.
+        --
+    .${styles.footer}.${styles.delay12} class={ [styles.loading]: progress < 0.1 }
+      .${styles.delay13} -- About
+      .${styles.delay14} -- Security
+      .${styles.delay15} -- Policies
+      .${styles.delay16} -- Help
+      .${styles.delay17} -- Sitemap
+  if=input.buffered || input.hydrateAll
+    .${styles.pageTitle} -- ${input.title}
+  else
+    .${styles.pageTitle}.${styles.pageTitleMarko}
+      img src="./logo.svg" alt=""
+      -- ${" "}${input.title}

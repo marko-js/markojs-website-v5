@@ -1,68 +1,78 @@
-@use "../vars" as *;
+@use "sass:color" as color;
+@use "app/tags/app-header/app-header.style.module.scss" as header;
+
+$black: #202124;
+$white: #ffffff;
+$colors: (
+  ("red", #cc0067, #ff5467),
+  ("yellow", #fc5c00, #ffd100),
+  ("green", #00b068, #7ced64),
+  ("blue", #0073d8, #00cffb)
+);
 
 :root {
   color-scheme: light dark;
 
-  --color-black: #{$color-black};
-  --color-white: #{$color-white};
-  --color-blue-dark: #{$color-blue-dark};
-  --color-blue-light: #{$color-blue-light};
-  --color-green-dark: #{$color-green-dark};
-  --color-green-light: #{$color-green-light};
-  --color-yellow-dark: #{$color-yellow-dark};
-  --color-yellow-light: #{$color-yellow-light};
-  --color-red-dark: #{$color-red-dark};
-  --color-red-light: #{$color-red-light};
+  --color-foreground: light-dark(#{$black}, #{$white});
+  --color-background: light-dark(#{$white}, #{$black});
 
-  --color-blue-dark-shade: #{$color-blue-dark-shade};
-  --color-blue-dark-tint: #{$color-blue-dark-tint};
-  --color-blue-light-shade: #{$color-blue-light-shade};
-  --color-blue-light-tint: #{$color-blue-light-tint};
-  --color-green-dark-shade: #{$color-green-dark-shade};
-  --color-green-dark-tint: #{$color-green-dark-tint};
-  --color-green-light-shade: #{$color-green-light-shade};
-  --color-green-light-tint: #{$color-green-light-tint};
-  --color-yellow-dark-shade: #{$color-yellow-dark-shade};
-  --color-yellow-dark-tint: #{$color-yellow-dark-tint};
-  --color-yellow-light-shade: #{$color-yellow-light-shade};
-  --color-yellow-light-tint: #{$color-yellow-light-tint};
-  --color-red-dark-shade: #{$color-red-dark-shade};
-  --color-red-dark-tint: #{$color-red-dark-tint};
-  --color-red-light-shade: #{$color-red-light-shade};
-  --color-red-light-tint: #{$color-red-light-tint};
+  @each $name, $dark, $light in $colors {
+    $tint-percent: 20%;
+    $shade-percent: 20%;
+    --color-#{$name}-dark: #{$dark};
+    --color-#{$name}-light: #{$light};
+    --color-#{$name}-dark-tint: #{color.mix(
+        $dark,
+        $white,
+        $method: oklch,
+        $weight: $tint-percent
+      )};
+    --color-#{$name}-dark-shade: #{color.mix(
+        $dark,
+        $black,
+        $method: oklch,
+        $weight: $shade-percent
+      )};
+    --color-#{$name}-light-tint: #{color.mix(
+        $light,
+        $white,
+        $method: oklch,
+        $weight: $tint-percent
+      )};
+    --color-#{$name}-light-shade: #{color.mix(
+        $light,
+        $black,
+        $method: oklch,
+        $weight: $shade-percent
+      )};
+    --color-#{$name}: light-dark(
+      var(--color-#{$name}-dark),
+      var(--color-#{$name}-light)
+    );
+    --color-#{$name}-alt: light-dark(
+      var(--color-#{$name}-light),
+      var(--color-#{$name}-dark)
+    );
+    --color-#{$name}-dim: light-dark(
+      var(--color-#{$name}-dark-tint),
+      var(--color-#{$name}-light-shade)
+    );
+    --color-#{$name}-dim-alt: light-dark(
+      var(--color-#{$name}-light-shade),
+      var(--color-#{$name}-dark-tint)
+    );
+    --color-#{$name}-alt-dim: light-dark(
+      var(--color-#{$name}-light-tint),
+      var(--color-#{$name}-dark-shade)
+    );
+    --color-#{$name}-alt-dim-alt: light-dark(
+      var(--color-#{$name}-dark-shade),
+      var(--color-#{$name}-light-tint)
+    );
+  }
 
   --color-selection-background: var(--color-red-alt);
   --color-selection-foreground: var(--color-red);
-
-  --color-background: light-dark(var(--color-white), var(--color-black));
-  --color-foreground: light-dark(var(--color-black), var(--color-white));
-  @each $color in "red", "yellow", "green", "blue" {
-    --color-#{$color}: light-dark(
-      var(--color-#{$color}-dark),
-      var(--color-#{$color}-light)
-    );
-    --color-#{$color}-alt: light-dark(
-      var(--color-#{$color}-light),
-      var(--color-#{$color}-dark)
-    );
-    --color-#{$color}-dim: light-dark(
-      var(--color-#{$color}-dark-tint),
-      var(--color-#{$color}-light-shade)
-    );
-    --color-#{$color}-dim-alt: light-dark(
-      var(--color-#{$color}-light-shade),
-      var(--color-#{$color}-dark-tint)
-    );
-
-    --color-#{$color}-alt-dim: light-dark(
-      var(--color-#{$color}-light-tint),
-      var(--color-#{$color}-dark-shade)
-    );
-    --color-#{$color}-alt-dim-alt: light-dark(
-      var(--color-#{$color}-dark-shade),
-      var(--color-#{$color}-light-tint)
-    );
-  }
 }
 
 *,
@@ -212,7 +222,7 @@ code {
       content: "";
       position: absolute;
       top: var(--stick-top, 0px);
-      height: $header-height;
+      height: header.$height;
       view-timeline: --stick-subject block;
     }
   }

@@ -1,5 +1,5 @@
 import { faToggleOff, faToggleOn } from "@fortawesome/free-solid-svg-icons";
-import styles from "./app-switch.module.css";
+import styles from "./app-switch.module.scss";
 export interface Input extends Omit<Marko.HTML.Input, "type"> {
   off: string;
   on: string;
@@ -7,10 +7,10 @@ export interface Input extends Omit<Marko.HTML.Input, "type"> {
 
 const/{ on, off, ...checkboxInput }=input
 
-label class=styles.label
+label.${styles.label}
   span -- ${off}
-  span class=styles.switch
+  span.${styles.switch}
     input ...checkboxInput type="checkbox"
-    fa-icon=faToggleOff class=styles.off
-    fa-icon=faToggleOn class=styles.on
+    fa-icon.${styles.off}=faToggleOff
+    fa-icon.${styles.on}=faToggleOn
   span -- ${on}

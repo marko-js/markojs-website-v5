@@ -1,0 +1,33 @@
+@mixin set($color, $dark: false) {
+  --section-color-dark: var(--color-#{$color}-dark);
+  --section-color-light: var(--color-#{$color}-light);
+
+  @if $dark and $color != "blue" {
+    --section-color-dim: light-dark(
+      var(--color-#{$color}-dark-tint),
+      var(--color-#{$color}-dark-shade)
+    );
+    --section-color-dim-alt: light-dark(
+      var(--color-#{$color}-dark-shade),
+      var(--color-#{$color}-dark-tint)
+    );
+    --section-color-alt-dim: light-dark(
+      var(--color-#{$color}-light-tint),
+      var(--color-#{$color}-light-shade)
+    );
+    --section-color-alt-dim-alt: light-dark(
+      var(--color-#{$color}-light-shade),
+      var(--color-#{$color}-light-tint)
+    );
+
+    --section-color: var(--color-#{$color}-dark);
+    --section-color-alt: var(--color-#{$color}-light);
+  } @else {
+    --section-color-dim: var(--color-#{$color}-dim);
+    --section-color-dim-alt: var(--color-#{$color}-dim-alt);
+    --section-color-alt-dim: var(--color-#{$color}-alt-dim);
+    --section-color-alt-dim-alt: var(--color-#{$color}-alt-dim-alt);
+    --section-color: var(--color-#{$color});
+    --section-color-alt: var(--color-#{$color}-alt);
+  }
+}

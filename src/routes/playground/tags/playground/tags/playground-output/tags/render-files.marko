@@ -10,7 +10,7 @@ client import { compile } from "../utils/compile";
 client const decoder = new TextDecoder();
 client import { highlighter } from "../../init-shiki-monaco";
 
-<debounce/files=input.value/>
+<let-debounce/files=input.value/>
 
 <let/compiled=(null as Awaited<ReturnType<typeof compile>> | null)/>
 <let/showLoadingMessage=false/>

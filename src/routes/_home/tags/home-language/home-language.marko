@@ -1,5 +1,5 @@
-import text from "../../text-styles.module.css";
-import styles from "./style.module.scss";
+import text from "app/styles/text.module.scss";
+import styles from "./home-language.style.module.scss";
 
 static const EXAMPLE = `<let/count=0>
 <button onClick() { count++ }>
@@ -15,7 +15,8 @@ section.${styles.redSection}
     a.${styles.cta} href="/docs/reference/language" -- Learn More
 
     figure.${styles.example}
-      code-block lang="marko" text=EXAMPLE
+      app-code-block lang="marko" text=EXAMPLE
       div
         let/count=0
         button onClick() { count++ } -- Count is ${count}
+

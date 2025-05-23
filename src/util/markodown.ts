@@ -158,7 +158,7 @@ function markoDocs(): MarkedExtension {
     },
     renderer: {
       code({ lang, text, concise, html, filename }) {
-        let out = `<code-block lang="${lang}"`;
+        let out = `<app-code-block lang="${lang}"`;
         if (filename) {
           out += ` filename="${filename}"`;
         }

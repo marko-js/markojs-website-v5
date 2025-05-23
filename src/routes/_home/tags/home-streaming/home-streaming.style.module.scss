@@ -1,0 +1,7 @@
+.section {
+  composes:
+    figureSection from "app/routes/_home/styles/section.module.scss",
+    flexReverse from "app/routes/_home/styles/section.module.scss";
+  --color-section: var(--color-blue);
+  --color-section-alt: var(--color-blue-alt);
+}

@@ -7,7 +7,7 @@ export interface Input {
   content: Marko.Body;
 }
 
-local-let/syntaxMode="html" key="syntax-mode"
+let-local-storage/syntaxMode="html" key="syntax-mode"
 let/isConciseMode=syntaxMode === "concise" valueChange(v) { syntaxMode = v ? "concise" : "html" }
 const/ariaCurrent = (page: string) => $global.url.pathname === page && "true";
 script -- document.body.classList.toggle("concise-mode", isConciseMode);
@@ -153,6 +153,7 @@ script --
     window.addEventListener("scroll", setTop, { passive: true });
     window.addEventListener("resize", setScale, { passive: true });
     setScale();
+    html.style.setProperty("--stick-top", "0px");
     function setTop() {
       const prevTop = top;
       top = vp.pageTop;

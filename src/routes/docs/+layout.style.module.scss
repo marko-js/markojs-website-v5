@@ -1,37 +1,5 @@
-@use "../../vars" as *;
-@mixin section-colors($color, $dark: false) {
-  --section-color-dark: var(--color-#{$color}-dark);
-  --section-color-light: var(--color-#{$color}-light);
-
-  @if $dark and $color != "blue" {
-    --section-color-dim: light-dark(
-      var(--color-#{$color}-dark-tint),
-      var(--color-#{$color}-dark-shade)
-    );
-    --section-color-dim-alt: light-dark(
-      var(--color-#{$color}-dark-shade),
-      var(--color-#{$color}-dark-tint)
-    );
-    --section-color-alt-dim: light-dark(
-      var(--color-#{$color}-light-tint),
-      var(--color-#{$color}-light-shade)
-    );
-    --section-color-alt-dim-alt: light-dark(
-      var(--color-#{$color}-light-shade),
-      var(--color-#{$color}-light-tint)
-    );
-
-    --section-color: var(--color-#{$color}-dark);
-    --section-color-alt: var(--color-#{$color}-light);
-  } @else {
-    --section-color-dim: var(--color-#{$color}-dim);
-    --section-color-dim-alt: var(--color-#{$color}-dim-alt);
-    --section-color-alt-dim: var(--color-#{$color}-alt-dim);
-    --section-color-alt-dim-alt: var(--color-#{$color}-alt-dim-alt);
-    --section-color: var(--color-#{$color});
-    --section-color-alt: var(--color-#{$color}-alt);
-  }
-}
+@use "app/styles/section-color.scss" as section-color;
+@use "app/tags/app-header/app-header.style.module.scss" as header;
 
 #left,
 #right {
@@ -46,9 +14,9 @@
     animation: sticky linear both;
     animation-timeline: --stick-subject;
     animation-range: exit 0% exit 100%;
-    margin-top: calc(-1 * $header-height);
+    margin-top: calc(-1 * header.$height);
     transform-origin: top;
-    transform: translateY($header-height) scaleY(var(--stick-scale));
+    transform: translateY(header.$height) scaleY(var(--stick-scale));
     will-change: transform;
     @keyframes sticky {
       to {
@@ -67,12 +35,12 @@
   }
 }
 #left {
-  @media (min-width: 48rem) {
+  @media (min-width: 48rem) and (min-height: 38rem) {
     display: flex;
   }
 }
 #right {
-  @media (min-width: 64rem) {
+  @media (min-width: 64rem) and (min-height: 38rem) {
     display: flex;
   }
 }
@@ -156,19 +124,20 @@
   flex: 1;
   padding: 2.5rem 0;
   line-height: 1.5;
+  min-width: 0;
 
-  @include section-colors("red");
+  @include section-color.set("red");
 
   $i: 1;
   @each $color in "blue", "yellow", "green" {
     & > section:nth-of-type(4n + #{$i}) {
-      @include section-colors($color);
+      @include section-color.set($color);
     }
     $i: $i + 1;
   }
 
   section {
-    scroll-margin-top: $header-height;
+    scroll-margin-top: header.$height;
     & > *:last-child {
       margin-bottom: 0;
     }
@@ -368,7 +337,7 @@
       )
   {
     .markdown-alert-#{$name} {
-      @include section-colors($color, true);
+      @include section-color.set($color, true);
     }
   }
 }

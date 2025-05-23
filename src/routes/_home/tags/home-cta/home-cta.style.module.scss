@@ -4,7 +4,7 @@
   justify-content: left;
 }
 
-.link {
+.primaryLink, .secondaryLink {
   border-radius: 2rem;
   padding: 0.5rem 1rem;
   text-decoration: none;
@@ -21,13 +21,11 @@
 }
 
 .primaryLink {
-  composes: link;
   background: linear-gradient(to right, #ff425b, #a31460);
   color: white;
 }
 
 .secondaryLink {
-  composes: link;
   color: var(--color-foreground);
   border: 1px solid currentColor;
 }
