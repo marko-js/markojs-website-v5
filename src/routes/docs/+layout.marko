@@ -142,31 +142,28 @@ id/tocLabelId
 
 static declare const ViewTimeline: unknown;
 script --
-  if (typeof ViewTimeline !== "undefined") {
+if (typeof ViewTimeline !== "undefined") {
     const vp = visualViewport!;
     const html = document.documentElement;
     const header = document.getElementById(headerStyles.header)!;
     const footer = document.getElementById(footerStyles.footer)!;
-    let up: boolean | undefined;
-    let top: number | undefined;
-    let stick = 0;
-    window.addEventListener("scroll", setTop, { passive: true });
-    window.addEventListener("resize", setScale, { passive: true });
-    setScale();
-    html.style.setProperty("--stick-top", "0px");
-    function setTop() {
-      const prevTop = top;
-      top = vp.pageTop;
-      if (prevTop == null) return;
-      const isUp = top < prevTop;
-      if (up === isUp) return;
-      if (up == null && !isUp) return;
-      up = isUp;
-      stick = up ? Math.max(stick, top - header.offsetHeight) : Math.min(stick, top);
-      stick = Math.min(stick, html.scrollHeight - vp.height - header.offsetHeight - footer.offsetHeight);
-      html.style.setProperty("--stick-top", `${stick}px`);
-    }
-    function setScale() {
-      html.style.setProperty("--stick-scale", `${1 - header.offsetHeight / vp.height}`);
-    }
+    let stickTop = 0;
+    let prevY = window.scrollY;
+    let prevUp: boolean | undefined;
+    window.addEventListener(
+      "scroll",
+      () => {
+        const y = window.scrollY;
+        const up = y < prevY;
+        if (prevY === (prevY = y) || prevUp === (prevUp = up)) return;
+
+        const stickSize = header.offsetHeight;
+        const stickMax = Math.max(0, html.scrollHeight - vp.height - stickSize - footer.offsetHeight);
+        stickTop = up
+          ? Math.max(0, stickTop, Math.min(stickMax, y - stickSize))
+          : Math.min(stickMax, stickTop, y);
+        html.style.setProperty("--stick-top", `${stickTop}px`);
+      },
+      { passive: true },
+    );
   }

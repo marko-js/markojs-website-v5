@@ -1,6 +1,5 @@
 @use "app/styles/section-color.scss" as section-color;
 @use "app/tags/app-header/app-header.style.module.scss" as header;
-
 #left,
 #right {
   position: sticky;
@@ -8,27 +7,28 @@
   flex-shrink: 0;
   width: 12rem;
   top: 0;
-  max-height: 100dvh;
+  height: 100dvh;
   display: none;
   @container style(--stick-top) {
+    --stick-scale: calc(1 - tan(atan2(#{header.$height}, 1px)) / tan(atan2(100dvh, 1px)));
     animation: sticky linear both;
-    animation-timeline: --stick-subject;
-    animation-range: exit 0% exit 100%;
+    animation-timeline: scroll(root);
+    animation-range: var(--stick-top) calc(var(--stick-top) + header.$height);
     margin-top: calc(-1 * header.$height);
-    transform-origin: top;
+    transform-origin: top left;
     transform: translateY(header.$height) scaleY(var(--stick-scale));
     will-change: transform;
     @keyframes sticky {
       to {
-        transform: translateY(0) scaleY(1);
+        transform: scaleY(1) translateY(0);
       }
     }
 
     > * {
       animation: sticky linear both;
-      animation-timeline: --stick-subject;
-      animation-range: exit 0% exit 100%;
-      transform-origin: top;
+      animation-timeline: scroll(root);
+      animation-range: var(--stick-top) calc(var(--stick-top) + header.$height);
+      transform-origin: top left;
       transform: scaleY(calc(1 / var(--stick-scale)));
       will-change: transform;
     }

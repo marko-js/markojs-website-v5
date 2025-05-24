@@ -27,8 +27,8 @@ $height: calc(48px + 4rem);
       position: sticky;
       top: 0;
       animation: sticky linear both;
-      animation-timeline: --stick-subject;
-      animation-range: exit 0% exit 100%;
+      animation-timeline: scroll(root);
+      animation-range: var(--stick-top) calc(var(--stick-top) + $height);
       transform: translateY(0);
       will-change: transform;
       @keyframes sticky {

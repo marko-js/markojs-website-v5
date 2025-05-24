@@ -24,25 +24,21 @@ $colors: (
     --color-#{$name}-dark-tint: #{color.mix(
         $dark,
         $white,
-        $method: oklch,
         $weight: $tint-percent
       )};
     --color-#{$name}-dark-shade: #{color.mix(
         $dark,
         $black,
-        $method: oklch,
         $weight: $shade-percent
       )};
     --color-#{$name}-light-tint: #{color.mix(
         $light,
         $white,
-        $method: oklch,
         $weight: $tint-percent
       )};
     --color-#{$name}-light-shade: #{color.mix(
         $light,
         $black,
-        $method: oklch,
         $weight: $shade-percent
       )};
     --color-#{$name}: light-dark(
@@ -216,16 +212,6 @@ code {
   padding: 0 1rem;
   max-width: 90rem;
   min-height: 100vh;
-  @container style(--stick-top) {
-    timeline-scope: --stick-subject;
-    &::after {
-      content: "";
-      position: absolute;
-      top: var(--stick-top, 0px);
-      height: header.$height;
-      view-timeline: --stick-subject block;
-    }
-  }
 }
 
 #main {
