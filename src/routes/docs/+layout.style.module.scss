@@ -1,38 +1,14 @@
 @use "app/styles/section-color.scss" as section-color;
 @use "app/tags/app-header/app-header.style.module.scss" as header;
+
 #left,
 #right {
   position: sticky;
   flex-direction: column;
-  flex-shrink: 0;
   width: 12rem;
   top: 0;
   height: 100dvh;
   display: none;
-  @container style(--stick-top) {
-    --stick-scale: calc(1 - tan(atan2(#{header.$height}, 1px)) / tan(atan2(100dvh, 1px)));
-    animation: sticky linear both;
-    animation-timeline: scroll(root);
-    animation-range: var(--stick-top) calc(var(--stick-top) + header.$height);
-    margin-top: calc(-1 * header.$height);
-    transform-origin: top left;
-    transform: translateY(header.$height) scaleY(var(--stick-scale));
-    will-change: transform;
-    @keyframes sticky {
-      to {
-        transform: scaleY(1) translateY(0);
-      }
-    }
-
-    > * {
-      animation: sticky linear both;
-      animation-timeline: scroll(root);
-      animation-range: var(--stick-top) calc(var(--stick-top) + header.$height);
-      transform-origin: top left;
-      transform: scaleY(calc(1 / var(--stick-scale)));
-      will-change: transform;
-    }
-  }
 }
 #left {
   @media (min-width: 48rem) and (min-height: 38rem) {
@@ -47,10 +23,13 @@
 
 #siteNav,
 #pageNav {
-  padding: 2.5rem 0;
+  flex-grow: 1;
   font-size: 0.9rem;
-  flex: 1;
   overflow-y: auto;
+
+  > ul {
+    padding: 2.5rem 0;
+  }
 
   ul {
     display: flex;
@@ -97,6 +76,7 @@
 }
 
 #controls {
+  position: relative;
   display: flex;
   gap: 0.5rem;
   flex-direction: column;
@@ -105,7 +85,6 @@
   background-color: var(--color-background);
   &::before {
     content: "";
-    z-index: -1;
     pointer-events: none;
     position: absolute;
     top: -2rem;
@@ -117,6 +96,34 @@
   strong {
     color: var(--color-foreground);
     font-weight: 700;
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  #left,
+  #right {
+    margin-top: calc(-1 * header.$size);
+  }
+
+  #siteNav,
+  #pageNav {
+    transform-origin: top left;
+    transform: translateY(header.$size) scaleY(header.$scale);
+    will-change: transform;
+    @include header.scroll-animate(sticky);
+
+    & > ul {
+      transform-origin: top left;
+      transform: scaleY(calc(1 / header.$scale));
+      will-change: transform;
+      @include header.scroll-animate(sticky);
+    }
+  }
+
+  @keyframes sticky {
+    to {
+      transform: scaleY(1) translateY(0);
+    }
   }
 }
 
@@ -137,8 +144,8 @@
   }
 
   section {
-    scroll-margin-top: header.$height;
-    & > *:last-child {
+    scroll-margin-top: header.$size;
+    & > :last-child {
       margin-bottom: 0;
     }
   }
@@ -155,17 +162,10 @@
   h5,
   h6 {
     color: var(--section-color);
-    margin-bottom: 1.3rem;
-  }
-
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
     margin-top: 1.5em;
+    margin-bottom: 1.3rem;
 
-    a {
+    > a {
       &:hover {
         text-decoration: none;
 

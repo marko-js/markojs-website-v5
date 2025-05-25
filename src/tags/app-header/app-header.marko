@@ -1,20 +1,56 @@
 client import "@docsearch/css";
 client import docsearch from "@docsearch/js";
+import footerStyles from "../app-footer/app-footer.style.module.scss";
 import styles from "./app-header.style.module.scss";
 
 header#${styles.header}
   a#${styles.logo} title="Home" href="/"
     img src="./logo-text.svg?no-inline" alt="Marko Logo" width=240 height=48
-  a href="/docs/" -- Docs
-  a href="/playground/" -- Playground
-  a href="https://github.com/marko-js/marko" -- GitHub
+  a.${styles.link} href="/docs/" -- Docs
+  a.${styles.link} href="/playground/" -- Playground
+  a.${styles.link} href="https://github.com/marko-js/marko" -- GitHub
   #${styles.docsearch}
     button disabled
-    script --
-      docsearch({
-        container: `#${styles.docsearch}`,
-        indexName: "markojs",
-        placeholder: "",
-        appId: "GB0QQV5RQM",
-        apiKey: "82f1b630f11e1afa4767f051af953a28",
-      });
+
+script --
+  docsearch({
+    container: `#${styles.docsearch}`,
+    indexName: "markojs",
+    placeholder: "",
+    appId: "GB0QQV5RQM",
+    apiKey: "82f1b630f11e1afa4767f051af953a28",
+  });
+
+  if ("ScrollTimeline" in window) {
+    if (document.readyState === "interactive") {
+      setupStickyScroll();
+    } else {
+      document.addEventListener("DOMContentLoaded", setupStickyScroll);
+    }
+  }
+
+static function setupStickyScroll() {
+  const vp = visualViewport!;
+  const html = document.documentElement;
+  const header = document.getElementById(styles.header)!;
+  const footer = document.getElementById(footerStyles.footer)!;
+  let stickTop = 0;
+  let prevY = window.scrollY;
+  let prevUp: boolean | undefined;
+  window.addEventListener(
+    "scroll",
+    () => {
+      const y = window.scrollY;
+      const up = y < prevY;
+      if (prevY === (prevY = y) || prevUp === (prevUp = up)) return;
+
+      const stickSize = header.offsetHeight;
+      const stickMax = Math.max(0, html.scrollHeight - vp.height - stickSize - footer.offsetHeight);
+      stickTop = up
+        ? Math.max(0, stickTop, Math.min(stickMax, y - stickSize))
+        : Math.min(stickMax, stickTop, y);
+      html.style.setProperty("--stick-top", `${stickTop}px`);
+    },
+    { passive: true },
+  );
+}

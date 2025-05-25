@@ -1,10 +1,24 @@
-$height: calc(48px + 4rem);
+$top: var(--stick-top);
+$size: var(--stick-size);
+$scale: var(--stick-scale);
+
+:root {
+  --stick-top: 0px;
+  --stick-size: calc(48px + 4rem);
+  --stick-scale: calc(1 - tan(atan2(#{$size}, 1px)) / tan(atan2(100dvh, 1px)));
+}
+
+@mixin scroll-animate($name) {
+  animation: $name linear both;
+  animation-timeline: scroll(root);
+  animation-range: $top calc($top + $size);
+}
 
 #header {
   z-index: 1;
   position: relative;
   display: flex;
-  height: $height;
+  height: $size;
   align-items: center;
   gap: 2rem;
   font-weight: 500;
@@ -22,36 +36,29 @@ $height: calc(48px + 4rem);
     background: linear-gradient(var(--color-background) 90%, transparent);
   }
 
-  @container style(--stick-top) {
-    & {
-      position: sticky;
-      top: 0;
-      animation: sticky linear both;
-      animation-timeline: scroll(root);
-      animation-range: var(--stick-top) calc(var(--stick-top) + $height);
-      transform: translateY(0);
-      will-change: transform;
-      @keyframes sticky {
-        to {
-          transform: translateY(-100%);
-        }
+  @supports (animation-timeline: scroll()) {
+    position: sticky;
+    top: 0;
+    transform: translateY(0);
+    will-change: transform;
+    @include scroll-animate(sticky);
+    @keyframes sticky {
+      to {
+        transform: translateY(-100%);
       }
     }
   }
+}
 
-  > :not(#logo, #docsearch) {
-    display: none;
-    @media (min-width: 64rem) and (min-height: 38rem) {
-      display: block;
-    }
+.link {
+  display: none;
+  text-decoration: none;
+  &:hover {
+    text-decoration-line: underline;
+    text-decoration-thickness: 2px;
   }
-
-  a {
-    text-decoration: none;
-    &:hover {
-      text-decoration-line: underline;
-      text-decoration-thickness: 2px;
-    }
+  @media (min-width: 64rem) and (min-height: 38rem) {
+    display: block;
   }
 }
 
@@ -137,8 +144,11 @@ $height: calc(48px + 4rem);
       border-radius: 1.25rem;
     }
 
-    &-Logo svg * {
-      fill: var(--docsearch-muted-color);
+    &-Logo {
+      .cls-1,
+      .cls-2 {
+        fill: var(--docsearch-muted-color);
+      }
     }
 
     &-Footer {

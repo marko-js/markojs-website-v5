@@ -71,9 +71,7 @@ $colors: (
   --color-selection-foreground: var(--color-red);
 }
 
-*,
-*::before,
-*::after {
+* {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -129,7 +127,6 @@ p {
 ::selection {
   background-color: var(--color-selection-background);
   color: var(--color-selection-foreground);
-  filter: contrast(200%);
 }
 
 body {
@@ -216,6 +213,6 @@ code {
 
 #main {
   display: flex;
-  column-gap: 1.5rem;
+  column-gap: 2.5rem;
   flex: 1 0 auto;
 }

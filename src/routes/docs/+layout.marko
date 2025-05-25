@@ -1,6 +1,4 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import headerStyles from "../../tags/app-header/app-header.style.module.scss";
-import footerStyles from "../../tags/app-footer/app-footer.style.module.scss";
 import styles from "./+layout.style.module.scss";
 import type { HeadingList } from "../../types";
 export interface Input {
@@ -128,42 +126,17 @@ article#${styles.article}
             -- You?
 
 define/TocTree|input: { headings: HeadingList }|
-  ul
-    for|heading| of=input.headings
-      li
-        a href=`#${heading.id}` -- ${heading.title}
-      if=heading.children.length
+  for|heading| of=input.headings
+    li
+      a href=`#${heading.id}` -- ${heading.title}
+    if=heading.children.length
+      ul
         TocTree headings=heading.children
+
 id/tocLabelId
 #${styles.right}
   nav#${styles.pageNav} aria-labelledby=tocLabelId
-    strong#${tocLabelId} -- On this Page
-    TocTree headings=($global.meta as any).headings
-
-static declare const ViewTimeline: unknown;
-script --
-if (typeof ViewTimeline !== "undefined") {
-    const vp = visualViewport!;
-    const html = document.documentElement;
-    const header = document.getElementById(headerStyles.header)!;
-    const footer = document.getElementById(footerStyles.footer)!;
-    let stickTop = 0;
-    let prevY = window.scrollY;
-    let prevUp: boolean | undefined;
-    window.addEventListener(
-      "scroll",
-      () => {
-        const y = window.scrollY;
-        const up = y < prevY;
-        if (prevY === (prevY = y) || prevUp === (prevUp = up)) return;
-
-        const stickSize = header.offsetHeight;
-        const stickMax = Math.max(0, html.scrollHeight - vp.height - stickSize - footer.offsetHeight);
-        stickTop = up
-          ? Math.max(0, stickTop, Math.min(stickMax, y - stickSize))
-          : Math.min(stickMax, stickTop, y);
-        html.style.setProperty("--stick-top", `${stickTop}px`);
-      },
-      { passive: true },
-    );
-  }
+    ul
+      li
+        strong#${tocLabelId} -- On this Page
+      TocTree headings=($global.meta as any).headings
