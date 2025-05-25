@@ -176,13 +176,16 @@
 
       &::before {
         content: "#";
-        position: absolute;
-        top: 50%;
-        left: 0;
         padding-right: 0.5rem;
-        translate: -100% -50%;
         color: var(--section-color-dim);
         font-size: 0.75em;
+
+        @media (min-width: 48rem) {
+          position: absolute;
+          top: 50%;
+          left: 0;
+          translate: -100% -50%;
+        }
       }
     }
   }
