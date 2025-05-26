@@ -2,7 +2,7 @@
   --section-color-dark: var(--color-#{$color}-dark);
   --section-color-light: var(--color-#{$color}-light);
 
-  @if $dark and $color != "blue" {
+  @if $dark and $color != "blue" and $color != "purple" {
     --section-color-dim: light-dark(
       var(--color-#{$color}-dark-tint),
       var(--color-#{$color}-dark-shade)

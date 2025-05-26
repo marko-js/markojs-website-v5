@@ -26,6 +26,9 @@
   flex-grow: 1;
   font-size: 0.9rem;
   overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
+
 
   > ul {
     padding: 2.5rem 0;
@@ -294,8 +297,8 @@
     padding: 1rem;
     padding-bottom: 0;
     border-radius: 1rem;
-
-    &::before {
+    min-height: 9rem;
+    &::after {
       position: absolute;
       z-index: -1;
       inset: 0;
@@ -306,7 +309,6 @@
       filter: blur(50px);
       opacity: 0.2;
     }
-
     @media (min-width: 48rem) {
       padding: 1.5rem;
       padding-bottom: 1rem;
@@ -332,18 +334,52 @@
     }
   }
 
-  @each $name,
-    $color
-      in (
-        "caution": "red",
-        "note": "blue",
-        "tip": "yellow",
-        "important": "green",
-        "warning": "gray"
-      )
-  {
+  $alert-types: (
+    ("note", "blue", "doc"),
+    ("caution", "red", "throw"),
+    ("tip", "yellow", "link"),
+    ("important", "green", "button"),
+    ("warning", "purple", "crash")
+  );
+
+  .markdown-alert::before {
+    pointer-events: none;
+    float: right;
+    content: "";
+    background-repeat: no-repeat;
+    margin-top: -3.2rem;
+    margin-right: -3rem;
+    width: 6rem;
+    height: 6rem;
+  }
+
+  @each $name, $color, $widget in $alert-types {
     .markdown-alert-#{$name} {
       @include section-color.set($color, true);
+      &::before {
+        background-image: url("../../tags/widget/#{$widget}.svg");
+      }
     }
+  }
+
+  @media (min-width: 48rem) and (min-height: 38rem) {
+    .markdown-alert::before {
+      width: 7.5rem;
+      height: 11.25rem;
+      margin-top: -4rem;
+      margin-left: -1.5rem;
+      margin-right: -3.3rem;
+      transform: rotateZ(0);
+    }
+
+    @each $name, $color, $widget in $alert-types {
+      .markdown-alert-#{$name}::before {
+        background-image: url("../../tags/widget/#{$widget}-legs.svg");
+      }
+    }
+  }
+
+  .markdown-alert-tip::before, .markdown-alert-note::before {
+    transform: scaleX(-1);
   }
 }

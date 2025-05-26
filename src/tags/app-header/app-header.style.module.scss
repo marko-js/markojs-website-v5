@@ -15,7 +15,7 @@ $scale: var(--stick-scale);
 }
 
 #header {
-  z-index: 1;
+  z-index: 99;
   position: relative;
   display: flex;
   height: $size;

@@ -7,7 +7,8 @@ $colors: (
   ("red", #cc0067, #ff5467),
   ("yellow", #fc5c00, #ffd100),
   ("green", #00b068, #7ced64),
-  ("blue", #0073d8, #00cffb)
+  ("blue", #0073d8, #00cffb),
+  ("purple", #5B43A7, #C999EC)
 );
 
 :root {
@@ -174,9 +175,12 @@ h5 {
 }
 
 pre {
-  padding: 0 1rem;
+  padding: 1rem;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
   border-left: 4px solid var(--section-color-dim);
+  scrollbar-width: thin;
+  scrollbar-color: var(--section-color-dim) var(--color-background);
 }
 
 code {
