@@ -29,7 +29,6 @@
   overscroll-behavior-y: contain;
   scrollbar-width: thin;
 
-
   > ul {
     padding: 2.5rem 0;
   }
@@ -346,18 +345,21 @@
     pointer-events: none;
     float: right;
     content: "";
-    background-repeat: no-repeat;
     margin-top: -3.2rem;
     margin-right: -3rem;
     width: 6rem;
     height: 6rem;
+    shape-margin: 1rem;
+    shape-outside: var(--widget-image);
+    background-image: var(--widget-image);
+    background-repeat: no-repeat;
   }
 
   @each $name, $color, $widget in $alert-types {
     .markdown-alert-#{$name} {
       @include section-color.set($color, true);
       &::before {
-        background-image: url("../../tags/widget/#{$widget}.svg");
+        --widget-image: url("../../tags/widget/#{$widget}.svg");
       }
     }
   }
@@ -374,12 +376,13 @@
 
     @each $name, $color, $widget in $alert-types {
       .markdown-alert-#{$name}::before {
-        background-image: url("../../tags/widget/#{$widget}-legs.svg");
+        --widget-image: url("../../tags/widget/#{$widget}-legs.svg");
       }
     }
   }
 
-  .markdown-alert-tip::before, .markdown-alert-note::before {
+  .markdown-alert-tip::before,
+  .markdown-alert-note::before {
     transform: scaleX(-1);
   }
 }
