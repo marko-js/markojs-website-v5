@@ -47,8 +47,10 @@
     color: var(--color-foreground);
     font-weight: 400;
     line-height: 1.6;
-    text-decoration-thickness: 2px;
-    text-underline-offset: calc(25% - 2px);
+    text-decoration-line: none;
+    &:hover {
+      text-decoration-line: underline;
+    }
 
     &[aria-current="true"] {
       padding-left: 0.5rem;
@@ -176,6 +178,7 @@
 
       &::before {
         content: "#";
+        text-wrap: nowrap;
         padding-right: 0.5rem;
         color: var(--section-color-dim);
         font-size: 0.75em;
@@ -196,8 +199,8 @@
 
   ul,
   ol {
+    list-style-position: inside;
     margin-bottom: 1.3rem;
-    padding-left: 1rem;
   }
 
   li::marker {

@@ -149,16 +149,19 @@ body {
 
 a {
   color: var(--section-color);
-  text-decoration: underline var(--section-color) solid 1px;
-  text-underline-offset: 40%;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--section-color);
+  text-decoration-line: underline;
+  text-underline-offset: 0.2lh;
+  text-decoration-skip-ink: none;
   &:hover {
-    text-underline-offset: calc(40% - 2px);
     text-decoration-thickness: 3px;
-    text-decoration-line: underline;
+  }
+  &:has(code) {
+    line-height: 1.8;
   }
 }
 
-nav,
 h1,
 h2,
 h3,
@@ -190,14 +193,8 @@ code {
     color: var(--section-color);
     background-color: var(--section-color-dim);
     border-radius: 1rem;
-    padding: 0.2rem 0rem;
+    padding: 0.2rem 1ch;
     line-height: 1.8;
-
-    &::before,
-    &::after {
-      content: " ";
-      white-space: pre;
-    }
   }
 }
 
