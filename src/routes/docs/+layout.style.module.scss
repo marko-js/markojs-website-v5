@@ -334,11 +334,11 @@
   }
 
   $alert-types: (
-    ("note", "blue", "doc"),
-    ("caution", "red", "throw"),
-    ("tip", "yellow", "link"),
-    ("important", "green", "button"),
-    ("warning", "purple", "crash")
+    ("note", "doc", "blue"),
+    ("caution", "throw", "red"),
+    ("tip", "link", "yellow"),
+    ("important", "button", "green"),
+    ("warning", "crash", "gray")
   );
 
   .markdown-alert::before {
@@ -355,7 +355,7 @@
     background-repeat: no-repeat;
   }
 
-  @each $name, $color, $widget in $alert-types {
+  @each $name, $widget, $color in $alert-types {
     .markdown-alert-#{$name} {
       @include section-color.set($color, true);
       &::before {
@@ -374,7 +374,7 @@
       transform: rotateZ(0);
     }
 
-    @each $name, $color, $widget in $alert-types {
+    @each $name, $widget in $alert-types {
       .markdown-alert-#{$name}::before {
         --widget-image: url("../../tags/widget/#{$widget}-legs.svg");
       }
