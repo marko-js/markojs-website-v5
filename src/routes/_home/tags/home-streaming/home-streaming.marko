@@ -1,5 +1,6 @@
 import text from "app/styles/text.module.scss";
 import figure from "app/routes/_home/styles/section.module.scss";
+import demoStyles from "../demo-page/demo-page.style.module.scss";
 import styles from "./home-streaming.style.module.scss";
 
 let/progress=0
@@ -9,7 +10,7 @@ section.${styles.section}
     -- Marko streams content to your users as soon as it's ready. No waiting for client side JavaScript bundles or data requests to start rendering. HTML, assets, and images are loaded as soon as possible with asynchronous data loading in as it completes.
     a.${figure.cta} href="/docs/explanation/optimizing-performance" -- Learn More
   figure.${figure.background}
-    .demo-pages
+    .${demoStyles.demoPages}
       demo-page [
         label="a blank white screen for 1 second, followed by a generic e-commerce page loaded all at once"
         title="buffered"
