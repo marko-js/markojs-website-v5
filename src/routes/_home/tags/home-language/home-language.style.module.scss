@@ -1,111 +1,159 @@
 .section {
   display: flex;
-  align-items: center;
-  margin: 3rem auto;
-  gap: 2rem;
-  padding: 3rem 2rem;
-  border: 3px solid transparent;
+  flex-direction: column;
+  justify-content: space-around;
   border-radius: 2rem;
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
-  background-image:
-  linear-gradient(var(--color-background), var(--color-background)),
-  linear-gradient(
-    -30deg,
-    var(--color-section),
-    var(--color-section-alt)
-  );
+  padding: 3rem 2rem;
+  gap: 3rem;
+  @media (min-width: 64rem) {
+    flex-direction: row;
+  }
+  @media (min-width: 90rem) {
+    width: calc(100% + 8rem);
+    margin: 0 -4rem;
+    padding: 3rem 4rem;
+  }
   @media (prefers-color-scheme: light) {
-    & {
-      background-image: linear-gradient(
-        120deg,
-        var(--color-section),
-        var(--color-section-alt)
-      );
-      color: var(--color-background);
-    }
-
-    > article > h2 {
-      color: white;
-    }
-    .cta {
-      background: var(--color-section-alt);
-    }
-  }
-  @media (min-width: 86rem) {
-    & {
-      margin: auto -3rem;
-    }
-  }
-  @media (max-width: 45rem) {
-    & {
-      flex-direction: column;
-      align-items: stretch;
-    }
-  }
-
-  > article {
-    > h2 {
-      text-align: left;
-    }
-  }
-
-  > figure {
-    margin: 0;
-    align-self: end;
-    @media (max-width: 45rem) {
-      & {
-        align-self: stretch;
-      }
-    }
-
-    > div {
-      transform: translateY(4rem);
-      margin-top: -4rem;
-    }
-  }
-
-  > div {
-    margin-left: -3rem;
+    color: var(--color-white);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    background-image: linear-gradient(
+      to bottom,
+      var(--color-red-dark),
+      var(--color-red-light)
+    );
   }
 }
-@each $color in "red", "yellow", "green", "blue" {
-  .#{$color}Section {
-    composes: section;
-    --color-section: var(--color-#{$color});
-    --color-section-alt: var(--color-#{$color}-alt);
+
+.content {
+  display: flex;
+  flex-direction: column;
+  min-width: 100%;
+
+  @media (min-width: 64rem) {
+    min-width: auto;
+    max-width: 29rem;
+    padding-right: 1rem;
+  }
+
+  h2 {
+    font-size: 2.8rem;
+
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    @media (min-width: 30rem) {
+      font-size: 3.3rem;
+      width: auto;
+    }
+  }
+
+  p {
+    font-size: 1.1rem;
+    line-height: 2rem;
+    margin: 1rem 0;
+    max-width: 40rem;
   }
 }
 
 .cta {
+  display: inline-block;
+  margin-top: 1.5rem;
   border-radius: 2rem;
-  padding: 0.5rem 1rem;
-  background-image: linear-gradient(
-    30deg,
-    var(--color-section),
-    var(--color-section-alt)
-  );
-  color: white;
+  padding: 1rem 4rem;
   text-decoration: none;
+  color: var(--color-red-dark);
+  background: var(--color-white);
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-align: center;
   align-self: flex-start;
+  justify-self: end;
+  width: 100%;
+
+  @media (min-width: 30rem) {
+    width: auto;
+  }
+
+  @media (min-width: 64rem) {
+    padding: 0.8rem 2.4rem;
+  }
 }
 
 .example {
-  box-shadow: 0 0 1rem var(--color-foreground);
-  border-radius: 1rem;
-  overflow: clip;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 2rem;
+  padding: 1.5rem;
+  padding-bottom: 1.5rem;
   position: relative;
   background-color: var(--color-background);
+  margin-bottom: -6.5rem;
+  border: 6px solid var(--color-red-dim);
+  align-self: end;
+  min-width: 100%;
+
+  &::before {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    transform-origin: bottom;
+    transform: scale(0.9, 0.4);
+    content: "";
+    background-color: var(--color-red-dim-alt);
+    filter: blur(50px);
+    opacity: 0.4;
+  }
+
+  @media (min-width: 48rem) {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+
+  @media (min-width: 64rem) {
+    min-width: auto;
+  }
 
   pre {
-    padding: 3rem 1rem;
-    margin: 0;
-    display: flex;
+    padding: 0;
+    font-size: 3dvw;
+    @media (min-width: 34rem) {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+.exampleOutput {
+  display: flex;
+  flex-direction: column;
+  place-items: center;
+  margin: 0 -1.5rem;
+  margin-top: 2rem;
+  padding: 1rem 1.5rem;
+  background-repeat: no-repeat;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--color-red-dim),
+    var(--color-red-dim) 10px,
+    transparent 10px,
+    transparent 20px
+  );
+  background-size: calc(100% + 20px) 3px;
+
+  @media (min-width: 48rem) {
+    margin-left: -3rem;
+    margin-right: -3rem;
+    padding: 1rem 3rem;
   }
 
   > div {
-    position: absolute;
-    right: 1rem;
-    bottom: 1rem;
+    all: revert;
+    font-size: 2rem;
+    color: var(--color-black);
+    padding: 0.5rem;
+  }
+  > button {
+    all: revert;
+    font-size: 1rem;
   }
 }

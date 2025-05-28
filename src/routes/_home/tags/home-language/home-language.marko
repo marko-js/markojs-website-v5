@@ -1,22 +1,24 @@
-import text from "app/styles/text.module.scss";
 import styles from "./home-language.style.module.scss";
 
-static const EXAMPLE = `<let/count=0>
+static const EXAMPLE = `// HTML + JavaScript = 💜
+<let/count=53>
+<div>\${count}</div>
 <button onClick() { count++ }>
-  Count is \${count}
+  Click Me!
 </button>
 `;
 
-section.${styles.redSection}
-  article
-    h2.${text.red} -- HTML Re-Imagined
-    -- Marko is HTML re-imagined as a language for building dynamic and reactive user interfaces. Just about any valid HTML is valid Marko, but Marko extends the HTML language to allow building modern applications in a declarative way.
-
+section.${styles.section}
+  .${styles.content}
+    h2 -- HTML Re&#8209;imagined
+    p -- Marko is HTML re&#8209;imagined as a language for building dynamic and reactive user interfaces.
+    p -- Just about any valid HTML is valid Marko, but Marko extends the HTML language to allow building modern applications in a declarative way.
     a.${styles.cta} href="/docs/reference/language" -- Learn More
 
-    figure.${styles.example}
-      app-code-block lang="marko" text=EXAMPLE
-      div
-        let/count=0
-        button onClick() { count++ } -- Count is ${count}
+  figure.${styles.example}
+    app-code-block lang="marko" text=EXAMPLE
+    .${styles.exampleOutput}
+      let/count=53
+      div -- ${count}
+      button onClick() { count++ } -- Click Me!
 

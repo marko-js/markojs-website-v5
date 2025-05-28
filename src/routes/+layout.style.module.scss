@@ -14,8 +14,11 @@ $colors: (
 :root {
   color-scheme: light dark;
 
-  --color-foreground: light-dark(#{$black}, #{$white});
-  --color-background: light-dark(#{$white}, #{$black});
+  --color-black: #{$black};
+  --color-white: #{$white};
+
+  --color-foreground: light-dark(var(--color-black), var(--color-white));
+  --color-background: light-dark(var(--color-white), var(--color-black));
 
   @each $name, $dark, $light in $colors {
     $tint-percent: 20%;
@@ -147,6 +150,10 @@ body {
     sans-serif;
 }
 
+input, textarea, button {
+  font-family: inherit;
+}
+
 a {
   color: var(--section-color);
   text-decoration-thickness: 1px;
@@ -209,6 +216,11 @@ code {
   padding: 0 1rem;
   max-width: 92rem;
   min-height: 100vh;
+
+  @media (min-width: 90rem) {
+    padding: 0 7rem;
+    max-width: 94rem;
+  }
 }
 
 main {
