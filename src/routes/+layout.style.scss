@@ -148,6 +148,18 @@ body {
     "Open Sans",
     "Helvetica Neue",
     sans-serif;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  padding: 0 1rem;
+  max-width: 82rem;
+  min-height: 100vh;
+
+  @media (min-width: 64rem) {
+    padding: 0 5rem;
+    max-width: 90rem;
+  }
 }
 
 input, textarea, button {
@@ -205,21 +217,6 @@ code {
     border-radius: 1rem;
     padding: 0.2rem 1ch;
     line-height: 1.8;
-  }
-}
-
-#root {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  margin: 0 auto;
-  padding: 0 1rem;
-  max-width: 92rem;
-  min-height: 100vh;
-
-  @media (min-width: 90rem) {
-    padding: 0 7rem;
-    max-width: 94rem;
   }
 }
 

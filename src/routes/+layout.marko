@@ -1,4 +1,3 @@
-import styles from "./+layout.style.module.scss"
 <!DOCTYPE html>
 html lang="en"
   head
@@ -17,11 +16,10 @@ html lang="en"
     link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap"
 
   body
-    #${styles.root}
-      app-header
-      main
-        ${input.content}
-      app-footer
+    app-header
+    main
+      ${input.content}
+    app-footer
 
     script --
       const selectionColors = ["red", "yellow", "green", "blue"];

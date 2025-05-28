@@ -21,11 +21,12 @@
 }
 
 .trusted, .familiar, .performant, .scalable {
+  --widget-size: min(10rem, max(6rem, 21dvw));
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: calc(96px + 0.5rem);
-  background-size: 96px 96px;
+  padding-top: calc(var(--widget-size) + 0.5rem);
+  background-size: var(--widget-size) var(--widget-size);
   background-repeat: no-repeat;
 
   @media (min-width: 48rem) {

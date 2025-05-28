@@ -1,27 +1,37 @@
 .section {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: space-between;
+  border: 3px solid transparent;
   border-radius: 2rem;
-  padding: 3rem 2rem;
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  padding: 2rem;
   gap: 3rem;
+  color: var(--color-white);
+  margin-bottom: 5rem;
+  @media (min-width: 48rem) {
+    padding: 3rem;
+  }
   @media (min-width: 64rem) {
     flex-direction: row;
-  }
-  @media (min-width: 90rem) {
     width: calc(100% + 8rem);
-    margin: 0 -4rem;
+    margin-left: -4rem;
+    margin-right: -4rem;
     padding: 3rem 4rem;
   }
   @media (prefers-color-scheme: light) {
-    color: var(--color-white);
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
     background-image: linear-gradient(
       to bottom,
       var(--color-red-dark),
       var(--color-red-light)
     );
+  }
+
+  @media (prefers-color-scheme: dark) {
+    background-image:
+      linear-gradient(var(--color-background), var(--color-background)),
+      linear-gradient(0, var(--color-red), var(--color-red-alt));
   }
 }
 
@@ -32,19 +42,13 @@
 
   @media (min-width: 64rem) {
     min-width: auto;
-    max-width: 29rem;
     padding-right: 1rem;
   }
 
   h2 {
-    font-size: 2.8rem;
-
+    font-size: max(2.8rem, min(3.3rem, 8dvw));
     font-weight: 500;
     margin-bottom: 1.5rem;
-    @media (min-width: 30rem) {
-      font-size: 3.3rem;
-      width: auto;
-    }
   }
 
   p {
@@ -52,6 +56,18 @@
     line-height: 2rem;
     margin: 1rem 0;
     max-width: 40rem;
+  }
+}
+
+.headingText {
+  @media (prefers-color-scheme: dark) {
+    background-clip: text;
+    color: transparent;
+    background-image: linear-gradient(
+      to bottom,
+      var(--color-red-dark),
+      var(--color-red-light)
+    );
   }
 }
 
@@ -70,6 +86,11 @@
   justify-self: end;
   width: 100%;
 
+  @media (prefers-color-scheme: dark) {
+    color: var(--color-foreground);
+    background-color: var(--color-red);
+  }
+
   @media (min-width: 30rem) {
     width: auto;
   }
@@ -84,42 +105,41 @@
   flex-direction: column;
   justify-content: space-between;
   border-radius: 2rem;
-  padding: 1.5rem;
-  padding-bottom: 1.5rem;
   position: relative;
   background-color: var(--color-background);
   margin-bottom: -6.5rem;
   border: 6px solid var(--color-red-dim);
-  align-self: end;
-  min-width: 100%;
-
+  align-self: center;
+  width: 100%;
   &::before {
     position: absolute;
     inset: 0;
-    z-index: -2;
+    z-index: -1;
     transform-origin: bottom;
-    transform: scale(0.9, 0.4);
+    transform: scale(0.9, 1);
     content: "";
     background-color: var(--color-red-dim-alt);
     filter: blur(50px);
     opacity: 0.4;
+
+    @media (prefers-color-scheme: dark) {
+      transform-origin: center;
+      transform: scale(1, 0.9);
+    }
   }
 
-  @media (min-width: 48rem) {
-    padding-left: 3rem;
-    padding-right: 3rem;
+  @media (prefers-color-scheme: dark) {
+    border: 3px solid var(--color-red-dark);
   }
 
   @media (min-width: 64rem) {
-    min-width: auto;
+    align-self: end;
+    width: auto;
   }
 
   pre {
-    padding: 0;
-    font-size: 3dvw;
-    @media (min-width: 34rem) {
-      font-size: 1.5rem;
-    }
+    background-color: transparent !important;
+    font-size: max(0.9rem, min(1.5rem, 3.5dvw));
   }
 }
 
@@ -127,30 +147,20 @@
   display: flex;
   flex-direction: column;
   place-items: center;
-  margin: 0 -1.5rem;
-  margin-top: 2rem;
   padding: 1rem 1.5rem;
-  background-repeat: no-repeat;
-  background-image: repeating-linear-gradient(
-    90deg,
-    var(--color-red-dim),
-    var(--color-red-dim) 10px,
-    transparent 10px,
-    transparent 20px
-  );
-  background-size: calc(100% + 20px) 3px;
-
+  border-top: 2px solid var(--color-red-dim);
+  @media (prefers-color-scheme: dark) {
+    border-top: 3px solid var(--color-red-dim);
+  }
   @media (min-width: 48rem) {
-    margin-left: -3rem;
-    margin-right: -3rem;
     padding: 1rem 3rem;
   }
 
   > div {
     all: revert;
-    font-size: 2rem;
-    color: var(--color-black);
-    padding: 0.5rem;
+    font-size: max(1.5rem, min(5dvw, 2rem));
+    color: var(--color-foreground);
+    padding-bottom: 0.5rem;
   }
   > button {
     all: revert;

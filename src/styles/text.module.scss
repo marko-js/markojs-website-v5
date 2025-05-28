@@ -1,4 +1,4 @@
-@use "app/routes/+layout.style.module.scss" as layout;
+@use "app/routes/+layout.style.scss" as layout;
 
 @each $color, $_dark, $_light in layout.$colors {
   .#{$color} {

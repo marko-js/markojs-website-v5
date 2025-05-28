@@ -1,6 +1,11 @@
 @use "app/styles/section-color.scss" as section-color;
 @use "app/tags/app-header/app-header.style.module.scss" as header;
 
+body {
+  padding: 0 1rem;
+  max-width: 82rem;
+}
+
 main {
   flex-direction: row;
 }
@@ -183,14 +188,14 @@ main {
       }
 
       &::before {
-        display: inline-block;
-        content: "#";
-        text-wrap: nowrap;
-        padding-right: 0.5rem;
-        color: var(--section-color-dim);
-        scale: 0.75;
         @media (min-width: 48rem) {
           position: absolute;
+          display: inline-block;
+          content: "#";
+          text-wrap: nowrap;
+          padding-right: 0.5rem;
+          color: var(--section-color-dim);
+          scale: 0.75;
           top: 50%;
           left: 0;
           translate: -100% -50%;
