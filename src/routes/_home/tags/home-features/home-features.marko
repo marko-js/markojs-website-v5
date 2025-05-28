@@ -1,26 +1,18 @@
-import cookie from "../../../../tags/widget/cookie.svg?url";
-import pixel from "../../../../tags/widget/pixel.svg?url";
-import fetch from "../../../../tags/widget/fetch.svg?url";
-import doc from "../../../../tags/widget/doc.svg?url";
 import styles from "./home-features.style.module.scss";
 
 section.${styles.section}
-  article
-    img src=cookie alt=""
+  article.${styles.trusted}
+    h3 -- Trusted
+    p -- Powering high-traffic, production-grade websites like eBay.com
+
+  article.${styles.familiar}
     h3 -- Familiar
     p -- If you know HTML, CSS, and JavaScript, you know Marko
 
-  article
-    img src=pixel alt=""
+  article.${styles.performant}
     h3 -- Performant
-    p -- Streaming, partial hydration, an optimizing compiler, and a small runtime
+    p -- Streaming, resumable, optimizing compiler, and a tiny runtime
 
-  article
-    img src=fetch alt=""
+  article.${styles.scalable}
     h3 -- Scalable
-    p -- Start with simple HTML templates and add powerful components as needed
-
-  article
-    img src=doc alt=""
-    h3 -- Trusted
-    p -- Marko is powering high-traffic websites like ebay.com
+    p -- From simple HTML templates to powerful components as needed

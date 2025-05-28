@@ -1,26 +1,25 @@
-.red, .blue, .green, .yellow {
-  background-clip: text;
-  color: transparent;
-  background-image: linear-gradient(
-    to right,
-    var(--text-gradient-start),
-    var(--text-gradient-end)
-  );
-}
+@use "app/routes/+layout.style.module.scss" as layout;
 
-.red {
-  --text-gradient-start: var(--color-red);
-  --text-gradient-end: var(--color-red-alt);
-}
-.blue {
-  --text-gradient-start: var(--color-blue);
-  --text-gradient-end: var(--color-blue-alt);
-}
-.green {
-  --text-gradient-start: var(--color-green);
-  --text-gradient-end: var(--color-green-alt);
-}
-.yellow {
-  --text-gradient-start: var(--color-yellow);
-  --text-gradient-end: var(--color-yellow-alt);
+@each $color, $_dark, $_light in layout.$colors {
+  .#{$color} {
+    color: var(--color-#{$color});
+  }
+  .#{$color}Alt {
+    color: var(--color-#{$color}-alt);
+  }
+  .#{$color}Light {
+    color: var(--color-#{$color}-light);
+  }
+  .#{$color}Dark {
+    color: var(--color-#{$color}-dark);
+  }
+  .#{$color}Gradient {
+    background-clip: text;
+    color: transparent;
+    background-image: linear-gradient(
+      to right,
+      var(--color-#{$color}-dark),
+      var(--color-#{$color}-light)
+    );
+  }
 }

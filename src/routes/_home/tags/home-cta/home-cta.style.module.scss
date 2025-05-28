@@ -1,16 +1,54 @@
-.section {
+h1 {
+  margin-top: 1rem;
+  font-size: calc(100dvw / 12);
+  font-weight: 300;
+  text-align: center;
+  width: 100%;
+  max-width: 64rem;
+
+  strong {
+    font-weight: 500;
+  }
+
+  @media (min-width: 48rem) {
+    margin-top: 2.5rem;
+    font-size: calc(100dvw / 15);
+  }
+
+  @media (min-width: 64rem) {
+    text-align: left;
+    font-size: 4.4rem;
+  }
+}
+
+.ctaNav {
   display: flex;
   gap: 1rem;
-  justify-content: left;
+  justify-content: center;
+  flex-wrap: wrap;
+  
+  @media (min-width: 48rem) {
+    gap: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (min-width: 64rem) {
+    justify-content: left;
+  }
 }
 
 .primaryLink, .secondaryLink {
   border-radius: 2rem;
-  padding: 0.5rem 1rem;
+  padding: 1rem 2.4rem;
   text-decoration: none;
-  display: inline-flex;
-  align-items: center;
   gap: 0.5rem;
+  margin: 0 1rem;
+  width: 100%;
+  justify-content: center;
+  @media (min-width: 32rem) {
+    margin: 0;
+    width: auto;
+  }
 
   svg {
     height: 1lh;
@@ -21,11 +59,29 @@
 }
 
 .primaryLink {
-  background: linear-gradient(to right, #ff425b, #a31460);
-  color: white;
+  background: linear-gradient(to top, var(--color-red-light), var(--color-red-dark));
+  color: #FFF;
+  font-size: 1.5rem;
+  font-weight: 500;
+  text-align: center;
+  @media (min-width: 32rem) {
+    margin: 0;
+    width: auto;
+  }
 }
 
 .secondaryLink {
+  display: inline-flex;
   color: var(--color-foreground);
   border: 1px solid currentColor;
+  font-size: 1rem;
+  font-weight: 300;
+  align-items: center;
+  text-align: center;
+}
+
+.underlineBlue {
+  text-decoration: 3px underline var(--color-blue-dark);
+  text-underline-offset: 0.09lh;
+  text-decoration-skip-ink: none;
 }

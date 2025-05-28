@@ -8,7 +8,7 @@ $colors: (
   ("yellow", #fc5c00, #ffd100),
   ("green", #00b068, #7ced64),
   ("blue", #0073d8, #00cffb), 
-  ("gray", #6e6e6e, #CCCCCC),
+  ("gray", #6e6e6e, #cccccc),
 );
 
 :root {
@@ -86,7 +86,6 @@ h5,
 h6 {
   position: relative;
   font-weight: 500;
-  overflow-wrap: break-word;
   text-wrap: balance;
 }
 
@@ -212,8 +211,9 @@ code {
   min-height: 100vh;
 }
 
-#main {
+main {
   display: flex;
-  column-gap: 2.5rem;
+  gap: 2.5rem;
   flex: 1 0 auto;
+  flex-direction: column;
 }

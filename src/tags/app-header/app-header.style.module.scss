@@ -20,7 +20,7 @@ $scale: var(--stick-scale);
   display: flex;
   height: $size;
   align-items: center;
-  gap: 2rem;
+  gap: 4rem;
   font-weight: 500;
   --section-color: var(--color-foreground);
   &::before {

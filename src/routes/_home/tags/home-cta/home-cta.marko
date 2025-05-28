@@ -3,14 +3,16 @@ import text from "app/styles/text.module.scss";
 import styles from "./home-cta.style.module.scss";
 
 h1
-  -- The${" "}
-  strong.${text.yellow} -- Markup
-  -- ${" "}
-  strong.${text.green} -- Language
-  -- ${" "}that${" "}
-  strong.${text.red} -- Scales
+  span.${text.redLight}
+    span.${styles.underlineBlue} -- A declarative
+    -- ,
+  strong.${text.yellowGradient} -- ${" "}HTML&#8209;based${" "}
+  strong.${text.yellow} -- language${" "}
+  span -- that makes${" "}
+  strong.${text.blueGradient} -- building web apps${" "}
+  strong.${text.green} -- fun.
 
-section.${styles.section}
+nav.${styles.ctaNav}
   a.${styles.primaryLink} href="docs/tutorial/getting-started/"
     -- Get Started
   a.${styles.secondaryLink} [

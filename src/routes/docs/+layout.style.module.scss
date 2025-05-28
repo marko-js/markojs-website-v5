@@ -1,6 +1,10 @@
 @use "app/styles/section-color.scss" as section-color;
 @use "app/tags/app-header/app-header.style.module.scss" as header;
 
+main {
+  flex-direction: row;
+}
+
 #left,
 #right {
   position: sticky;
@@ -179,12 +183,12 @@
       }
 
       &::before {
+        display: inline-block;
         content: "#";
         text-wrap: nowrap;
         padding-right: 0.5rem;
         color: var(--section-color-dim);
-        font-size: 0.75em;
-
+        scale: 0.75;
         @media (min-width: 48rem) {
           position: absolute;
           top: 50%;
@@ -345,14 +349,29 @@
     pointer-events: none;
     float: right;
     content: "";
-    margin-top: -3.2rem;
-    margin-right: -3rem;
-    width: 6rem;
-    height: 6rem;
+    margin-top: -3.6rem;
+    margin-right: -1.75rem;
+    width: 8rem;
+    height: 8rem;
     shape-margin: 1rem;
     shape-outside: var(--widget-image);
     background-image: var(--widget-image);
     background-repeat: no-repeat;
+  }
+  
+  .markdown-alert-note::before {
+    rotate: 4deg;
+  }
+  .markdown-alert-caution::before {
+    rotate: -6deg;
+  }
+  .markdown-alert-tip::before {
+    scale: -1 1;
+    rotate: -5deg;
+  }
+  .markdown-alert-important::before {
+    scale: -1 1;
+    rotate: 3deg;
   }
 
   @each $name, $widget, $color in $alert-types {
@@ -370,8 +389,8 @@
       height: 11.25rem;
       margin-top: -4rem;
       margin-left: -1.5rem;
-      margin-right: -3.3rem;
-      transform: rotateZ(0);
+      margin-right: -1rem;
+      rotate: 0deg;
     }
 
     @each $name, $widget in $alert-types {
@@ -379,10 +398,5 @@
         --widget-image: url("../../tags/widget/#{$widget}-legs.svg");
       }
     }
-  }
-
-  .markdown-alert-tip::before,
-  .markdown-alert-note::before {
-    transform: scaleX(-1);
   }
 }
