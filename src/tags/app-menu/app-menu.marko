@@ -3,6 +3,7 @@ import styles from "./app-menu.module.scss"
 let-local-storage/syntaxMode="html" key="syntax-mode"
 let/isConciseMode=syntaxMode === "concise" valueChange(v) { syntaxMode = v ? "concise" : "html" }
 script -- document.body.classList.toggle("concise-mode", isConciseMode);
+html-script -- document.body.classList.toggle("concise-mode",localStorage.getItem("syntax-mode")==='"concise"')
 
 #site-menu.${styles.menu}
   const/ariaCurrent = (page: string) => $global.url.pathname === page && "true";
