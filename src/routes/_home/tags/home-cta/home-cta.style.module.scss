@@ -85,3 +85,17 @@ h1 {
   text-underline-offset: 0.09lh;
   text-decoration-skip-ink: none;
 }
+
+@property --stars {
+  syntax: '<integer>';
+  initial-value: 13000;
+  inherits: false;
+}
+#stars {
+  transition: --stars 0.8s ease;
+  counter-reset: stars var(--stars);
+  font-variant-numeric: tabular-nums;
+  &::after {
+    content: " " counter(stars) " ⭐️";
+  }
+}
