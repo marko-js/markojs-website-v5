@@ -1,3 +1,16 @@
 import styles from "./app-footer.style.module.scss";
-footer#${styles.footer} -- Hello World
-
+footer id=styles.footer
+  a.${styles.openjsf} href="https://openjsf.org/"
+    img src="./openjsf.svg?no-inline" alt=""
+    -- ${" "}
+    span
+      span${styles.bold} -- OpenJS&nbsp;
+      span${styles.light} -- Foundation
+  .${styles.separator}
+  a.${styles.osi} href="https://github.com/marko-js/marko/blob/main/LICENSE"
+    img src="./osi.svg?no-inline" alt=""
+    --  MIT&nbsp;License
+  .${styles.separator}
+  a.${styles.ebay} href="https://github.com/eBay"
+    img src="./ebay.svg?no-inline" alt="eBay"
+    --  open&nbsp;source

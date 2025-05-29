@@ -1,7 +1,79 @@
+$size: var(--footer-size);
+
+:root {
+  --footer-size: 12rem;
+  @media (min-width: 48rem) {
+    --footer-size: 8rem;
+  }
+}
+
 #footer {
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-top: 1rem;
+  padding: 2rem 0;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
   display: flex;
   flex-shrink: 0;
-  height: 16rem;
-  line-height: 16rem;
-  // background-color: var(--color-blue);
+  height: $size;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px solid var(--color-gray-alt);
+
+  @media (min-width: 48rem) {
+    flex-direction: row;
+    padding: 0;
+  }
+
+  a {
+    color: var(--color-foreground);
+    height: 5em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-decoration: none;
+
+    img {
+      position: relative;
+      margin-right: 0.3em;
+    }
+  }
+}
+
+.openjsf img {
+  height: 2em;
+}
+
+.ebay img {
+  height: 1em;
+  top: 0.1em;
+}
+
+.osi img {
+  height: 1.5em;
+}
+
+.bold {
+  font-weight: 600;
+}
+.light {
+  font-weight: 200;
+}
+
+.separator {
+  display: none;
+  color: var(--color-gray-alt);
+  height: 2lh;
+  width: 2px;
+  margin: 2rem;
+  background-color: var(--color-gray-alt);
+  position: relative;
+
+  @media (min-width: 48rem) {
+    display: block;
+  }
 }

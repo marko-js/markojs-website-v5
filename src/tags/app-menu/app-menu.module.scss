@@ -15,7 +15,7 @@
   left: 0;
   right: 0;
   top: calc(header.$size + 2rem);
-  bottom: 5rem;
+  bottom: 5rem; /* controls size */
   margin: 0;
   width: 100%;
   height: calc(100dvh - header.$size - 2rem);
