@@ -1,9 +1,8 @@
 import styles from "./app-menu.module.scss"
 
-let-local-storage/syntaxMode="html" key="syntax-mode"
-let/isConciseMode=syntaxMode === "concise" valueChange(v) { syntaxMode = v ? "concise" : "html" }
-script -- document.body.classList.toggle("concise-mode", isConciseMode);
-html-script -- document.body.classList.toggle("concise-mode",localStorage.getItem("syntax-mode")==='"concise"')
+let-local-storage/conciseMode=false key="concise-mode"
+script -- document.body.classList.toggle("concise-mode", conciseMode);
+html-script -- document.body.classList.toggle("concise-mode",localStorage.getItem("concise-mode")==='true');
 
 #site-menu.${styles.menu}
   const/ariaCurrent = (page: string) => $global.url.pathname === page && "true";
@@ -96,4 +95,4 @@ html-script -- document.body.classList.toggle("concise-mode",localStorage.getIte
   #${styles.controls}
     id/modeId
     strong id=modeId -- Syntax Mode
-    app-switch aria-labelledby=modeId checked:=isConciseMode off="HTML" on="Concise"
+    app-switch aria-labelledby=modeId checked:=conciseMode off="HTML" on="Concise"

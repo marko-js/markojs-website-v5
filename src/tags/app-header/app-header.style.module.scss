@@ -102,16 +102,18 @@ $scale: var(--stick-scale);
 #hamburger {
   display: flex;
   border: none;
-  height: 3rem;
-  width: 3rem;
+  height: 4rem;
+  padding: 1rem 0.5rem;
   place-items: center;
+  place-content: center;
   background: none;
   color: var(--color-foreground);
 
   &::before {
+    display: block;
     content: "";
-    height: 35px;
-    width: 35px;
+    height: 18px;
+    width: 18px;
     mask-size: 100% 100%;
     mask-image: url(./hamburger.svg?no-inline);
     background-color: currentColor;
@@ -134,19 +136,20 @@ $scale: var(--stick-scale);
 #docsearch {
   display: flex;
   place-items: center;
-  height: 3rem;
-  width: 3rem;
+  place-content: center;
+  flex-shrink: 1;
   @media (min-width: 64rem) and (min-height: 38rem) {
     width: 12.75rem;
   }
 
   button {
     display: flex;
+    height: 4rem;
     width: 100%;
+    padding: 1rem;
     background-origin: border-box;
     margin: 0;
     border-radius: 1.25rem;
-    padding: 0 8px;
     align-items: center;
     color: var(--color-foreground);
     -webkit-tap-highlight-color: transparent;
@@ -155,18 +158,14 @@ $scale: var(--stick-scale);
       border-color: transparent;
     }
     &:before {
+      content: "";
       display: block;
-      height: 48px;
-      width: 48px;
+      height: 18px;
+      width: 18px;
       margin-left: 0.2rem;
       mask-size: 100% 100%;
       mask-image: url(./search.svg?no-inline);
       background-color: currentColor;
-      content: "";
-      @media (min-width: 48rem) and (min-height: 38rem) {
-        height: 18px;
-        width: 18px;
-      }
     }
     @media (min-width: 64rem) and (min-height: 38rem) {
       border: 2px solid var(--color-foreground);
