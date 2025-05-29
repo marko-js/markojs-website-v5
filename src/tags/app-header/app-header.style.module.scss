@@ -4,8 +4,12 @@ $scale: var(--stick-scale);
 
 :root {
   --stick-top: 0px;
-  --stick-size: calc(48px + 4rem);
+  --stick-size: calc(36px + 4rem);
   --stick-scale: calc(1 - tan(atan2(#{$size}, 1px)) / tan(atan2(100dvh, 1px)));
+
+  @media (min-width: 48rem) and (min-height: 38rem) {
+    --stick-size: calc(48px + 4rem);
+  }
 }
 
 @mixin scroll-animate($name) {
@@ -54,6 +58,16 @@ $scale: var(--stick-scale);
       to {
         transform: translateY(-100%);
       }
+    }
+  }
+
+  img {
+    width: 180px;
+    height: 36px;
+
+    @media (min-width: 48rem) and (min-height: 38rem) {
+      width: 240px;
+      height: 48px;
     }
   }
 }
