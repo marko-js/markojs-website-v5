@@ -176,7 +176,7 @@ main {
 
   #syntax-legend pre {
     border: none;
-    font-size: 1.3rem;
+    font-size: max(0.8rem, min(4dvw, 1.5rem));
     background-color: var(--section-color-dim);
     border-radius: 1rem;
     padding: 1.5rem;
