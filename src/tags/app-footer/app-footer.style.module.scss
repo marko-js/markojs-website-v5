@@ -9,13 +9,9 @@ $size: var(--footer-size);
 
 #footer {
   position: relative;
-  left: 50%;
-  right: 50%;
   margin-top: 1rem;
   padding: 2rem 0;
-  margin-left: -50vw;
-  margin-right: -50vw;
-  width: 100vw;
+  width: 100%;
   display: flex;
   flex-shrink: 0;
   height: $size;

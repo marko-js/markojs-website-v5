@@ -149,6 +149,10 @@ body {
     "Open Sans",
     "Helvetica Neue",
     sans-serif;
+  margin: 0;
+}
+
+#root {
   display: flex;
   flex-direction: column;
   margin: 0 auto;

@@ -1,8 +1,8 @@
 @use "app/styles/section-color.scss" as section-color;
 @use "app/tags/app-header/app-header.style.module.scss" as header;
 
-body {
-  padding: 0 1rem;
+:global(#root) {
+  padding-inline: 1rem;
   max-width: 82rem;
 }
 
