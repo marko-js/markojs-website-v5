@@ -153,12 +153,12 @@ body {
   flex-direction: column;
   margin: 0 auto;
   padding: 0 1rem;
-  max-width: 92rem;
+  max-width: 82rem;
   min-height: 100vh;
 
-  @media (min-width: 90rem) {
-    padding: 0 7rem;
-    max-width: 94rem;
+  @media (min-width: 64rem) {
+    padding: 0 5rem;
+    max-width: 90rem;
   }
 }
 

@@ -148,6 +148,7 @@
   flex-direction: column;
   place-items: center;
   padding: 1rem 1.5rem;
+  padding-bottom: 2rem;
   border-top: 2px solid var(--color-red-dim);
   @media (prefers-color-scheme: dark) {
     border-top: 3px solid var(--color-red-dim);
