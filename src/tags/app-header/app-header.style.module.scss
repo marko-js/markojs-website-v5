@@ -20,7 +20,6 @@ $scale: var(--stick-scale);
   display: flex;
   height: $size;
   align-items: center;
-  gap: 1rem;
   font-weight: 500;
   --section-color: var(--color-foreground);
   &::before {
@@ -108,17 +107,17 @@ $scale: var(--stick-scale);
 }
 
 #docsearch {
-  width: 2.5rem;
-
-  @media (min-width: 48rem) and (min-height: 38rem) {
+  display: flex;
+  place-items: center;
+  height: 3rem;
+  width: 3rem;
+  @media (min-width: 64rem) and (min-height: 38rem) {
     width: 12.75rem;
   }
 
   button {
     display: flex;
     width: 100%;
-    height: 2.5rem;
-    border: 2px solid var(--color-foreground);
     background-origin: border-box;
     margin: 0;
     border-radius: 1.25rem;
@@ -126,23 +125,32 @@ $scale: var(--stick-scale);
     align-items: center;
     color: var(--color-foreground);
     -webkit-tap-highlight-color: transparent;
-    background:
-      linear-gradient(var(--color-background), var(--color-background))
-        padding-box,
-      linear-gradient(120deg, var(--color-red-dark), var(--color-red-light))
-        border-box !important;
     &:not(:disabled):is(:hover, :active, :focus) {
       color: var(--color-red-dark);
       border-color: transparent;
     }
     &:before {
       display: block;
-      height: 0.875rem;
-      width: 0.875rem;
+      height: 48px;
+      width: 48px;
       margin-left: 0.2rem;
+      mask-size: 100% 100%;
       mask-image: url(./search.svg?no-inline);
       background-color: currentColor;
       content: "";
+      @media (min-width: 48rem) and (min-height: 38rem) {
+        height: 18px;
+        width: 18px;
+      }
+    }
+    @media (min-width: 64rem) and (min-height: 38rem) {
+      border: 2px solid var(--color-foreground);
+      height: 2.5rem;
+      background:
+        linear-gradient(var(--color-background), var(--color-background))
+          padding-box,
+        linear-gradient(120deg, var(--color-red-dark), var(--color-red-light))
+          border-box !important;
     }
   }
 }
