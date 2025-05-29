@@ -15,7 +15,7 @@ header#${styles.header}
   let/mobileMenu=false
   button#${styles.hamburger} onClick() {
     document.body.classList.toggle("show-mobile-menu", !mobileMenu);
-    mobileMenu = !mobileMenu
+    mobileMenu = !mobileMenu;
   } aria-pressed=mobileMenu ? "true" : "false" aria-label=`${mobileMenu ? "Hide" : "Show"} menu`
 
   #${styles.docsearch}
