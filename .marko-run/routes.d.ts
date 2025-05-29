@@ -8,46 +8,44 @@ import type * as Run from "@marko/run";
 
 
 declare module "@marko/run" {
-	interface Platform extends {} {}
-
 	interface AppData extends Run.DefineApp<{
 		routes: {
-			"/": Routes["/_home"];
-			"/llms%2etxt": Routes["/llms%2etxt"];
-			"/docs": Routes["/docs"];
-			"/docs/explanation/forms": Routes["/docs/_compiled-docs/explanation/forms"];
-			"/docs/explanation/let-vs-const": Routes["/docs/_compiled-docs/explanation/let-vs-const"];
-			"/docs/explanation/nested-reactivity": Routes["/docs/_compiled-docs/explanation/nested-reactivity"];
-			"/docs/explanation/optimizing-performance": Routes["/docs/_compiled-docs/explanation/optimizing-performance"];
-			"/docs/explanation/streaming": Routes["/docs/_compiled-docs/explanation/streaming"];
-			"/docs/explanation/why-marko": Routes["/docs/_compiled-docs/explanation/why-marko"];
-			"/docs/guide/csp": Routes["/docs/_compiled-docs/guide/csp"];
-			"/docs/guide/duplicate-form-submissions": Routes["/docs/_compiled-docs/guide/duplicate-form-submissions"];
-			"/docs/guide/existing-project": Routes["/docs/_compiled-docs/guide/existing-project"];
-			"/docs/guide/library-integration": Routes["/docs/_compiled-docs/guide/library-integration"];
-			"/docs/guide/low-level-apis": Routes["/docs/_compiled-docs/guide/low-level-apis"];
-			"/docs/guide/marko-5-interop": Routes["/docs/_compiled-docs/guide/marko-5-interop"];
-			"/docs/guide/publishing-components": Routes["/docs/_compiled-docs/guide/publishing-components"];
-			"/docs/guide/styling": Routes["/docs/_compiled-docs/guide/styling"];
-			"/docs/marko-run/file-based-routing": Routes["/docs/_compiled-docs/marko-run/file-based-routing"];
-			"/docs/marko-run/getting-started": Routes["/docs/_compiled-docs/marko-run/getting-started"];
-			"/docs/marko-run/typescript": Routes["/docs/_compiled-docs/marko-run/typescript"];
-			"/docs/reference/concise-syntax": Routes["/docs/_compiled-docs/reference/concise-syntax"];
-			"/docs/reference/core-tag": Routes["/docs/_compiled-docs/reference/core-tag"];
-			"/docs/reference/custom-tag": Routes["/docs/_compiled-docs/reference/custom-tag"];
-			"/docs/reference/language": Routes["/docs/_compiled-docs/reference/language"];
-			"/docs/reference/native-tag": Routes["/docs/_compiled-docs/reference/native-tag"];
-			"/docs/reference/reactivity": Routes["/docs/_compiled-docs/reference/reactivity"];
-			"/docs/reference/template": Routes["/docs/_compiled-docs/reference/template"];
-			"/docs/reference/typescript": Routes["/docs/_compiled-docs/reference/typescript"];
-			"/docs/tutorial/app-from-scratch": Routes["/docs/_compiled-docs/tutorial/app-from-scratch"];
-			"/docs/tutorial/components-and-reactivity": Routes["/docs/_compiled-docs/tutorial/components-and-reactivity"];
-			"/docs/tutorial/experienced-developers": Routes["/docs/_compiled-docs/tutorial/experienced-developers"];
-			"/docs/tutorial/fundamentals": Routes["/docs/_compiled-docs/tutorial/fundamentals"];
-			"/docs/tutorial/getting-started": Routes["/docs/_compiled-docs/tutorial/getting-started"];
-			"/docs/llms/:filePath*": Routes["/docs/llms/$$filePath"];
-			"/docs/llms/reference-full%2emd": Routes["/docs/llms/reference-full%2emd"];
-			"/playground": Routes["/playground"];
+			"/": { verb: "get"; };
+			"/llms.txt": { verb: "get"; };
+			"/docs": { verb: "get"; };
+			"/docs/explanation/forms": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/forms+meta.json"); };
+			"/docs/explanation/let-vs-const": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/let-vs-const+meta.json"); };
+			"/docs/explanation/nested-reactivity": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/nested-reactivity+meta.json"); };
+			"/docs/explanation/optimizing-performance": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/optimizing-performance+meta.json"); };
+			"/docs/explanation/streaming": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/streaming+meta.json"); };
+			"/docs/explanation/why-marko": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/why-marko+meta.json"); };
+			"/docs/guide/csp": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/csp+meta.json"); };
+			"/docs/guide/duplicate-form-submissions": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/duplicate-form-submissions+meta.json"); };
+			"/docs/guide/existing-project": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/existing-project+meta.json"); };
+			"/docs/guide/library-integration": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/library-integration+meta.json"); };
+			"/docs/guide/low-level-apis": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/low-level-apis+meta.json"); };
+			"/docs/guide/marko-5-interop": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/marko-5-interop+meta.json"); };
+			"/docs/guide/publishing-components": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/publishing-components+meta.json"); };
+			"/docs/guide/styling": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/styling+meta.json"); };
+			"/docs/marko-run/file-based-routing": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/marko-run/file-based-routing+meta.json"); };
+			"/docs/marko-run/getting-started": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/marko-run/getting-started+meta.json"); };
+			"/docs/marko-run/typescript": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/marko-run/typescript+meta.json"); };
+			"/docs/reference/concise-syntax": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/reference/concise-syntax+meta.json"); };
+			"/docs/reference/core-tag": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/reference/core-tag+meta.json"); };
+			"/docs/reference/custom-tag": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/reference/custom-tag+meta.json"); };
+			"/docs/reference/language": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/reference/language+meta.json"); };
+			"/docs/reference/native-tag": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/reference/native-tag+meta.json"); };
+			"/docs/reference/reactivity": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/reference/reactivity+meta.json"); };
+			"/docs/reference/template": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/reference/template+meta.json"); };
+			"/docs/reference/typescript": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/reference/typescript+meta.json"); };
+			"/docs/tutorial/app-from-scratch": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/tutorial/app-from-scratch+meta.json"); };
+			"/docs/tutorial/components-and-reactivity": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/tutorial/components-and-reactivity+meta.json"); };
+			"/docs/tutorial/experienced-developers": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/tutorial/experienced-developers+meta.json"); };
+			"/docs/tutorial/fundamentals": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/tutorial/fundamentals+meta.json"); };
+			"/docs/tutorial/getting-started": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/tutorial/getting-started+meta.json"); };
+			"/docs/llms/$$filePath": { verb: "get"; };
+			"/docs/llms/reference-full.md": { verb: "get"; };
+			"/playground": { verb: "get"; meta: typeof import("../src/routes/playground/+meta.json"); };
 		}
 	}> {}
 }
@@ -55,7 +53,7 @@ declare module "@marko/run" {
 declare module "../src/routes/llms%2etxt+handler" {
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
-    export type Route = Run.Routes["/llms%2etxt"];
+    export type Route = Run.Routes["/llms.txt"];
     export type Context = Run.MultiRouteContext<Route>;
     export type Handler = Run.HandlerLike<Route>;
     /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
@@ -77,7 +75,7 @@ declare module "../src/routes/docs/+handler" {
 declare module "../src/routes/docs/llms/$$filePath+handler" {
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
-    export type Route = Run.Routes["/docs/llms/:filePath*"];
+    export type Route = Run.Routes["/docs/llms/$$filePath"];
     export type Context = Run.MultiRouteContext<Route>;
     export type Handler = Run.HandlerLike<Route>;
     /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
@@ -88,7 +86,7 @@ declare module "../src/routes/docs/llms/$$filePath+handler" {
 declare module "../src/routes/docs/llms/reference-full%2emd+handler" {
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
-    export type Route = Run.Routes["/docs/llms/reference-full%2emd"];
+    export type Route = Run.Routes["/docs/llms/reference-full.md"];
     export type Context = Run.MultiRouteContext<Route>;
     export type Handler = Run.HandlerLike<Route>;
     /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
@@ -99,7 +97,7 @@ declare module "../src/routes/docs/llms/reference-full%2emd+handler" {
 declare module "../src/routes/docs/+middleware" {
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
-    export type Route = Run.Routes["/docs" | "/docs/explanation/forms" | "/docs/explanation/let-vs-const" | "/docs/explanation/nested-reactivity" | "/docs/explanation/optimizing-performance" | "/docs/explanation/streaming" | "/docs/explanation/why-marko" | "/docs/guide/csp" | "/docs/guide/duplicate-form-submissions" | "/docs/guide/existing-project" | "/docs/guide/library-integration" | "/docs/guide/low-level-apis" | "/docs/guide/marko-5-interop" | "/docs/guide/publishing-components" | "/docs/guide/styling" | "/docs/marko-run/file-based-routing" | "/docs/marko-run/getting-started" | "/docs/marko-run/typescript" | "/docs/reference/concise-syntax" | "/docs/reference/core-tag" | "/docs/reference/custom-tag" | "/docs/reference/language" | "/docs/reference/native-tag" | "/docs/reference/reactivity" | "/docs/reference/template" | "/docs/reference/typescript" | "/docs/tutorial/app-from-scratch" | "/docs/tutorial/components-and-reactivity" | "/docs/tutorial/experienced-developers" | "/docs/tutorial/fundamentals" | "/docs/tutorial/getting-started" | "/docs/llms/:filePath*" | "/docs/llms/reference-full%2emd"];
+    export type Route = Run.Routes["/docs" | "/docs/explanation/forms" | "/docs/explanation/let-vs-const" | "/docs/explanation/nested-reactivity" | "/docs/explanation/optimizing-performance" | "/docs/explanation/streaming" | "/docs/explanation/why-marko" | "/docs/guide/csp" | "/docs/guide/duplicate-form-submissions" | "/docs/guide/existing-project" | "/docs/guide/library-integration" | "/docs/guide/low-level-apis" | "/docs/guide/marko-5-interop" | "/docs/guide/publishing-components" | "/docs/guide/styling" | "/docs/marko-run/file-based-routing" | "/docs/marko-run/getting-started" | "/docs/marko-run/typescript" | "/docs/reference/concise-syntax" | "/docs/reference/core-tag" | "/docs/reference/custom-tag" | "/docs/reference/language" | "/docs/reference/native-tag" | "/docs/reference/reactivity" | "/docs/reference/template" | "/docs/reference/typescript" | "/docs/tutorial/app-from-scratch" | "/docs/tutorial/components-and-reactivity" | "/docs/tutorial/experienced-developers" | "/docs/tutorial/fundamentals" | "/docs/tutorial/getting-started" | "/docs/llms/$$filePath" | "/docs/llms/reference-full.md"];
     export type Context = Run.MultiRouteContext<Route>;
     export type Handler = Run.HandlerLike<Route>;
     /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
@@ -460,7 +458,7 @@ declare module "../src/routes/playground/+page.marko" {
 }
 
 declare module "../src/routes/+layout.marko" {
-  export interface Input extends Run.LayoutInput<typeof import('../src/routes/+layout.marko')> {}
+  export interface Input extends Run.LayoutInput<typeof import("../src/routes/+layout.marko")> {}
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
     export type Route = Run.Routes["/" | "/docs/explanation/forms" | "/docs/explanation/let-vs-const" | "/docs/explanation/nested-reactivity" | "/docs/explanation/optimizing-performance" | "/docs/explanation/streaming" | "/docs/explanation/why-marko" | "/docs/guide/csp" | "/docs/guide/duplicate-form-submissions" | "/docs/guide/existing-project" | "/docs/guide/library-integration" | "/docs/guide/low-level-apis" | "/docs/guide/marko-5-interop" | "/docs/guide/publishing-components" | "/docs/guide/styling" | "/docs/marko-run/file-based-routing" | "/docs/marko-run/getting-started" | "/docs/marko-run/typescript" | "/docs/reference/concise-syntax" | "/docs/reference/core-tag" | "/docs/reference/custom-tag" | "/docs/reference/language" | "/docs/reference/native-tag" | "/docs/reference/reactivity" | "/docs/reference/template" | "/docs/reference/typescript" | "/docs/tutorial/app-from-scratch" | "/docs/tutorial/components-and-reactivity" | "/docs/tutorial/experienced-developers" | "/docs/tutorial/fundamentals" | "/docs/tutorial/getting-started" | "/playground"];
@@ -472,7 +470,7 @@ declare module "../src/routes/+layout.marko" {
 }
 
 declare module "../src/routes/docs/+layout.marko" {
-  export interface Input extends Run.LayoutInput<typeof import('../src/routes/docs/+layout.marko')> {}
+  export interface Input extends Run.LayoutInput<typeof import("../src/routes/docs/+layout.marko")> {}
   namespace MarkoRun {
     export { NotHandled, NotMatched, GetPaths, PostPaths, GetablePath, GetableHref, PostablePath, PostableHref, Platform };
     export type Route = Run.Routes["/docs/explanation/forms" | "/docs/explanation/let-vs-const" | "/docs/explanation/nested-reactivity" | "/docs/explanation/optimizing-performance" | "/docs/explanation/streaming" | "/docs/explanation/why-marko" | "/docs/guide/csp" | "/docs/guide/duplicate-form-submissions" | "/docs/guide/existing-project" | "/docs/guide/library-integration" | "/docs/guide/low-level-apis" | "/docs/guide/marko-5-interop" | "/docs/guide/publishing-components" | "/docs/guide/styling" | "/docs/marko-run/file-based-routing" | "/docs/marko-run/getting-started" | "/docs/marko-run/typescript" | "/docs/reference/concise-syntax" | "/docs/reference/core-tag" | "/docs/reference/custom-tag" | "/docs/reference/language" | "/docs/reference/native-tag" | "/docs/reference/reactivity" | "/docs/reference/template" | "/docs/reference/typescript" | "/docs/tutorial/app-from-scratch" | "/docs/tutorial/components-and-reactivity" | "/docs/tutorial/experienced-developers" | "/docs/tutorial/fundamentals" | "/docs/tutorial/getting-started"];
@@ -481,43 +479,4 @@ declare module "../src/routes/docs/+layout.marko" {
     /** @deprecated use `((context, next) => { ... }) satisfies MarkoRun.Handler` instead */
     export const route: Run.HandlerTypeFn<Route>;
   }
-}
-
-type Routes = {
-	"/_home": { verb: "get"; };
-	"/llms%2etxt": { verb: "get"; };
-	"/docs": { verb: "get"; };
-	"/docs/_compiled-docs/explanation/forms": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/forms+meta.json"); };
-	"/docs/_compiled-docs/explanation/let-vs-const": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/let-vs-const+meta.json"); };
-	"/docs/_compiled-docs/explanation/nested-reactivity": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/nested-reactivity+meta.json"); };
-	"/docs/_compiled-docs/explanation/optimizing-performance": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/optimizing-performance+meta.json"); };
-	"/docs/_compiled-docs/explanation/streaming": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/streaming+meta.json"); };
-	"/docs/_compiled-docs/explanation/why-marko": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/explanation/why-marko+meta.json"); };
-	"/docs/_compiled-docs/guide/csp": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/csp+meta.json"); };
-	"/docs/_compiled-docs/guide/duplicate-form-submissions": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/duplicate-form-submissions+meta.json"); };
-	"/docs/_compiled-docs/guide/existing-project": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/existing-project+meta.json"); };
-	"/docs/_compiled-docs/guide/library-integration": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/library-integration+meta.json"); };
-	"/docs/_compiled-docs/guide/low-level-apis": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/low-level-apis+meta.json"); };
-	"/docs/_compiled-docs/guide/marko-5-interop": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/marko-5-interop+meta.json"); };
-	"/docs/_compiled-docs/guide/publishing-components": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/publishing-components+meta.json"); };
-	"/docs/_compiled-docs/guide/styling": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/guide/styling+meta.json"); };
-	"/docs/_compiled-docs/marko-run/file-based-routing": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/marko-run/file-based-routing+meta.json"); };
-	"/docs/_compiled-docs/marko-run/getting-started": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/marko-run/getting-started+meta.json"); };
-	"/docs/_compiled-docs/marko-run/typescript": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/marko-run/typescript+meta.json"); };
-	"/docs/_compiled-docs/reference/concise-syntax": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/reference/concise-syntax+meta.json"); };
-	"/docs/_compiled-docs/reference/core-tag": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/reference/core-tag+meta.json"); };
-	"/docs/_compiled-docs/reference/custom-tag": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/reference/custom-tag+meta.json"); };
-	"/docs/_compiled-docs/reference/language": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/reference/language+meta.json"); };
-	"/docs/_compiled-docs/reference/native-tag": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/reference/native-tag+meta.json"); };
-	"/docs/_compiled-docs/reference/reactivity": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/reference/reactivity+meta.json"); };
-	"/docs/_compiled-docs/reference/template": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/reference/template+meta.json"); };
-	"/docs/_compiled-docs/reference/typescript": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/reference/typescript+meta.json"); };
-	"/docs/_compiled-docs/tutorial/app-from-scratch": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/tutorial/app-from-scratch+meta.json"); };
-	"/docs/_compiled-docs/tutorial/components-and-reactivity": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/tutorial/components-and-reactivity+meta.json"); };
-	"/docs/_compiled-docs/tutorial/experienced-developers": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/tutorial/experienced-developers+meta.json"); };
-	"/docs/_compiled-docs/tutorial/fundamentals": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/tutorial/fundamentals+meta.json"); };
-	"/docs/_compiled-docs/tutorial/getting-started": { verb: "get"; meta: typeof import("../src/routes/docs/_compiled-docs/tutorial/getting-started+meta.json"); };
-	"/docs/llms/$$filePath": { verb: "get"; };
-	"/docs/llms/reference-full%2emd": { verb: "get"; };
-	"/playground": { verb: "get"; meta: typeof import("../src/routes/playground/+meta.json"); };
 }

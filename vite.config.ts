@@ -8,9 +8,7 @@ export default defineConfig({
   plugins: [
     patchCssModules(),
     markodown(),
-    marko({
-      trailingSlashes: "RedirectWithout",
-    }),
+    marko(),
     {
       ...nodePolyfills({
         include: [
