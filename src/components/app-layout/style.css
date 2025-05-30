@@ -270,12 +270,18 @@ header.solid-color h1 {
   }
 }
 
-.unstable-warning {
-  background-color: #ffee99;
+.new-version {
+  color: #fff;
+  background-image: linear-gradient(to bottom, #cc0067, #ff5467);
   width: 100%;
   text-align: center;
-  font-size: 0.8em;
+  font-size: 1em;
   padding: 0.5em;
   position: relative;
   z-index: 51;
+}
+
+.new-version a {
+  text-decoration: underline;
+  color: #fff;
 }
