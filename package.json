@@ -47,7 +47,7 @@
     "build": "NODE_ENV=production marko-build ./src/pages --static",
     "preview": "npm run build && http-server ./build",
     "dev": "marko-serve ./src/pages",
-    "publish": "gh-pages --cname v5.markojs.com --nojekyll -d dist/public -u \"marko-js <noreply@markojs.com>\""
+    "publish": "gh-pages --cname v5.markojs.com --nojekyll -d build -u \"marko-js <noreply@markojs.com>\""
   },
   "dependencies": {
     "@docsearch/css": "^3.9.0",
