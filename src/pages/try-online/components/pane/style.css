@@ -29,7 +29,8 @@
   margin: 0;
   padding-left: 0;
   list-style: none;
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .pane li.tab {

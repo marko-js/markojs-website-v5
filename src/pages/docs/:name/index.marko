@@ -3,6 +3,7 @@ import documentLookup from "./document-lookup";
 
 $ const { params } = input;
 $ const doc = documentLookup[params.name];
+$ if (!doc) console.log("MISSING DOC", params);
 
 <app-layout.docs title=doc.title currentDoc=params.name toc=doc.toc footer=false>
     <div.doc-layout>

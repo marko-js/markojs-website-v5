@@ -6,78 +6,53 @@
         </p>
     </@content>
     <@visual class="home-language__examples">
-        <if(input.v6)>
-            <figure>
-                <div class="home-language__interactive-container">
-                    <div class="home-language__interactive-example">
-                        <counter-tags/>
-                    </div>
-                    <code-block lang="marko" no-switch code=`
-                        <!doctype html>
-                        <html>
-                            <head>
-                                <title>Count with Marko</title>
-                            </head>
-                            <body>
-                                <let/count=0/>
-                                <button onClick() { count++ }>
-                                    \${count}
-                                </button>
-                            </body>
-                        </html>
-                    `/>
+        <figure>
+            <code-block
+                lang="marko"
+                no-switch
+                code=`
+                <!doctype html>
+                <html>
+                <head>
+                    <title>Hello Marko</title>
+                </head>
+                <body>
+                    <h1>My favorite colors</h1>
+                    <ul>
+                        <for|color| of=["red", "green", "blue"]>
+                            <li style=\`color:\${color}\`>
+                                \${color.toUpperCase()}
+                            </li>
+                        </for>
+                    </ul>
+                    <shared-footer/>
+                </body>
+                </html>
+            `
+            />
+            <figcaption>
+                HTML Templates, Custom Tags, & Javascript Expressions
+            </figcaption>
+        </figure>
+        <figure>
+            <div class="home-language__interactive-container">
+                <div class="home-language__interactive-example">
+                    <counter-example/>
                 </div>
-            </figure>
-        </if>
-        <else>
-            <figure>
                 <code-block
-                    lang="marko"
                     no-switch
-                    code=`
-                    <!doctype html>
-                    <html>
-                    <head>
-                        <title>Hello Marko</title>
-                    </head>
-                    <body>
-                        <h1>My favorite colors</h1>
-                        <ul>
-                            <for|color| of=["red", "green", "blue"]>
-                                <li style=\`color:\${color}\`>
-                                    \${color.toUpperCase()}
-                                </li>
-                            </for>
-                        </ul>
-                        <shared-footer/>
-                    </body>
-                    </html>
-                `
+                    file="./components/counter-example/index.marko"
                 />
-                <figcaption>
-                    HTML Templates, Custom Tags, & Javascript Expressions
-                </figcaption>
-            </figure>
-            <figure>
-                <div class="home-language__interactive-container">
-                    <div class="home-language__interactive-example">
-                        <counter-example/>
-                    </div>
-                    <code-block
-                        no-switch
-                        file="./components/counter-example/index.marko"
-                    />
-                    <!--<code-block lang="marko" no-switch>
-                        <let/count=0/>
-                        <div>${count}</div>
-                        <button on-click=()=>count++>
-                            increment
-                        </button> 
-                    </code-block>-->
-                </div>
-                <figcaption>Interactive Logic & Reactive Values</figcaption>
-            </figure>
-        </else>
+                <!--<code-block lang="marko" no-switch>
+                    <let/count=0/>
+                    <div>${count}</div>
+                    <button on-click=()=>count++>
+                        increment
+                    </button> 
+                </code-block>-->
+            </div>
+            <figcaption>Interactive Logic & Reactive Values</figcaption>
+        </figure>
     </@visual>
 </home-feature-block>
 
