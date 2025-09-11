@@ -4,8 +4,8 @@ import docsearch from '@docsearch/js';
 export function init(container) {
   docsearch({
     container,
-    indexName: 'markojs',
-    appId: 'GB0QQV5RQM',
-    apiKey: '82f1b630f11e1afa4767f051af953a28',
+    indexName: 'v5 Documentation',
+    appId: 'QP0FPVNIF3',
+    apiKey: 'efae11e98934f2fd2cd6c00faf79cdbd',
   });
 }
