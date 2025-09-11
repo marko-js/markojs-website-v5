@@ -1,0 +1,2 @@
+"use strict";(globalThis.webpackChunk=globalThis.webpackChunk||[]).push([[586],{"../components/app-layout/components/layout-search/doc-search.js":(e,a,c)=>{c.d(a,{init:()=>o});var n=c("../../node_modules/@docsearch/js/dist/esm/index.js");function o(e){(0,n.A)({container:e,indexName:"v5 Documentation",appId:"QP0FPVNIF3",apiKey:"efae11e98934f2fd2cd6c00faf79cdbd"})}}}]);
+//# sourceMappingURL=586.d1a7d384.js.map
